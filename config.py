@@ -1,5 +1,0 @@
-host = "127.0.0.1"
-user = "postgres"
-password = "624589"
-db_name = "antic_trader"
-SECRET_KEY = "sahrehlbsdafb3522lk__allaindemoupu@mail.ru"
