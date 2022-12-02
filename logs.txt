@@ -1,0 +1,21 @@
+
+2022-10-23 23:04:25.316502: [INFO] Error while working with postgresql ОШИБКА:  ошибка синтаксиса (примерное положение: "user")
+LINE 1: CREATE TABLE IF NOT EXISTS user (row_id serial PRIMARY KEY, ...
+                                   ^
+ 
+2022-10-26 13:38:37.221948: [INFO] Error while working with postgresql ОШИБКА:  ошибка синтаксиса (примерное положение: "user")
+LINE 1: CREATE TABLE IF NOT EXISTS user (row_id serial PRIMARY KEY, ...
+                                   ^
+ 
+2022-10-26 13:38:37.448626: [INFO] Error while working with postgresql ОШИБКА:  ошибка синтаксиса (примерное положение: "user")
+LINE 1: CREATE TABLE IF NOT EXISTS user (row_id serial PRIMARY KEY, ...
+                                   ^
+ 
+2022-10-26 13:41:13.951293: [INFO] Error while working with postgresql ОШИБКА:  ошибка синтаксиса (примерное положение: "user")
+LINE 1: CREATE TABLE IF NOT EXISTS user (row_id serial PRIMARY KEY, ...
+                                   ^
+ 
+2022-10-26 13:41:14.196356: [INFO] Error while working with postgresql ОШИБКА:  ошибка синтаксиса (примерное положение: "user")
+LINE 1: CREATE TABLE IF NOT EXISTS user (row_id serial PRIMARY KEY, ...
+                                   ^
+ 

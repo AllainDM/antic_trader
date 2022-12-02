@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
+    <title>{{title}}</title>
+</head>
+<body>
+    
+    {% block content -%}
+        {%- block mainmenu -%}
+            <ul class="mainmenu">
+                {% for m in menu %}
+                <li><a href="{{m.url}}">{{m.name}}</a></li>
+                {% endfor -%}
+            </ul>
+        {% endblock mainmenu -%}
+<!--        <aside class="aside_left">-->
+<!--            <div>-->
+<!--                <a href="/backpack">Роутеры</a>-->
+<!--                -->
+<!--            </div>-->
+<!--        </aside>-->
+        
+	{% endblock -%}
+
+</body>
+</html>

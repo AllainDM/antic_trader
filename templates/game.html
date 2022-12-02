@@ -1,0 +1,117 @@
+	{% extends 'base.html' %}
+
+	{% block content %}
+	{{ super() }}
+
+<header>
+    <div class="container">
+        <div class="dashboard-turn">
+            <div class="gold">
+                <p id="gold">Золото: нету</p>
+            </div>
+            <div class="year-turn">
+                <p id="year-turn">Год: -300(!) Ход: 1</p>
+            </div>
+            <div class="end-turn-bool">
+                <p id="end-turn-bool">Завершен ли ход</p>
+            </div>
+            <div class="end-turn">                
+                <div id="end-turn-btn" class="end-turn-btn">Конец хода</div>
+            </div>
+            <div class="stats header-buttons">
+                <input type="button" value="Отменить приказ" id="cancel-act">
+                <input type="button" value="Отменить все приказы" id="cancel-all-act">
+                <input type="button" value="Вывести логи" id="act-logs">
+
+
+            </div>
+
+
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="dashboard">
+        <div class="map-block">
+            <img src="static/image/map/map2.png" alt="map">
+        </div>
+        <div class="menu-block">
+            <!-- Главное меню -->
+            <div class="menu-buttons menu-buttons-main"  id="main-menu-buttons">
+                <div class="menu-btn" id="menu-colony">Строительство колоний</div>
+                <div class="menu-btn" id="menu-trade">Торговля</div>
+
+            </div>
+
+            <!-- Строительство колоний -->
+            <div class="menu-buttons menu-buttons-colony" id="menu-buttons-colony">
+                <div class="menu-btn" id="menu-new-colony">Построить новую колонию(производство)</div>
+                <div class="menu-btn menu-exit">Выход</div>
+            </div>
+
+            <!-- Торговля -->
+               <div class="menu-buttons menu-buttons-trade" id="menu-buttons-trade">
+                   <div class="menu-btn" id="menu-rise-development">Повысить развитие</div>
+                   <div class="menu-btn" id="menu-rise-loyalty">Повысить лояльность</div>
+                   <div class="menu-btn" id="menu-collect-tribute">Собрать доп. дань</div>
+                   <div class="menu-btn menu-exit">Выход</div>
+                </div>
+                <div>
+                    <div class="choose-list"> <!-- Возможно лучше скрыть -->
+                        <div class="menu-buttons-choose" id="menu-buttons-choose">
+                           <!-- Для отображения кнопок выбора новых пунктов в меню, строительство и торговля -->
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container">
+        <div class="stats">
+            <div class="province-name">
+                <div id="province-name">Первая династия</div>
+            </div>
+            <div class="all-stats">
+                <div class="two-stats">
+                    <div class="stats stats1">
+                        <div id="goods1"></div>
+                        <div id="goods2"></div>
+                        <div id="goods3"></div>
+                        <div id="goods4"></div>
+                        <div id="goods5"></div>
+                    </div>
+                    <div class="stats stats2">
+                        <div id="goods1-num"></div>
+                        <div id="goods2-num"></div>
+                        <div id="goods3-num"></div>
+                        <div id="goods4-num"></div>
+                        <div id="goods5-num"></div>
+                    </div>
+                </div>
+                <div class="two-stats">
+                    <div class="stats stats3">
+                        <div id="colony_goods1"></div>
+                        <div id="colony_goods2"></div>
+                        <div id="colony_goods3"></div>
+                        <div id="colony_goods4"></div>
+                        <div id="colony_goods5"></div>
+                    </div>
+                    <div class="stats stats4">
+                        <div id="colony_goods1-num"></div>
+                        <div id="colony_goods2-num"></div>
+                        <div id="colony_goods3-num"></div>
+                        <div id="colony_goods4-num"></div>
+                        <div id="colony_goods5-num"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+        <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+
+	{% endblock %}
