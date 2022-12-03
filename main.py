@@ -197,6 +197,11 @@ def post_turn():
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
         for i in game.dynasty_list:
             if player == game.dynasty[i].player_id:
+                # Получаем список с действиями игрока
+                post = request.get_json()
+                print(post)
+                # Присваиваем список действий игрока конкретному игроку
+                game.dynasty[i].acts = post
                 # Меняем переменную отвечающую за готовность хода
                 game.dynasty[i].end_turn = True
         # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
@@ -264,7 +269,6 @@ def profile():
 
 
 # postgreTables.create_tables()
-
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -23,9 +23,20 @@ class FirstWorld:
         # Проверку можно сделать и при запуске самой функции
         for i in range(len(self.dynasty)):
             if not self.dynasty[self.dynasty_list[i]].end_turn:
+                # print()
                 return
+        # Перебираем все династии и делаем по одному действию
+        # Пока по 5 действий
+        for cont in range(5):
+            for dyns in range(len(self.dynasty_list)):
+                self.dynasty[self.dynasty_list[dyns]].calc_act()
+        # Пост обсчет хода
+        for dyns in range(len(self.dynasty_list)):
+            self.dynasty[self.dynasty_list[dyns]].calc_end_turn()
+        # !!! Переношу это в пост обсчет для династии
+        # В конце обсчета выставим end_turn = False для династий
+        # for i in range(len(self.dynasty)):
+        #     self.dynasty[self.dynasty_list[i]].end_turn = False
+        # Добавим 1 к номеру хода и года
         self.year += 1
         self.turn += 1
-        # В конце обсчета выставим end_turn = False для династий
-        for i in range(len(self.dynasty)):
-            self.dynasty[self.dynasty_list[i]].end_turn = False

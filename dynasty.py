@@ -25,12 +25,12 @@ class Dynasty:
             "goods5": 0,
         }
 
-        self.act = []  # Список действий
+        self.acts = []  # Список действий
         # self.logs = []
         self.result_logs_text = []  # Список с текстом выполненных действий
         self.logs_text = []  # Список с текстом не выполненных действий
 
-        self.end_turn = True  # Отправила ли страна заявку
+        self.end_turn = False  # Отправила ли страна заявку
 
         # self.world = world  # Не помню, но для чего то нужно передать ссылку
 
@@ -52,3 +52,18 @@ class Dynasty:
             "goods5": self.goods["goods5"],
         }
         return data
+
+    def calc_act(self):  # Подсчет одного действия для династии
+        # if len(self.acts) > 0:
+        if self.acts:
+            print(f"""до: {self.acts}""")
+            print(f"""Выполнено действие {self.acts[0]}""")
+            self.acts.pop(0)
+            print(f"""после: {self.acts}""")
+
+    # Подсчет каких либо параметров после обсчета действия игроков. Обязательно выполняется после действий
+    def calc_end_turn(self):
+
+        # Выставим False для параметра end_turn
+        self.end_turn = False
+

@@ -87,17 +87,13 @@ div.content {
     text-align: center;
     line-height: 2;
     margin-top: 2px;
-    margin-left: 50px;
+    margin-left: 100px;
+    width: 150px;
     background-color: rgb(194, 187, 173);
     border: solid black 1px;
     border-radius: 8px;
 
     font-size: 15pt;
-}
-.end-turn {
-    display: table-cell;
-    /* margin-top: 0px;
-    margin-left: 700px; */
 }
 .gold {
     width: 20%;
@@ -105,12 +101,18 @@ div.content {
 }
 
 .year-turn {
-    width: 30%;
+    width: 27%;
     display: table-cell;
 }
 .end-turn-bool {
-    width: 34%;
+    width: 33%;
     display: table-cell;
+}
+.end-turn {
+    display: table-cell;
+    width: 20%;
+    /* margin-top: 0px;
+    margin-left: 700px; */
 }
 /* .dashboard-turn{
     width: 100%;

@@ -154,7 +154,9 @@ function postTurn() {
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     
     // console.log(JSON.stringify(country.acts))
-    request.send(JSON.stringify("turn"));
+    // request.send(JSON.stringify("turn"));
+    console.log(JSON.stringify(acts))
+    request.send(JSON.stringify(acts));
 
     request.addEventListener('load', () => {
         console.log("Автообновление");
