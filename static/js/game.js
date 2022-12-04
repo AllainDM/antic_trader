@@ -30,6 +30,12 @@ let statusGame = {
 let acts = [];
 let actsText = [];
 
+// Переменная для работы функции автообновления. При отправленном ходе раз в некоторое время происходит запрос новых данных на сервер.
+// !!! Можно еще сделать переменные, чтобы при первом получении данных нового хода выскакивало сообщение, что ход обработан.
+// Обязательно обрабатывать ответ от сервера с новым ходом, чтоб менять положение это переменной.
+// let turnEnd = false;
+// Это все есть в обьекте statusGame, по умолчание false
+
 // Список возможных построек. Пока в базовом варианте. В виде массива, для перебора при отображении в виде пунктов меню
 // На будущее так же сможет скачиваться с бека
 let colonyList = [
@@ -103,6 +109,7 @@ function requestStatusPlayer() {
                 const response = JSON.parse(request.response);
                 console.log(response)
                 actualVarPlayer(response);
+                console.log("Ответ от сервера. Статус хода: " + response.end_turn)
             };
         } else {
             console.log("Ответ от сервера не получег");
@@ -110,10 +117,40 @@ function requestStatusPlayer() {
     });
     request.send();
 
+    // console.log("Ответ от сервера. Статус хода: " + response.end_turn)
+    // autoUpdate(); // Автообновление в случае "отправленного хода"
 }
 
 requestStatus();
 requestStatusPlayer();
+// autoUpdateTimer();
+
+// Автообновление странички при статусе "Ход отправлен"
+// Запускать проверку с каждым запросом на сервер. 
+// Типо: 1 = Запрос на сервер
+//       2 = Если переменная "ход отправлен" остается в true, то повторный запрос через интервал
+function autoUpdate() {
+    if (statusGame.end_turn) {
+        requestStatus();
+        requestStatusPlayer();
+
+    } 
+};
+
+function autoUpdateTimer() {
+    console.log("Статус хода:")
+    console.log(statusGame.end_turn)
+    // while (statusGame.end_turn) {
+    //     setTimeout(autoUpdate, 3000)
+    //     console.log("Таймер работает")
+    //     // requestStatus();
+    //     // requestStatusPlayer();
+    // }
+    // if (statusGame.end_turn) {
+    //     requestStatus();
+    //     requestStatusPlayer();
+    // }
+};
 
 // Обновим общие параметры
 function actualVar(res) {
@@ -121,7 +158,7 @@ function actualVar(res) {
     statusGame.turn = res.turn
 
     updateVar();
-}
+};
 
 // Обновим параметры управляемой "страной"
 function actualVarPlayer(res) {
@@ -140,6 +177,8 @@ function actualVarPlayer(res) {
     statusGame.colony_goods4 = res.colony_goods4
     statusGame.colony_goods5 = res.colony_goods5
 
+
+    // end_turn = res.end_turn;
     updateVar();
 }
 
@@ -163,8 +202,15 @@ function postTurn() {
         // Автообновление параметров игры после обсчета хода
         // getVar()
     });
+
+    requestStatus();
+    requestStatusPlayer();
+
+    // autoUpdateTimer();
 };
 
+
+// Запись действий игрока
 document.getElementById('menu-new-colony').addEventListener('click', () => {
     hiddenAllMenu();  // Скроем все меню
     chooseList.innerHTML = `<span>Выберите постройку:</span>`;  // Добавим подсказку
