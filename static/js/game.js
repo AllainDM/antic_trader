@@ -133,13 +133,18 @@ function autoUpdate() {
     if (statusGame.end_turn) {
         requestStatus();
         requestStatusPlayer();
-
     } 
 };
 
+// function autoUpdate2() {
+//     requestStatus();
+//     requestStatusPlayer();
+// };
+
+// Вообщем пока игра всегда каждые 10 секунд проверяет параметр "отправлен ли ход", и если отправлен делает запрос на сервер статуса игры
 function autoUpdateTimer() {
-    console.log("Статус хода:")
-    console.log(statusGame.end_turn)
+    // console.log("Статус хода: " + statusGame.end_turn)
+    // console.log(statusGame.end_turn)
     // while (statusGame.end_turn) {
     //     setTimeout(autoUpdate, 3000)
     //     console.log("Таймер работает")
@@ -150,7 +155,10 @@ function autoUpdateTimer() {
     //     requestStatus();
     //     requestStatusPlayer();
     // }
+    let timerId = setInterval(() => autoUpdate(), 10000);
+
 };
+autoUpdateTimer();
 
 // Обновим общие параметры
 function actualVar(res) {
@@ -199,12 +207,17 @@ function postTurn() {
 
     request.addEventListener('load', () => {
         console.log("Автообновление");
+
+        requestStatus();
+        requestStatusPlayer();
+
+        autoUpdateTimer();
         // Автообновление параметров игры после обсчета хода
         // getVar()
     });
 
-    requestStatus();
-    requestStatusPlayer();
+    // requestStatus();
+    // requestStatusPlayer();
 
     // autoUpdateTimer();
 };
