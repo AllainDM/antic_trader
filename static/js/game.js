@@ -85,7 +85,11 @@ function requestStatus() {
                 
             } else {
                 const response = JSON.parse(request.response);
-                console.log(response)
+                console.log(response);
+                // После обсчета хода игрок один раз получает сообщение, что пришел новый ход
+                if (statusGame.year < response.year) {
+                    alert(`Новый ход обработан. Текущий год: ${response.year}`);
+                }
                 actualVar(response);
             };
         } else {
