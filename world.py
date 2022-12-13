@@ -1,4 +1,6 @@
 from dynasty import Dynasty
+from colony_buildings import colonyBuildings
+from resources import goods
 
 
 class FirstWorld:
@@ -10,11 +12,15 @@ class FirstWorld:
         self.dynasty = {}  # Основной объект с династиями
         self.dynasty_list = []  # Массив стран, для перебора при обсчете хода
 
+        # Товары и производство
+        self.goods = goods
+        self.colonyBuildings = colonyBuildings
+
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
         # , win_points, colony, goods
         # При создании династии передаем название, но можно передавать ид
         # Нужно ли передавать ссылку self при создании Dynasty ?
-        self.dynasty[name] = Dynasty(row_id, player_id, name, name_rus, gold)
+        self.dynasty[name] = Dynasty(self, row_id=row_id, player_id=player_id, name=name, name_rus=name_rus, gold=gold)
         self.dynasty_list.append(name)
         return self.dynasty[name]
 

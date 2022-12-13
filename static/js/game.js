@@ -38,12 +38,21 @@ let actsText = [];
 
 // Список возможных построек. Пока в базовом варианте. В виде массива, для перебора при отображении в виде пунктов меню
 // На будущее так же сможет скачиваться с бека
+
 let colonyList = [
-    "colony_goods1",
-    "colony_goods2",
-    "colony_goods3",
-    "colony_goods4",
-    "colony_goods5",
+    "Плантация(Оливки)",
+    "Рудник(Медь)",
+    "Невол.рынок(Рабы)",
+    "Угодье(Шкуры)",
+    "Поля(Зерно)",
+]
+
+let goodsList = [
+    "Оливки",
+    "Медь",
+    "Рабы",
+    "Шкуры",
+    "Зерно",
 ]
 
 // Обычная функция обновления параметров на страничке
@@ -58,16 +67,16 @@ function updateVar() {
         document.getElementById('end-turn-bool').innerText = "Ход НЕ отправлен"
     }
 
-    document.getElementById('goods1').innerText = 'goods1: ' + statusGame.goods1;
-    document.getElementById('goods2').innerText = 'goods2: ' + statusGame.goods2;
-    document.getElementById('goods3').innerText = 'goods3: ' + statusGame.goods3;
-    document.getElementById('goods4').innerText = 'goods4: ' + statusGame.goods4;
-    document.getElementById('goods5').innerText = 'goods5: ' + statusGame.goods5;
-    document.getElementById('colony_goods1').innerText = 'colony_goods1: ' + statusGame.colony_goods1;
-    document.getElementById('colony_goods2').innerText = 'colony_goods2: ' + statusGame.colony_goods2;
-    document.getElementById('colony_goods3').innerText = 'colony_goods3: ' + statusGame.colony_goods3;
-    document.getElementById('colony_goods4').innerText = 'colony_goods4: ' + statusGame.colony_goods4;
-    document.getElementById('colony_goods5').innerText = 'colony_goods5: ' + statusGame.colony_goods5;
+    document.getElementById('goods1').innerText = `${goodsList[0]}: ` + statusGame.goods1;
+    document.getElementById('goods2').innerText = `${goodsList[1]}: ` + statusGame.goods2;
+    document.getElementById('goods3').innerText = `${goodsList[2]}: ` + statusGame.goods3;
+    document.getElementById('goods4').innerText = `${goodsList[3]}: ` + statusGame.goods4;
+    document.getElementById('goods5').innerText = `${goodsList[4]}: ` + statusGame.goods5;
+    document.getElementById('colony_goods1').innerText = `${colonyList[0]}: ` + statusGame.colony_goods1;
+    document.getElementById('colony_goods2').innerText = `${colonyList[1]}: ` + statusGame.colony_goods2;
+    document.getElementById('colony_goods3').innerText = `${colonyList[2]}: ` + statusGame.colony_goods3;
+    document.getElementById('colony_goods4').innerText = `${colonyList[3]}: ` + statusGame.colony_goods4;
+    document.getElementById('colony_goods5').innerText = `${colonyList[4]}: ` + statusGame.colony_goods5;
 }
 
 updateVar();
@@ -90,6 +99,7 @@ function requestStatus() {
                 if (statusGame.year < response.year) {
                     alert(`Новый ход обработан. Текущий год: ${response.year}`);
                 }
+                // Обновим параметры на странице
                 actualVar(response);
             };
         } else {
@@ -116,7 +126,7 @@ function requestStatusPlayer() {
                 console.log("Ответ от сервера. Статус хода: " + response.end_turn)
             };
         } else {
-            console.log("Ответ от сервера не получег");
+            console.log("Ответ от сервера не получен");
         }
     });
     request.send();
@@ -145,7 +155,7 @@ function autoUpdate() {
 //     requestStatusPlayer();
 // };
 
-// Вообщем пока игра всегда каждые 10 секунд проверяет параметр "отправлен ли ход", и если отправлен делает запрос на сервер статуса игры
+// Вообщем пока игра всегда каждые 20 секунд проверяет параметр "отправлен ли ход", и если отправлен делает запрос на сервер статуса игры
 function autoUpdateTimer() {
     // console.log("Статус хода: " + statusGame.end_turn)
     // console.log(statusGame.end_turn)
@@ -159,7 +169,7 @@ function autoUpdateTimer() {
     //     requestStatus();
     //     requestStatusPlayer();
     // }
-    let timerId = setInterval(() => autoUpdate(), 10000);
+    let timerId = setInterval(() => autoUpdate(), 20000);
 
 };
 autoUpdateTimer();
@@ -212,6 +222,7 @@ function postTurn() {
     request.addEventListener('load', () => {
         console.log("Автообновление");
 
+        // Обновим общие параметры и параметры игрока
         requestStatus();
         requestStatusPlayer();
 
@@ -232,14 +243,17 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     hiddenAllMenu();  // Скроем все меню
     chooseList.innerHTML = `<span>Выберите постройку:</span>`;  // Добавим подсказку
     colonyList.forEach((item, id) => {
-        chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${colonyList[id]}</div>`;
-        console.log(colonyList[id]);
+        // if (id > 0) {
+            chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${colonyList[id]}</div>`;
+            console.log(colonyList[id]);
+        // };        
     });
 
     // Нарисуем кнопку отмены(выхода)
     chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-choose-exit">Отмена</div>`;
     document.getElementById('menu-choose-exit').addEventListener('click', () => { chooseList.innerHTML = ''; exitToMainMenuButtons(); });
 
+    // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".menu-buttons-choose").forEach((btn, i) => {
         btn.addEventListener('click', () => {
             acts.push([100+i]);         // 100 это главный ид. +i автоматически создаст нужный ид, например 103 или даже 100 для постройки с индексом 0

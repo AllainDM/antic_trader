@@ -1,5 +1,5 @@
 class Dynasty:
-    def __init__(self, row_id, player_id, name, name_rus, gold=1000):
+    def __init__(self, game, row_id=0, player_id=0, name="default_name", name_rus="Страна", gold=1000):
         self.row_id = row_id
         self.player_id = player_id
         self.name = name
@@ -32,7 +32,7 @@ class Dynasty:
 
         self.end_turn = False  # Отправила ли страна заявку
 
-        # self.world = world  # Не помню, но для чего то нужно передать ссылку
+        self.game = game  # Не помню, но для чего то нужно передать ссылку
 
     def return_var(self):
         data = {

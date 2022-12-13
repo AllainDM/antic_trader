@@ -97,7 +97,7 @@ def index():
 
 @app.route("/create-game")
 @login_required
-def create_game():
+def admin_create_new_game():
     user_admin = current_user.get_admin()
     if user_admin == 1:
         print("this is admin2")
@@ -125,7 +125,7 @@ def play():
             return render_template('new-game.html', title=user_name, menu=menu_auth)
 
 
-@app.route("/create-new-game")
+@app.route("/create_new_game")
 @login_required
 def create_new_game():
     user_admin = current_user.get_admin()
@@ -149,7 +149,12 @@ def create_new_game():
         print(game.dynasty["Magonid"].player_id)
         # print(game1["Barkid"])
         # print(game1.Barkid)
+        # return game
     return render_template("create-game.html", title="Main", menu=menu_admin)
+
+
+# def create_game():
+#     pass
 
 
 @app.route("/req_status_game_player", methods=["GET"])
