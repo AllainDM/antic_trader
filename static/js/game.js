@@ -172,7 +172,7 @@ function autoUpdateTimer() {
     let timerId = setInterval(() => autoUpdate(), 20000);
 
 };
-autoUpdateTimer();
+// autoUpdateTimer();
 
 // Обновим общие параметры
 function actualVar(res) {
@@ -188,16 +188,19 @@ function actualVarPlayer(res) {
     statusGame.gold = res.gold
     statusGame.end_turn = res.end_turn
 
-    statusGame.goods1 = res.goods1
-    statusGame.goods2 = res.goods2
-    statusGame.goods3 = res.goods3
-    statusGame.goods4 = res.goods4
-    statusGame.goods5 = res.goods5
-    statusGame.colony_goods1 = res.colony_goods1
-    statusGame.colony_goods2 = res.colony_goods2
-    statusGame.colony_goods3 = res.colony_goods3
-    statusGame.colony_goods4 = res.colony_goods4
-    statusGame.colony_goods5 = res.colony_goods5
+    //  Запись не выполненных действий, массив обновляется на беке при выполнение и остаток возвращается на фронт
+    acts = res.acts
+
+    statusGame.goods1 = res.goods[0]
+    statusGame.goods2 = res.goods[1]
+    statusGame.goods3 = res.goods[2]
+    statusGame.goods4 = res.goods[3]
+    statusGame.goods5 = res.goods[4]
+    statusGame.colony_goods1 = res.colony_buildings[0]
+    statusGame.colony_goods2 = res.colony_buildings[1]
+    statusGame.colony_goods3 = res.colony_buildings[2]
+    statusGame.colony_goods4 = res.colony_buildings[3]
+    statusGame.colony_goods5 = res.colony_buildings[4]
 
 
     // end_turn = res.end_turn;
@@ -226,7 +229,9 @@ function postTurn() {
         requestStatus();
         requestStatusPlayer();
 
-        autoUpdateTimer();
+        // Временно отключу автообновление, неудобно для тестов
+        // autoUpdateTimer();
+
         // Автообновление параметров игры после обсчета хода
         // getVar()
     });
@@ -256,7 +261,7 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".menu-buttons-choose").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            acts.push([100+i]);         // 100 это главный ид. +i автоматически создаст нужный ид, например 103 или даже 100 для постройки с индексом 0
+            acts.push([100, i]);         // 100 это главный ид действия. i индекс постройки в списке построек в беке
                                         // На беке кстати можно вычитать 100 и получать "чистый" индекс в массиве построек
             console.log(acts);
             exitToMainMenuButtons();    // Скрываем меню

@@ -8,8 +8,8 @@ class Goods:
             'Зерно': 100,
         }
 
-    def price(self, goods):
-        return self.resources[goods]
+    def price(self, resources):
+        return self.resources[resources]
 
 
 goods = Goods()

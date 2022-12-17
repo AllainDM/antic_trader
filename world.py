@@ -1,5 +1,5 @@
 from dynasty import Dynasty
-from colony_buildings import colonyBuildings
+from colony_buildings import buildings
 from resources import goods
 
 
@@ -13,8 +13,9 @@ class FirstWorld:
         self.dynasty_list = []  # Массив стран, для перебора при обсчете хода
 
         # Товары и производство
+        # А зачем нам это надо?
         self.goods = goods
-        self.colonyBuildings = colonyBuildings
+        self.buildings = buildings
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
         # , win_points, colony, goods
