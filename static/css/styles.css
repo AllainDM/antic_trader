@@ -67,6 +67,21 @@ div.content {
 	margin-left: 100px;
 }
 
+.container-logs{
+    width: 1024px;
+    margin: 0 auto;
+}
+
+.container-local-logs{
+    width: 40%;
+    float: left;
+}
+
+.container-all-logs{
+    width: 60%;
+    float: left;
+}
+
 .center {
     width: 80%;
     float: left;

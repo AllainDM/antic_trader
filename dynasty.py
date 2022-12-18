@@ -32,8 +32,8 @@ class Dynasty:
 
         self.acts = []  # Список действий
         # self.logs = []
+        self.acts_text = []  # Список с текстом не выполненных действий
         self.result_logs_text = []  # Список с текстом выполненных действий
-        self.logs_text = []  # Список с текстом не выполненных действий
 
         self.end_turn = False  # Отправила ли страна заявку
 
@@ -45,6 +45,8 @@ class Dynasty:
             "end_turn": self.end_turn,  # Отправим игроку статус хода, чтоб он был в курсе
             "gold": self.gold,
             "acts": self.acts,
+            "acts_text": self.acts_text,  # Список с текстом не выполненных действий
+            "result_logs_text": self.result_logs_text,  # Список с текстом выполненных действий
             # Товары и колонии
             # Сделаем списком
             "goods": [

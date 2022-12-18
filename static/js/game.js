@@ -10,8 +10,9 @@ let statusGame = {
     year: -300,
     turn: 1,
     end_turn: false,
-    // acts: [],           // Запись планируемых действий
-    // actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
+    acts: [],           // Запись планируемых действий
+    actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
+    logsText: [],       // Запись итогов хода в виде текста понятного для игрока
     gold: 0,
     goods1: 0,
     goods2: 0,
@@ -26,9 +27,10 @@ let statusGame = {
 };
 
 // Запись планируемых действий. Лог ид и текстовый лог. 
-// !=== Переместим в StatusGame. В этом случае проблема с сохранинием записи хода при обновлении данных с сервера
-let acts = [];
-let actsText = [];
+// !=== Переместим в StatusGame. В этом случае проблема с сохранением записи хода при обновлении данных с сервера
+// let acts = [];
+// let actsText = [];
+// let logsResult = [];
 
 // Переменная для работы функции автообновления. При отправленном ходе раз в некоторое время происходит запрос новых данных на сервер.
 // !!! Можно еще сделать переменные, чтобы при первом получении данных нового хода выскакивало сообщение, что ход обработан.
@@ -189,7 +191,9 @@ function actualVarPlayer(res) {
     statusGame.end_turn = res.end_turn
 
     //  Запись не выполненных действий, массив обновляется на беке при выполнение и остаток возвращается на фронт
-    acts = res.acts
+    statusGame.acts = res.acts
+    statusGame.actsText = res.acts_text
+    statusGame.logsText = res.result_logs_text
 
     statusGame.goods1 = res.goods[0]
     statusGame.goods2 = res.goods[1]
@@ -219,8 +223,8 @@ function postTurn() {
     
     // console.log(JSON.stringify(country.acts))
     // request.send(JSON.stringify("turn"));
-    console.log(JSON.stringify(acts))
-    request.send(JSON.stringify(acts));
+    console.log(JSON.stringify(statusGame.acts))
+    request.send(JSON.stringify(statusGame.acts));
 
     request.addEventListener('load', () => {
         console.log("Автообновление");
@@ -242,6 +246,22 @@ function postTurn() {
     // autoUpdateTimer();
 };
 
+function logStart() {       //Функция запуска будущего лога
+    document.getElementById('logs').innerText = '';  // Очистим
+    statusGame.actsText.forEach((item, logsLenght) => {   // actText это пока глобальная переменная(массив) с записью текста будущих действий
+        let a = document.getElementById('logs');
+        a.insertAdjacentHTML('beforeend', `<div>${logsLenght + 1}: ${item}</div>`);
+    });
+}
+
+function logResultStart() {       //Функция запуска лога итога хода
+    document.getElementById('logs-result').innerText = '';  // Очистим
+    statusGame.logsText.forEach((item, logsLenght) => {   // logsResult это пока глобальная переменная(массив) с записью текста лога итога хода
+        let a = document.getElementById('logs-result');
+        a.insertAdjacentHTML('beforeend', `<div>${logsLenght + 1}: ${item}</div>`);
+    }); 
+}
+
 
 // Запись действий игрока
 document.getElementById('menu-new-colony').addEventListener('click', () => {
@@ -261,9 +281,9 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".menu-buttons-choose").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            acts.push([100, i]);         // 100 это главный ид действия. i индекс постройки в списке построек в беке
+            statusGame.acts.push([100, i]);         // 100 это главный ид действия. i индекс постройки в списке построек в беке
                                         // На беке кстати можно вычитать 100 и получать "чистый" индекс в массиве построек
-            console.log(acts);
+            console.log(statusGame.acts);
             exitToMainMenuButtons();    // Скрываем меню
             chooseList.innerHTML = '';  // Чистим(скрываем) список
         });
