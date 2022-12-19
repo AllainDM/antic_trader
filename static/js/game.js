@@ -98,11 +98,16 @@ function requestStatus() {
                 const response = JSON.parse(request.response);
                 console.log(response);
                 // После обсчета хода игрок один раз получает сообщение, что пришел новый ход
+                // Баг!!! При сообщении о новом ходе все параметры висят по нулям
+                // По скольку это временный вариант, чинить не буду
                 if (statusGame.year < response.year) {
+                    // Обновим параметры на странице
+                    actualVar(response);
                     alert(`Новый ход обработан. Текущий год: ${response.year}`);
+                } else {
+                    // Обновим параметры на странице
+                    actualVar(response);
                 }
-                // Обновим параметры на странице
-                actualVar(response);
             };
         } else {
             console.log("Ответ от сервера не получег");
@@ -209,6 +214,7 @@ function actualVarPlayer(res) {
 
     // end_turn = res.end_turn;
     updateVar();
+    logStart();
 }
 
 // Отправка хода
@@ -254,9 +260,15 @@ function postAct() {
     const request = new XMLHttpRequest();
     request.open('POST', `/post_act`);
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+    // Помимо самих ид действий, нужно еще отправить текстовое описание действий.
+    post = {
+        acts: statusGame.acts,
+        actsText: statusGame.actsText,
+    }
     
-    console.log(JSON.stringify(statusGame.acts))
-    request.send(JSON.stringify(statusGame.acts));
+    console.log(JSON.stringify(post))
+    request.send(JSON.stringify(post));
 
     request.addEventListener('load', () => {
         console.log("Автообновление");
@@ -264,6 +276,8 @@ function postAct() {
         requestStatusPlayer();
     });
 };
+
+// Функции отображения логов. До хода и итогов хода
 
 function logStart() {       //Функция запуска будущего лога
     document.getElementById('logs').innerText = '';  // Очистим
@@ -301,7 +315,9 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     document.querySelectorAll(".menu-buttons-choose").forEach((btn, i) => {
         btn.addEventListener('click', () => {
             statusGame.acts.push([100, i]);         // 100 это главный ид действия. i индекс постройки в списке построек в беке
-                                        // На беке кстати можно вычитать 100 и получать "чистый" индекс в массиве построек
+            statusGame.actsText.push(`Построим постройку`);
+            postAct();
+            logStart();
             console.log(statusGame.acts);
             exitToMainMenuButtons();    // Скрываем меню
             chooseList.innerHTML = '';  // Чистим(скрываем) список
