@@ -246,6 +246,25 @@ function postTurn() {
     // autoUpdateTimer();
 };
 
+// Отправка одного действия
+// Функция Необходима для отображения актуального списка действий, 
+// который не будет пропадать и сбиваться при обновлении странички 
+// Ход при этом не считается отправленным
+function postAct() {
+    const request = new XMLHttpRequest();
+    request.open('POST', `/post_act`);
+    request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    
+    console.log(JSON.stringify(statusGame.acts))
+    request.send(JSON.stringify(statusGame.acts));
+
+    request.addEventListener('load', () => {
+        console.log("Автообновление");
+        requestStatus();
+        requestStatusPlayer();
+    });
+};
+
 function logStart() {       //Функция запуска будущего лога
     document.getElementById('logs').innerText = '';  // Очистим
     statusGame.actsText.forEach((item, logsLenght) => {   // actText это пока глобальная переменная(массив) с записью текста будущих действий
