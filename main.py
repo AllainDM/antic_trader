@@ -135,7 +135,7 @@ def create_new_game():
         global game
         game = FirstWorld(1)
         game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
-        game.create_dynasty(2, 3, "Magonid", "Магониды", 10000)
+        game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
         # Так же присвоим одноименным переменным созданные династии
         print("Игра на двоих создана")
         Barkid = game.dynasty['Barkid']
@@ -200,6 +200,9 @@ def post_turn():
         player = int(current_user.get_id())
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
+        # !!! А чего, напрямую нельзя присвоить??? Используя dynasty[player]
+        # Можно =) НЕТТТ
+        # game.dynasty[player].end_turn = True
         for i in game.dynasty_list:
             if player == game.dynasty[i].player_id:
                 # Получаем список с действиями игрока

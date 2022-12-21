@@ -27,12 +27,12 @@ class Dynasty:
         #     "goods4": 0,
         #     "goods5": 0,
         # }
-        self.goods = [1, 0, 0, 0, 0]
-        self.colony_buildings = [0, 0, 0, 1, 0]
+        self.goods = [0, 0, 0, 0, 0]
+        self.colony_buildings = [0, 0, 0, 0, 0]
 
         self.acts = []  # Список действий
         # self.logs = []
-        self.acts_text = []  # Список с текстом не выполненных действий
+        # self.acts_text = []  # Список с текстом не выполненных действий
         self.result_logs_text = []  # Список с текстом выполненных действий
 
         self.end_turn = False  # Отправила ли страна заявку
@@ -45,7 +45,7 @@ class Dynasty:
             "end_turn": self.end_turn,  # Отправим игроку статус хода, чтоб он был в курсе
             "gold": self.gold,
             "acts": self.acts,
-            "acts_text": self.acts_text,  # Список с текстом не выполненных действий
+            # "acts_text": self.acts_text,  # Список с текстом не выполненных действий
             "result_logs_text": self.result_logs_text,  # Список с текстом выполненных действий
             # Товары и колонии
             # Сделаем списком
@@ -79,13 +79,14 @@ class Dynasty:
     def calc_act(self):  # Подсчет одного действия для династии
         # if len(self.acts) > 0:
         if self.acts:
-            # Передавать ли аргументы в функцию или вытаскивать их уже в самой функции.
-            # Попробуем по разному =>
-            if self.acts[0][0] == 100:
-                self.act_build_colony(self.acts[0][1])  # Тут передадим аргумент
+            # 1 индекс это первое по списку действие, первый элемент в списке, оно выполняется и удаляется
+            # 2 индекс это индекс с ИД действия, он под индексом 1, под 0 текстовое описание. Начиная с 2 аргументы
+            # Передавать ли аргументы в функцию или вытаскивать их уже в самой функции. Попробуем по разному =>
+            if self.acts[0][1] == 101:
+                self.act_build_colony(self.acts[0][2])  # Тут передадим аргумент
                 print(f"""Выполнено действие {self.acts[0]}""")
                 self.acts.pop(0)
-            elif self.acts[0][0] == 200:
+            elif self.acts[0][1] == 201:
                 self.act_sell_goods()  # А тут не будем передавать аргумент
                 print(f"""Выполнено действие {self.acts[0]}""")
                 # print(f"""до: {self.acts}""")
@@ -95,12 +96,13 @@ class Dynasty:
                 print('Записей в акте нет')
 
     # Подсчет каких либо параметров после обсчета действия игроков. Обязательно выполняется после действий
+    # Типо какие-нибудь налоги или наоборот доп доход
     def calc_end_turn(self):
 
         # Выставим False для параметра end_turn
         self.end_turn = False
 
-    def act_build_colony(self, buildings_index):     # 100 id
+    def act_build_colony(self, buildings_index):     # 101 id
         print(self.game.buildings.buildings)
         # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
         if self.gold >= self.game.buildings.buildings[buildings_index][1]:  # Индекс 1 это цена у постройки
@@ -109,5 +111,5 @@ class Dynasty:
             self.gold -= self.game.buildings.buildings[buildings_index][1]
             print(self.game.buildings.buildings[buildings_index])
 
-    def act_sell_goods(self):     # 200 id
+    def act_sell_goods(self):     # 201 id
         pass

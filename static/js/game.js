@@ -10,8 +10,8 @@ let statusGame = {
     year: -300,
     turn: 1,
     end_turn: false,
-    acts: [],           // Запись планируемых действий
-    actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
+    acts: [],           // Запись планируемых действий с описанием
+    // actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
     gold: 0,
     goods1: 0,
@@ -25,6 +25,8 @@ let statusGame = {
     colony_goods4: 0,
     colony_goods5: 0,
 };
+
+
 
 // Запись планируемых действий. Лог ид и текстовый лог. 
 // !=== Переместим в StatusGame. В этом случае проблема с сохранением записи хода при обновлении данных с сервера
@@ -47,7 +49,7 @@ let colonyList = [
     "Невол.рынок(Рабы)",
     "Угодье(Шкуры)",
     "Поля(Зерно)",
-]
+];
 
 let goodsList = [
     "Оливки",
@@ -55,7 +57,7 @@ let goodsList = [
     "Рабы",
     "Шкуры",
     "Зерно",
-]
+];
 
 // Обычная функция обновления параметров на страничке
 // Неплохо бы делать вывод только тех товаров, что есть в наличии через создание верстки перебором массива с ресурсами forEach
@@ -100,14 +102,15 @@ function requestStatus() {
                 // После обсчета хода игрок один раз получает сообщение, что пришел новый ход
                 // Баг!!! При сообщении о новом ходе все параметры висят по нулям
                 // По скольку это временный вариант, чинить не буду
-                if (statusGame.year < response.year) {
-                    // Обновим параметры на странице
-                    actualVar(response);
-                    alert(`Новый ход обработан. Текущий год: ${response.year}`);
-                } else {
-                    // Обновим параметры на странице
-                    actualVar(response);
-                }
+                // if (statusGame.year < response.year) {
+                //     // Обновим параметры на странице
+                //     actualVar(response);
+                //     alert(`Новый ход обработан. Текущий год: ${response.year}`);
+                // } else {
+                //     // Обновим параметры на странице
+                //     actualVar(response);
+                // }
+                actualVar(response);
             };
         } else {
             console.log("Ответ от сервера не получег");
@@ -195,9 +198,9 @@ function actualVarPlayer(res) {
     statusGame.gold = res.gold
     statusGame.end_turn = res.end_turn
 
-    //  Запись не выполненных действий, массив обновляется на беке при выполнение и остаток возвращается на фронт
+    //  Запись не выполненных действий, массив обновляется на беке при выполнении и остаток возвращается на фронт
     statusGame.acts = res.acts
-    statusGame.actsText = res.acts_text
+    // statusGame.actsText = res.acts_text
     statusGame.logsText = res.result_logs_text
 
     statusGame.goods1 = res.goods[0]
@@ -262,13 +265,13 @@ function postAct() {
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
     // Помимо самих ид действий, нужно еще отправить текстовое описание действий.
-    post = {
-        acts: statusGame.acts,
-        actsText: statusGame.actsText,
-    }
+    // post = {
+    //     acts: statusGame.acts,
+    //     // actsText: statusGame.actsText,
+    // }
     
-    console.log(JSON.stringify(post))
-    request.send(JSON.stringify(post));
+    console.log(JSON.stringify(statusGame.acts))
+    request.send(JSON.stringify(statusGame.acts));
 
     request.addEventListener('load', () => {
         console.log("Автообновление");
@@ -281,17 +284,17 @@ function postAct() {
 
 function logStart() {       //Функция запуска будущего лога
     document.getElementById('logs').innerText = '';  // Очистим
-    statusGame.actsText.forEach((item, logsLenght) => {   // actText это пока глобальная переменная(массив) с записью текста будущих действий
+    statusGame.acts.forEach((item, num) => {   // actText это пока глобальная переменная(массив) с записью текста будущих действий
         let a = document.getElementById('logs');
-        a.insertAdjacentHTML('beforeend', `<div>${logsLenght + 1}: ${item}</div>`);
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
     });
 }
 
 function logResultStart() {       //Функция запуска лога итога хода
     document.getElementById('logs-result').innerText = '';  // Очистим
-    statusGame.logsText.forEach((item, logsLenght) => {   // logsResult это пока глобальная переменная(массив) с записью текста лога итога хода
+    statusGame.logsText.forEach((item, num) => {   // logsResult это пока глобальная переменная(массив) с записью текста лога итога хода
         let a = document.getElementById('logs-result');
-        a.insertAdjacentHTML('beforeend', `<div>${logsLenght + 1}: ${item}</div>`);
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
     }); 
 }
 
@@ -314,8 +317,9 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".menu-buttons-choose").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            statusGame.acts.push([100, i]);         // 100 это главный ид действия. i индекс постройки в списке построек в беке
-            statusGame.actsText.push(`Построим постройку`);
+            statusGame.acts.push([`Строим: ${colonyList[i]}`, 101, i]);         
+            // 101 это главный ид действия. i индекс постройки в списке построек в беке. Ну и текст описание действия
+            // statusGame.actsText.push(`Построим постройку`);
             postAct();
             logStart();
             console.log(statusGame.acts);
