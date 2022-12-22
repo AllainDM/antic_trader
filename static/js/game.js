@@ -218,6 +218,7 @@ function actualVarPlayer(res) {
     // end_turn = res.end_turn;
     updateVar();
     logStart();
+    logResultStart();
 }
 
 // Отправка хода
@@ -291,10 +292,10 @@ function logStart() {       //Функция запуска будущего л�
 }
 
 function logResultStart() {       //Функция запуска лога итога хода
-    document.getElementById('logs-result').innerText = '';  // Очистим
+    document.getElementById('logs-result').innerText = 'Лог прошлого хода';  // Очистим + подсказка
     statusGame.logsText.forEach((item, num) => {   // logsResult это пока глобальная переменная(массив) с записью текста лога итога хода
         let a = document.getElementById('logs-result');
-        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item}</div>`);
     }); 
 }
 

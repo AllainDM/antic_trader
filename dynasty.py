@@ -97,6 +97,7 @@ class Dynasty:
 
     # Подсчет каких либо параметров после обсчета действия игроков. Обязательно выполняется после действий
     # Типо какие-нибудь налоги или наоборот доп доход
+    # Производство товаров будет обрабатываться здесь
     def calc_end_turn(self):
 
         # Выставим False для параметра end_turn
@@ -109,6 +110,7 @@ class Dynasty:
             # print(buildings[buildings_index])
             self.colony_buildings[buildings_index] += 1
             self.gold -= self.game.buildings.buildings[buildings_index][1]
+            self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
             print(self.game.buildings.buildings[buildings_index])
 
     def act_sell_goods(self):     # 201 id
