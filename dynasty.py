@@ -99,7 +99,7 @@ class Dynasty:
     # Типо какие-нибудь налоги или наоборот доп доход
     # Производство товаров будет обрабатываться здесь
     def calc_end_turn(self):
-
+        self.prod_goods()  # Произведем товары в "колониях"
         # Выставим False для параметра end_turn
         self.end_turn = False
 
@@ -115,3 +115,10 @@ class Dynasty:
 
     def act_sell_goods(self):     # 201 id
         pass
+
+    def prod_goods(self):
+        # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек
+        # Сама функция запускается в конце обработки хода игрока
+        for i in range(len(self.colony_buildings)):
+            self.goods[i] += self.colony_buildings[i]
+
