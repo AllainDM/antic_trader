@@ -13,6 +13,7 @@ let statusGame = {
     acts: [],           // Запись планируемых действий с описанием
     // actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
+    allLogs: [],        // Все логи итогов хода всех стран
     gold: 0,
     goods1: 0,
     goods2: 0,
@@ -186,10 +187,13 @@ function autoUpdateTimer() {
 
 // Обновим общие параметры
 function actualVar(res) {
-    statusGame.year = res.year
-    statusGame.turn = res.turn
+    statusGame.year = res.year;
+    statusGame.turn = res.turn;
+    statusGame.allLogs = res.all_logs;
+
 
     updateVar();
+    logAllResultStart();
 };
 
 // Обновим параметры управляемой "страной"
@@ -219,6 +223,7 @@ function actualVarPlayer(res) {
     updateVar();
     logStart();
     logResultStart();
+    logAllResultStart();
 }
 
 // Отправка хода
@@ -285,7 +290,7 @@ function postAct() {
 
 function logStart() {       //Функция запуска будущего лога
     document.getElementById('logs').innerText = '';  // Очистим
-    statusGame.acts.forEach((item, num) => {   // actText это пока глобальная переменная(массив) с записью текста будущих действий
+    statusGame.acts.forEach((item, num) => {  
         let a = document.getElementById('logs');
         a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
     });
@@ -293,8 +298,16 @@ function logStart() {       //Функция запуска будущего л�
 
 function logResultStart() {       //Функция запуска лога итога хода
     document.getElementById('logs-result').innerText = 'Лог прошлого хода';  // Очистим + подсказка
-    statusGame.logsText.forEach((item, num) => {   // logsResult это пока глобальная переменная(массив) с записью текста лога итога хода
+    statusGame.logsText.forEach((item, num) => {  
         let a = document.getElementById('logs-result');
+        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item}</div>`);
+    }); 
+}
+
+function logAllResultStart() {       //Функция запуска лога итога хода всех игроков
+    document.getElementById('all-logs-result').innerText = 'Общий лог прошлого хода';  // Очистим + подсказка
+    statusGame.allLogs.forEach((item, num) => {  
+        let a = document.getElementById('all-logs-result');
         a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item}</div>`);
     }); 
 }

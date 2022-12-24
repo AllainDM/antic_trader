@@ -111,6 +111,7 @@ class Dynasty:
             self.colony_buildings[buildings_index] += 1
             self.gold -= self.game.buildings.buildings[buildings_index][1]
             self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
+            self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
             print(self.game.buildings.buildings[buildings_index])
 
     def act_sell_goods(self):     # 201 id

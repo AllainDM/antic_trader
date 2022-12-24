@@ -72,13 +72,18 @@ div.content {
     margin: 0 auto;
 }
 
+.container-act-logs{
+    width: 30%;
+    float: left;
+}
+
 .container-local-logs{
-    width: 40%;
+    width: 30%;
     float: left;
 }
 
 .container-all-logs{
-    width: 60%;
+    width: 40%;
     float: left;
 }
 

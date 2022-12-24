@@ -17,6 +17,9 @@ class FirstWorld:
         self.goods = goods
         self.buildings = buildings
 
+        # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
+        self.all_logs = []
+
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
         # , win_points, colony, goods
         # При создании династии передаем название, но можно передавать ид

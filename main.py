@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, flash, g, redirect, url_for, jsonify
 import psycopg2
-import postgreTables
 from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_required, current_user, login_user, LoginManager, logout_user
@@ -9,6 +8,7 @@ import config
 from FDataBase import FDataBase
 from world import FirstWorld
 from UserLogin import UserLogin
+import postgreTables
 
 
 Debug = True
@@ -183,6 +183,7 @@ def req_status_game():
         data = {
             "year": game.year,
             "turn": game.turn,
+            "all_logs": game.all_logs
         }
         return jsonify(data)
     else:
