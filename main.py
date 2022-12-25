@@ -147,14 +147,22 @@ def create_new_game():
         print(game.dynasty_list)
         print(game.dynasty["Barkid"].player_id)
         print(game.dynasty["Magonid"].player_id)
-        # print(game1["Barkid"])
-        # print(game1.Barkid)
-        # return game
     return render_template("create-game.html", title="Main", menu=menu_admin)
 
 
 # def create_game():
 #     pass
+
+@app.route("/cancel_act")
+def cancel_act():
+    what = request.args.get('what')
+    # response = dbase.read_router_comment(id_router)
+    global game
+    player = int(current_user.get_id())
+    for i in game.dynasty_list:
+        if player == game.dynasty[i].player_id:
+            game.dynasty[i].cancel_act(what)
+    return "ok"
 
 
 @app.route("/req_status_game_player", methods=["GET"])

@@ -123,3 +123,6 @@ class Dynasty:
         for i in range(len(self.colony_buildings)):
             self.goods[i] += self.colony_buildings[i]
 
+    def cancel_act(self, what):
+        if what == "all":
+            self.acts = []

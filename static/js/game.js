@@ -226,6 +226,29 @@ function actualVarPlayer(res) {
     logAllResultStart();
 }
 
+// Отмена приказов
+document.getElementById('cancel-all-acts').addEventListener('click', () => {
+    cancelAct("all");
+})
+
+function cancelAct(what) {
+    const req = new XMLHttpRequest();
+    req.open("GET", `/cancel_act?what=${what}`);
+    req.addEventListener('load', () => {
+        console.log("Xmmm")
+        // const response = JSON.parse(req.responseText);
+        // То что ниже в комментах оставим, интересно....
+        // Если ответ есть, запустить функцию отображения
+        // if (response) {
+            // writeComment(response, id);
+        // };
+    });
+    req.addEventListener('error', () => {
+        console.log('error')
+    });
+    req.send();
+};
+
 // Отправка хода
 document.getElementById('end-turn-btn').addEventListener('click', () => {
     postTurn();
