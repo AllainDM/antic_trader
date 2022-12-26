@@ -342,7 +342,8 @@ def profile():
 
 
 # postgreTables.create_tables()
+create_game()
 
 if __name__ == '__main__':
     app.run(debug=True)
-    create_game()
+
