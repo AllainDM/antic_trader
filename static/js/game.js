@@ -229,14 +229,18 @@ function actualVarPlayer(res) {
 // Отмена приказов
 document.getElementById('cancel-all-acts').addEventListener('click', () => {
     cancelAct("all");
-})
+});
+
+document.getElementById('cancel-act').addEventListener('click', () => {
+    cancelAct("last");
+});
 
 function cancelAct(what) {
     const req = new XMLHttpRequest();
     req.open("GET", `/cancel_act?what=${what}`);
     req.addEventListener('load', () => {
         console.log("Xmmm")
-        // const response = JSON.parse(req.responseText);
+        requestStatusPlayer();
         // То что ниже в комментах оставим, интересно....
         // Если ответ есть, запустить функцию отображения
         // if (response) {

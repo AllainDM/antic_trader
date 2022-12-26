@@ -139,14 +139,14 @@ def create_new_game():
         # Так же присвоим одноименным переменным созданные династии
         print("Игра на двоих создана")
         Barkid = game.dynasty['Barkid']
-        print(game.dynasty['Barkid'])
-        print(Barkid.name_rus)
+        # print(game.dynasty['Barkid'])
+        # print(Barkid.name_rus)
         Magonid = game.dynasty['Magonid']
-        print(Magonid)
-        print(game.dynasty['Magonid'])
+        # print(Magonid)
+        # print(game.dynasty['Magonid'])
         print(game.dynasty_list)
-        print(game.dynasty["Barkid"].player_id)
-        print(game.dynasty["Magonid"].player_id)
+        # print(game.dynasty["Barkid"].player_id)
+        # print(game.dynasty["Magonid"].player_id)
     return render_template("create-game.html", title="Main", menu=menu_admin)
 
 
