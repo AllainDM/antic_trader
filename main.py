@@ -105,29 +105,50 @@ def admin_create_new_game():
     return render_template('index.html',  title="Main", menu=menu_auth)
 
 
+# @app.route("/game")
+# @login_required
+# def play():
+#     global game
+#     user_admin = current_user.get_admin()
+#     user_name = current_user.get_name()
+#     # Проверим на админку и проверим на наличие созданной игры
+#     if user_admin == 1:
+#         print("this is admin2")
+#         if game is not None:
+#             # Если игра создана, отобразим базовый интерфейс, с бека никакие параметры не загрузятся
+#             return render_template("game.html", title=user_name, menu=menu_admin)
+#         else:  # Если игра не создана перекинуть на окошко создания новой игры
+#             return render_template("create-game.html", title=user_name, menu=menu_admin)
+#     else:
+#         if game is not None:  # Если игра создана откроем страничку игры, после произойдет запрос с фронта параметров
+#             return render_template('game.html',  title=user_name, menu=menu_auth)
+#         else:  # Если игра не создана, перекинем на страничку присоединения к новой игре
+#             return render_template('new-game.html', title=user_name, menu=menu_auth)
+
+
 @app.route("/game")
 @login_required
 def play():
+    global game
     user_admin = current_user.get_admin()
     user_name = current_user.get_name()
-    # Проверим на админку и проверим на наличие созданной игры
-    if user_admin == 1:
-        print("this is admin2")
-        if game is not None:
-            # Если игра создана, отобразим базовый интерфейс, с бека понятно никакие параметры не загрузятся
+    # Проверим на наличие созданной игры
+    if game:  # Если игра создана
+        if user_admin == 1:
             return render_template("game.html", title=user_name, menu=menu_admin)
-        else:  # Если игра не создана перекинуть на окошко создания новой игры
-            return render_template("create-game.html", title=user_name, menu=menu_admin)
+        else:
+            return render_template("game.html", title=user_name, menu=menu_auth)
     else:
-        if game is not None:  # Если игра создана откроем страничку игры, после произойдет запрос с фронта параметров
-            return render_template('game.html',  title=user_name, menu=menu_auth)
-        else:  # Если игра не создана, перекинем на страничку присоединения к новой игре
-            return render_template('new-game.html', title=user_name, menu=menu_auth)
+        if user_admin == 1:
+            return render_template("new-game.html", title=user_name, menu=menu_admin)
+        else:
+            return render_template("new-game.html", title=user_name, menu=menu_auth)
 
 
 @app.route("/create_new_game")
 @login_required
 def create_new_game():
+    # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
     user_admin = current_user.get_admin()
     if user_admin == 1:
         print("this is admin3")
