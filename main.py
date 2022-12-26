@@ -57,7 +57,8 @@ dbase = None
 А так надо разобраться как получать такую переменную при каждой созданной игре.
 Это требуется для одновременного создания нескольких игр, пока не понятно как себя поведет движок
 """
-game = None
+# game = None
+game = FirstWorld(1)
 
 
 @app.before_request
@@ -153,26 +154,29 @@ def create_new_game():
     if user_admin == 1:
         print("this is admin3")
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
-        global game
-        game = FirstWorld(1)
-        game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
-        game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
-        # Так же присвоим одноименным переменным созданные династии
-        print("Игра на двоих создана")
-        Barkid = game.dynasty['Barkid']
-        # print(game.dynasty['Barkid'])
-        # print(Barkid.name_rus)
-        Magonid = game.dynasty['Magonid']
-        # print(Magonid)
-        # print(game.dynasty['Magonid'])
-        print(game.dynasty_list)
-        # print(game.dynasty["Barkid"].player_id)
-        # print(game.dynasty["Magonid"].player_id)
-    return render_template("create-game.html", title="Main", menu=menu_admin)
+        create_game()
+        return render_template("game.html", title="Main", menu=menu_admin)
+    else:
+        return render_template("game.html", title="Main", menu=menu_auth)
 
 
-# def create_game():
-#     pass
+def create_game():
+    global game
+    game = FirstWorld(1)
+    game.create_dynasty(1, 4, "Barkid", "Баркиды", 10000)
+    game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+    # Так же присвоим одноименным переменным созданные династии
+    print("Игра на двоих создана")
+    Barkid = game.dynasty['Barkid']
+    # print(game.dynasty['Barkid'])
+    # print(Barkid.name_rus)
+    Magonid = game.dynasty['Magonid']
+    # print(Magonid)
+    # print(game.dynasty['Magonid'])
+    print(game.dynasty_list)
+    # print(game.dynasty["Barkid"].player_id)
+    # print(game.dynasty["Magonid"].player_id)
+
 
 @app.route("/cancel_act")
 def cancel_act():
@@ -341,3 +345,4 @@ def profile():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    create_game()
