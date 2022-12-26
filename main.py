@@ -163,7 +163,7 @@ def create_new_game():
 def create_game():
     global game
     game = FirstWorld(1)
-    game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
+    game.create_dynasty(1, 4, "Barkid", "Баркиды", 10000)
     game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
