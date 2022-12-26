@@ -1,0 +1,61 @@
+	{% extends 'base.html' %}
+
+	{% block content %}
+	{{ super() }}
+
+<header>
+    <div class="container">
+        <div class="dashboard-turn">
+
+            <div class="year-turn">
+                <p id="year-turn">Год: -300(!) Ход: 1</p>
+            </div>
+<!--            <div class="end-turn-bool">-->
+<!--                <p id="end-turn-bool">Завершен ли ход</p>-->
+<!--            </div>-->
+            <div class="end-turn">                
+                <div id="end-turn-btn" class="all-end-turn-btn">Завершить ход</div>
+            </div>
+            <div class="stats header-buttons">
+<!--                <input type="button" value="Отменить последний приказ" id="cancel-act">-->
+<!--                <input type="button" value="Отменить все приказы" id="cancel-all-acts">-->
+                 <input type="button" value="Вывести логи" id="act-logs">
+
+
+            </div>
+
+
+        </div>
+    </div>
+</header>
+
+
+<div class="container">
+    <div class="stats">
+        <div class="province-name">
+            <div id="province-name">Первая династия</div>
+
+    </div>
+</div>
+<div class="container">
+    <div class="container-act-logs">
+        <div class="logs"> 
+            <div id="logs"></div>
+        </div>
+    </div>
+    <div class="container-local-logs">
+        <div class="logs"> 
+            <div id="logs-result"></div>
+        </div>
+    </div>
+    <div class="container-all-logs">
+        <div class="logs"> 
+            <div id="all-logs-result"></div>
+        </div>
+    </div>
+</div>
+
+        <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+
+	{% endblock %}

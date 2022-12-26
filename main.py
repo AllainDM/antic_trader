@@ -136,7 +136,7 @@ def play():
     # Проверим на наличие созданной игры
     if game:  # Если игра создана
         if user_admin == 1:
-            return render_template("game.html", title=user_name, menu=menu_admin)
+            return render_template("game-admin.html", title=user_name, menu=menu_admin)
         else:
             return render_template("game.html", title=user_name, menu=menu_auth)
     else:
@@ -163,7 +163,7 @@ def create_new_game():
 def create_game():
     global game
     game = FirstWorld(1)
-    game.create_dynasty(1, 4, "Barkid", "Баркиды", 10000)
+    game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
@@ -204,8 +204,8 @@ def req_status_game_player():
                 var_to_front = game.dynasty[i].return_var()
                 print(game.dynasty[i].return_var())
                 return jsonify(var_to_front)
-    #     return jsonify(game.var_for_front(cur_game))
-    return ""
+        # return jsonify()
+        return ""
 
 
 @app.route("/req_status_game", methods=["GET"])
