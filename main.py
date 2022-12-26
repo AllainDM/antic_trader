@@ -8,7 +8,7 @@ import config
 from FDataBase import FDataBase
 from world import FirstWorld
 from UserLogin import UserLogin
-import postgreTables
+# import postgreTables
 
 
 Debug = True
@@ -264,7 +264,9 @@ def contact():
         if len(request.form['message']) > 3:
             flash('Message sent', category="success")
             # Неправильна форма глагола send, sent прошедшее время в утвердительной форме
-            dbase.add_feedback(request.form['message'], 1)  # 1 это фейковый ид юзера
+            user_id = int(current_user.get_id())  # Определим id Юзера
+            user = current_user.get_name()  # Определим имя Юзера
+            dbase.add_feedback(request.form['message'], user_id, user)
         else:
             flash('Error send. Message text must be longer than 3 characters.', category="error")
     user_admin = current_user.get_admin()

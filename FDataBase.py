@@ -1,4 +1,4 @@
-# from datetime import datetime
+from datetime import datetime
 # import psycopg2
 
 
@@ -25,13 +25,14 @@ class FDataBase:
         return False
 
     # Добавить сообщение в фидбек
-    def add_feedback(self, mess, user_id):
+    def add_feedback(self, mess, user_id, user_name):
         try:
             # Пока без даты, надо модифицировать таблицу
-            # date = datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M")  # Дата регистрации, день, часы, минуты
-            self.__cur.execute("INSERT INTO feedback (message, user_id) VALUES(%s, %s)", (mess, user_id))
+            date = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M")  # Дата: день, часы, минуты
+            self.__cur.execute("INSERT INTO feedback (message, user_id, user_name, date) VALUES(%s, %s, %s, %s)",
+                               (mess, user_id, user_name, date))
             self.__db.commit()
-            print("Добавилось?")
+            print(f"Добавилось? id:{user_id} name: {user_name} text: {mess} date: {date}")
         except Exception as _ex:
             print("Ошибка добавления данных в БД", _ex)
             return False

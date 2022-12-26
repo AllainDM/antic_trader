@@ -19,7 +19,6 @@ def create_tables():
 
         cursor = conn.cursor()
 
-        # cursor.execute("DROP TABLE IF EXISTS message")
         # cursor.execute("DROP TABLE IF EXISTS feedback")
         # print("Таблица удалена")
         # conn.commit()
@@ -28,7 +27,9 @@ def create_tables():
                        "CREATE TABLE IF NOT EXISTS feedback ("
                        "row_id serial PRIMARY KEY, "
                        "message text, "
-                       "user_id int);"
+                       "user_name text, "
+                       "user_id int, "
+                       "date text);"
                        )
         print(f"{datetime.now()}: Таблица feedback создана")
 
@@ -46,7 +47,9 @@ def create_tables():
 
         conn.commit()
 
-        # cursor.execute("SELECT * FROM message")
+        cursor.execute("SELECT * FROM users")
+        one_line = cursor.fetchall()
+        print(one_line)
 
         cursor.close()
         conn.close()
@@ -57,4 +60,6 @@ def create_tables():
         file.write(f"{datetime.now()}: [INFO] Error while working with postgresql {_ex} \n")
         file.close()
 
+
+create_tables()
 
