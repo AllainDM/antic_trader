@@ -41,7 +41,7 @@ function requestStatus() {
                 actualVar(response);
             };
         } else {
-            console.log("Ответ от сервера не получег");
+            console.log("Ответ от сервера не получен");
         }
     });
     request.send();

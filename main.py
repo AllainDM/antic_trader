@@ -96,6 +96,7 @@ def index():
     return render_template('index.html',  title="Main", menu=menu_auth)
 
 
+# Что это за функция??????????????
 @app.route("/create-game")
 @login_required
 def admin_create_new_game():
@@ -155,9 +156,12 @@ def create_new_game():
         print("this is admin3")
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
         create_game()
-        return render_template("game.html", title="Main", menu=menu_admin)
+        # Старое. Возврат страницы, игра создавалась просто по ссылке
+        # return render_template("game.html", title="Main", menu=menu_admin)
+        return jsonify("Ответ от Python: Игра создалась")
     else:
-        return render_template("game.html", title="Main", menu=menu_auth)
+        # return render_template("game.html", title="Main", menu=menu_auth)
+        return ""
 
 
 def create_game():
@@ -342,7 +346,7 @@ def profile():
 
 
 # postgreTables.create_tables()
-create_game()
+# create_game()
 
 if __name__ == '__main__':
     app.run(debug=True)
