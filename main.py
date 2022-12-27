@@ -57,8 +57,7 @@ dbase = None
 А так надо разобраться как получать такую переменную при каждой созданной игре.
 Это требуется для одновременного создания нескольких игр, пока не понятно как себя поведет движок
 """
-game = None
-# game = FirstWorld(1)
+game = {0: FirstWorld(1)}
 
 
 @app.before_request
@@ -71,7 +70,7 @@ def before_request():
 
 @login_manager.user_loader
 def load_user(user_id):
-    print("Load user")
+    print(f"Load user. ID: {user_id}")
     return UserLogin().fromDB(user_id, dbase)
 
 
@@ -135,7 +134,7 @@ def play():
     user_admin = current_user.get_admin()
     user_name = current_user.get_name()
     # Проверим на наличие созданной игры
-    if game:  # Если игра создана
+    if game[0]:  # Если игра создана
         if user_admin == 1:
             return render_template("game-admin.html", title=user_name, menu=menu_admin)
         else:
@@ -166,18 +165,18 @@ def create_new_game():
 
 def create_game():
     global game
-    game = FirstWorld(1)
-    game.create_dynasty(1, 4, "Barkid", "Баркиды", 10000)
-    game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+    game[0] = FirstWorld(1)
+    game[0].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
+    game[0].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
-    Barkid = game.dynasty['Barkid']
+    Barkid = game[0].dynasty['Barkid']
     # print(game.dynasty['Barkid'])
     # print(Barkid.name_rus)
-    Magonid = game.dynasty['Magonid']
+    Magonid = game[0].dynasty['Magonid']
     # print(Magonid)
     # print(game.dynasty['Magonid'])
-    print(game.dynasty_list)
+    print(game[0].dynasty_list)
     # print(game.dynasty["Barkid"].player_id)
     # print(game.dynasty["Magonid"].player_id)
 
@@ -188,9 +187,9 @@ def cancel_act():
     # response = dbase.read_router_comment(id_router)
     global game
     player = int(current_user.get_id())
-    for i in game.dynasty_list:
-        if player == game.dynasty[i].player_id:
-            game.dynasty[i].cancel_act(what)
+    for i in game[0].dynasty_list:
+        if player == game[0].dynasty[i].player_id:
+            game[0].dynasty[i].cancel_act(what)
     return "ok"
 
 
@@ -198,15 +197,15 @@ def cancel_act():
 @login_required
 def req_status_game_player():
     global game
-    if game is not None:
+    if game[0] is not None:
         player = int(current_user.get_id())
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        for i in game.dynasty_list:
-            if player == game.dynasty[i].player_id:
-                print(f"Наша страна: {game.dynasty[i].name_rus}")
-                var_to_front = game.dynasty[i].return_var()
-                print(game.dynasty[i].return_var())
+        for i in game[0].dynasty_list:
+            if player == game[0].dynasty[i].player_id:
+                print(f"Наша страна: {game[0].dynasty[i].name_rus}")
+                var_to_front = game[0].dynasty[i].return_var()
+                print(game[0].dynasty[i].return_var())
                 return jsonify(var_to_front)
         # return jsonify()
         return ""
@@ -216,11 +215,11 @@ def req_status_game_player():
 @login_required
 def req_status_game():
     global game
-    if game is not None:
+    if game[0] is not None:
         data = {
-            "year": game.year,
-            "turn": game.turn,
-            "all_logs": game.all_logs
+            "year": game[0].year,
+            "turn": game[0].turn,
+            "all_logs": game[0].all_logs
         }
         return jsonify(data)
     else:
@@ -241,17 +240,17 @@ def post_turn():
         # !!! А чего, напрямую нельзя присвоить??? Используя dynasty[player]
         # Можно =) НЕТТТ
         # game.dynasty[player].end_turn = True
-        for i in game.dynasty_list:
-            if player == game.dynasty[i].player_id:
+        for i in game[0].dynasty_list:
+            if player == game[0].dynasty[i].player_id:
                 # Получаем список с действиями игрока
                 post = request.get_json()
                 print(post)
                 # Присваиваем список действий игрока конкретному игроку
-                game.dynasty[i].acts = post
+                game[0].dynasty[i].acts = post
                 # Меняем переменную отвечающую за готовность хода
-                game.dynasty[i].end_turn = True
+                game[0].dynasty[i].end_turn = True
         # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
-        game.calculate_turn()
+        game[0].calculate_turn()
     # Временно возвращаем пустую строку
     return ""
 
@@ -273,13 +272,13 @@ def post_act():
         player = int(current_user.get_id())
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        for i in game.dynasty_list:
-            if player == game.dynasty[i].player_id:
+        for i in game[0].dynasty_list:
+            if player == game[0].dynasty[i].player_id:
                 # Получаем список с действиями игрока
                 post = request.get_json()
                 print(post)
                 # Присваиваем список действий игрока конкретному игроку
-                game.dynasty[i].acts = post
+                game[0].dynasty[i].acts = post
                 # Меняем переменную отвечающую за готовность хода
     # Временно возвращаем пустую строку
     return ""
