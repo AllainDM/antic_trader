@@ -28,6 +28,7 @@ menu = [{"name": "Авторизация", "url": "login"},
 
 menu_auth = [{"name": "Профиль", "url": "profile"},
              {"name": "Игра", "url": "game"},
+             {"name": "Выбор игры", "url": "choose-game"},
              {"name": "Feedback", "url": "contact"}]
 
 menu_admin = [{"name": "Профиль", "url": "profile"},
@@ -149,6 +150,54 @@ def play():
             return render_template("new-game.html", title=user_name, menu=menu_auth)
 
 
+@app.route("/choose-game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
+@login_required
+def choose_game_html():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
+    global game
+    user_admin = current_user.get_admin()
+    user_name = current_user.get_name()
+    if user_admin == 1:
+        return render_template("choose-game.html", title=user_name, menu=menu_admin)
+    else:
+        return render_template("choose-game.html", title=user_name, menu=menu_auth)
+
+
+@app.route("/load-all-my-game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
+@login_required
+def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
+    global game
+    # user_admin = current_user.get_admin()
+    # user_name = current_user.get_name()
+    # if user_admin == 1:
+    #     return render_template("choose-game.html", title=user_name, menu=menu_admin)
+    # else:
+    #     return render_template("choose-game.html", title=user_name, menu=menu_auth)
+    player = int(current_user.get_id())
+    games_list = []
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # Пока используем уже проверенный способ найти ид игрока в созданной игры
+    # Потом сменить на нормальный поиск
+    # И пока не понятно нужный ли ИД возвращается
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    for my_g in game_arr:
+        for i in game[my_g].dynasty_list:
+            if player == game[my_g].dynasty[i].player_id:
+                print(f"Найдена игра с ИД: {my_g}")
+                games_list.append(my_g)
+    return jsonify(games_list)
+
+
+@app.route("/get_games")
+@login_required
+def get_games():
+    game_id = request.args.get('id')
+    global game
+    player = int(current_user.get_id())
+    print(f"Игрок запросил игру номер: {game_id}")
+    # play()
+    return render_template("game.html", title=f"Игра: {game_id}", menu=menu_auth)
+
+
 @app.route("/create_new_game")
 @login_required
 def create_new_game():
@@ -210,7 +259,7 @@ def req_status_game_player():
         for i in game[game_arr[-1]].dynasty_list:
             if player == game[game_arr[-1]].dynasty[i].player_id:
                 print(f"Наша страна: {game[game_arr[-1]].dynasty[i].name_rus}")
-                var_to_front = game[1].dynasty[i].return_var()
+                var_to_front = game[game_arr[-1]].dynasty[i].return_var()
                 print(game[game_arr[-1]].dynasty[i].return_var())
                 return jsonify(var_to_front)
         # return jsonify()
@@ -247,17 +296,17 @@ def post_turn():
         # !!! А чего, напрямую нельзя присвоить??? Используя dynasty[player]
         # Можно =) НЕТТТ
         # game.dynasty[player].end_turn = True
-        for i in game[0].dynasty_list:
-            if player == game[0].dynasty[i].player_id:
+        for i in game[game_arr[-1]].dynasty_list:
+            if player == game[game_arr[-1]].dynasty[i].player_id:
                 # Получаем список с действиями игрока
                 post = request.get_json()
                 print(post)
                 # Присваиваем список действий игрока конкретному игроку
-                game[0].dynasty[i].acts = post
+                game[game_arr[-1]].dynasty[i].acts = post
                 # Меняем переменную отвечающую за готовность хода
-                game[0].dynasty[i].end_turn = True
+                game[game_arr[-1]].dynasty[i].end_turn = True
         # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
-        game[0].calculate_turn()
+        game[game_arr[-1]].calculate_turn()
     # Временно возвращаем пустую строку
     return ""
 
@@ -279,13 +328,13 @@ def post_act():
         player = int(current_user.get_id())
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        for i in game[0].dynasty_list:
-            if player == game[0].dynasty[i].player_id:
+        for i in game[game_arr[-1]].dynasty_list:
+            if player == game[game_arr[-1]].dynasty[i].player_id:
                 # Получаем список с действиями игрока
                 post = request.get_json()
                 print(post)
                 # Присваиваем список действий игрока конкретному игроку
-                game[0].dynasty[i].acts = post
+                game[game_arr[-1]].dynasty[i].acts = post
                 # Меняем переменную отвечающую за готовность хода
     # Временно возвращаем пустую строку
     return ""
