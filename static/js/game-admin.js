@@ -16,6 +16,10 @@ function updateVar() {
 
 updateVar();
 
+document.getElementById('act-logs').addEventListener('click', () => {
+    requestStatus();
+});
+
 function requestStatus() {
     const request = new XMLHttpRequest();
     request.open('GET', '/req_status_game');
@@ -39,6 +43,8 @@ function requestStatus() {
                 //     actualVar(response);
                 // }
                 actualVar(response);
+                console.log(response)
+                console.log("Ответ от сервера")
             };
         } else {
             console.log("Ответ от сервера не получен");

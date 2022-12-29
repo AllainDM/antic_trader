@@ -58,6 +58,8 @@ dbase = None
 Это требуется для одновременного создания нескольких игр, пока не понятно как себя поведет движок
 """
 game = {0: FirstWorld(1)}
+# Массив с АЙДишниками игр, нужен для поиска в словаре(выше), используя как ключ
+game_arr = [0]
 
 
 @app.before_request
@@ -134,6 +136,7 @@ def play():
     user_admin = current_user.get_admin()
     user_name = current_user.get_name()
     # Проверим на наличие созданной игры
+    # Это ерунда!!!! Нужно искать конкрутную партию
     if game[0]:  # Если игра создана
         if user_admin == 1:
             return render_template("game-admin.html", title=user_name, menu=menu_admin)
@@ -154,7 +157,9 @@ def create_new_game():
     if user_admin == 1:
         print("this is admin3")
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
-        create_game()
+        game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+        print(f"ID новой игры: {game_arr[-1]}")
+        create_game(game_arr[-1])
         # Старое. Возврат страницы, игра создавалась просто по ссылке
         # return render_template("game.html", title="Main", menu=menu_admin)
         return jsonify("Ответ от Python: Игра создалась")
@@ -163,20 +168,20 @@ def create_new_game():
         return ""
 
 
-def create_game():
+def create_game(num):
     global game
-    game[0] = FirstWorld(1)
-    game[0].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
-    game[0].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+    game[num] = FirstWorld(1)
+    game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
+    game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
-    Barkid = game[0].dynasty['Barkid']
+    Barkid = game[num].dynasty['Barkid']
     # print(game.dynasty['Barkid'])
     # print(Barkid.name_rus)
-    Magonid = game[0].dynasty['Magonid']
+    Magonid = game[num].dynasty['Magonid']
     # print(Magonid)
     # print(game.dynasty['Magonid'])
-    print(game[0].dynasty_list)
+    print(game[num].dynasty_list)
     # print(game.dynasty["Barkid"].player_id)
     # print(game.dynasty["Magonid"].player_id)
 
@@ -197,15 +202,16 @@ def cancel_act():
 @login_required
 def req_status_game_player():
     global game
-    if game[0] is not None:
+    # Берём последнюю игру из найденных
+    if game is not None:
         player = int(current_user.get_id())
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        for i in game[0].dynasty_list:
-            if player == game[0].dynasty[i].player_id:
-                print(f"Наша страна: {game[0].dynasty[i].name_rus}")
-                var_to_front = game[0].dynasty[i].return_var()
-                print(game[0].dynasty[i].return_var())
+        for i in game[game_arr[-1]].dynasty_list:
+            if player == game[game_arr[-1]].dynasty[i].player_id:
+                print(f"Наша страна: {game[game_arr[-1]].dynasty[i].name_rus}")
+                var_to_front = game[1].dynasty[i].return_var()
+                print(game[game_arr[-1]].dynasty[i].return_var())
                 return jsonify(var_to_front)
         # return jsonify()
         return ""
@@ -215,12 +221,13 @@ def req_status_game_player():
 @login_required
 def req_status_game():
     global game
-    if game[0] is not None:
+    if game is not None:
         data = {
-            "year": game[0].year,
-            "turn": game[0].turn,
-            "all_logs": game[0].all_logs
+            "year": game[game_arr[-1]].year,
+            "turn": game[game_arr[-1]].turn,
+            "all_logs": game[game_arr[-1]].all_logs,
         }
+        print(game)
         return jsonify(data)
     else:
         return ""
