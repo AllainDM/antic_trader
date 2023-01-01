@@ -62,6 +62,10 @@ game = {0: FirstWorld(1)}
 # Массив с АЙДишниками игр, нужен для поиска в словаре(выше), используя как ключ
 game_arr = [0]
 
+# Сделаем глобально массив с активными играми игроков. Индексом будет ИД игрока
+# Временно напихаем сюда нулей. Вообще длинная должна равняться количеству зарегистрированных игроков
+active_games = [0, 0, 0, 0, 0, 0, 0, 0]
+
 
 @app.before_request
 def before_request():
@@ -198,6 +202,20 @@ def get_games():
     return render_template("game.html", title=f"Игра: {game_id}", menu=menu_auth)
 
 
+@app.route("/set_active_game")
+@login_required
+def set_active_games():
+    game_id = request.args.get('id')
+    global active_games
+    player = int(current_user.get_id())
+    user_name = current_user.get_name()
+    # player подсвечивается, но работает, мне бы понять почему
+    active_games[player] = game_id
+    print(f"Игрок {user_name} сделал активной игру номер: {game_id}")
+    return ""
+    # return render_template("game.html", title=f"Игра: {game_id}", menu=menu_auth)
+
+
 @app.route("/create_new_game")
 @login_required
 def create_new_game():
@@ -251,17 +269,27 @@ def cancel_act():
 @login_required
 def req_status_game_player():
     global game
+    global active_games
     # Берём последнюю игру из найденных
     if game is not None:
         player = int(current_user.get_id())
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
+        print("ТУТ !!!!!!!!!!!")
+        # print(game_arr[active_games[player]])
+        # print(game[game_arr[active_games[player]]])
         for i in game[game_arr[-1]].dynasty_list:
             if player == game[game_arr[-1]].dynasty[i].player_id:
                 print(f"Наша страна: {game[game_arr[-1]].dynasty[i].name_rus}")
                 var_to_front = game[game_arr[-1]].dynasty[i].return_var()
                 print(game[game_arr[-1]].dynasty[i].return_var())
                 return jsonify(var_to_front)
+        # for i in game[active_games[player]].dynasty_list:
+        #     if player == game[active_games[player]].dynasty[i].player_id:
+        #         print(f"Наша страна: {game[active_games[player]].dynasty[i].name_rus}")
+        #         var_to_front = game[active_games[player]].dynasty[i].return_var()
+        #         print(game[active_games[player]].dynasty[i].return_var())
+        #         return jsonify(var_to_front)
         # return jsonify()
         return ""
 
@@ -270,8 +298,13 @@ def req_status_game_player():
 @login_required
 def req_status_game():
     global game
+    global active_games
+    player = int(current_user.get_id())
     if game is not None:
         data = {
+            # "year": game[active_games[player]].year,
+            # "turn": game[active_games[player]].turn,
+            # "all_logs": game[active_games[player]].all_logs,
             "year": game[game_arr[-1]].year,
             "turn": game[game_arr[-1]].turn,
             "all_logs": game[game_arr[-1]].all_logs,
