@@ -140,19 +140,20 @@ def play():
     global game
     user_admin = current_user.get_admin()
     user_name = current_user.get_name()
-    # Проверим на наличие созданной игры
-    # Это ерунда!!!! Нужно искать конкрутную партию
-    if game[0]:  # Если игра создана
-        if user_admin == 1:
-            # Интересно, что открывается game-admin.html, но путь в адресной строке висит как "game"
-            return render_template("game-admin.html", title=user_name, menu=menu_admin)
+    player = int(current_user.get_id())
+    if user_admin == 1:
+        # Интересно, что открывается game-admin.html, но путь в адресной строке висит как "game"
+        return render_template("game-admin.html", title=user_name, menu=menu_admin)
+    else:
+        if active_games[player] == 0:
+            return render_template("new-game.html", title=user_name, menu=menu_auth)
         else:
             return render_template("game.html", title=user_name, menu=menu_auth)
-    else:
-        if user_admin == 1:
-            return render_template("new-game.html", title=user_name, menu=menu_admin)
-        else:
-            return render_template("new-game.html", title=user_name, menu=menu_auth)
+    # else:
+    #     if user_admin == 1:
+    #         return render_template("new-game.html", title=user_name, menu=menu_admin)
+    #     else:
+    #         return render_template("new-game.html", title=user_name, menu=menu_auth)
 
 
 @app.route("/choose-game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
@@ -267,7 +268,7 @@ def req_status_game_player():
     # Берём последнюю игру из найденных
     if game is not None:
         player = int(current_user.get_id())
-        player = int(player)
+        # player = int(player)  # Это вроде не нужно, была проблема с добавлением строки вместо числа.
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
         # print("ТУТ !!!!!!!!!!!")
