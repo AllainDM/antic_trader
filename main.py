@@ -144,6 +144,7 @@ def play():
     # Это ерунда!!!! Нужно искать конкрутную партию
     if game[0]:  # Если игра создана
         if user_admin == 1:
+            # Интересно, что открывается game-admin.html, но путь в адресной строке висит как "game"
             return render_template("game-admin.html", title=user_name, menu=menu_admin)
         else:
             return render_template("game.html", title=user_name, menu=menu_auth)
@@ -189,17 +190,6 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
                 print(f"Найдена игра с ИД: {my_g}")
                 games_list.append(my_g)
     return jsonify(games_list)
-
-
-@app.route("/get_games")
-@login_required
-def get_games():
-    game_id = request.args.get('id')
-    global game
-    player = int(current_user.get_id())
-    print(f"Игрок запросил игру номер: {game_id}")
-    # play()
-    return render_template("game.html", title=f"Игра: {game_id}", menu=menu_auth)
 
 
 @app.route("/set_active_game")
