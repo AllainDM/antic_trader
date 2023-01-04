@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from flask import Flask, render_template, request, flash, g, redirect, url_for, jsonify
 import psycopg2
-from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_required, current_user, login_user, LoginManager, logout_user
 
@@ -58,7 +59,7 @@ dbase = None
 А так надо разобраться как получать такую переменную при каждой созданной игре.
 Это требуется для одновременного создания нескольких игр, пока не понятно как себя поведет движок
 """
-game = {0: FirstWorld(1)}
+game = {0: FirstWorld(1, "0:0:0")}
 # Массив с АЙДишниками игр, нужен для поиска в словаре(выше), используя как ключ
 game_arr = [0]
 
@@ -219,8 +220,10 @@ def create_new_game():
         print("this is admin3")
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
         game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+        date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+        print(f"Игра создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
-        create_game(game_arr[-1])
+        create_game(game_arr[-1], date_now)
         # Старое. Возврат страницы, игра создавалась просто по ссылке
         # return render_template("game.html", title="Main", menu=menu_admin)
         return jsonify("Ответ от Python: Игра создалась")
@@ -229,9 +232,9 @@ def create_new_game():
         return ""
 
 
-def create_game(num):
+def create_game(num, date):
     global game
-    game[num] = FirstWorld(1)
+    game[num] = FirstWorld(game_arr[-1], date)
     game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     # Так же присвоим одноименным переменным созданные династии
@@ -300,11 +303,15 @@ def req_status_game():
     global game
     global active_games
     player = int(current_user.get_id())
+    user_name = current_user.get_name()
     if game is not None:
         data = {
             "year": game[active_games[player]].year,
             "turn": game[active_games[player]].turn,
             "all_logs": game[active_games[player]].all_logs,
+            "game_id": game[active_games[player]].row_id,
+            "date_create": game[active_games[player]].date_create,
+            "user_name": user_name,
             # "year": game[game_arr[-1]].year,
             # "turn": game[game_arr[-1]].turn,
             # "all_logs": game[game_arr[-1]].all_logs,

@@ -25,6 +25,9 @@ let statusGame = {
     colony_goods3: 0,
     colony_goods4: 0,
     colony_goods5: 0,
+    user_name: "",
+    game_id: "",
+    date_create: "",
 };
 
 
@@ -71,6 +74,11 @@ function updateVar() {
     } else {
         document.getElementById('end-turn-bool').innerText = "Ход НЕ отправлен"
     }
+
+    document.getElementById('player').innerText = 'Игрок: ' + statusGame.user_name;
+    document.getElementById('game-id').innerText = 'Игра: ' + statusGame.game_id;
+    document.getElementById('game-date').innerText = 'Дата создания: ' + statusGame.date_create;
+
 
     document.getElementById('goods1').innerText = `${goodsList[0]}: ` + statusGame.goods1;
     document.getElementById('goods2').innerText = `${goodsList[1]}: ` + statusGame.goods2;
@@ -190,6 +198,10 @@ function actualVar(res) {
     statusGame.year = res.year;
     statusGame.turn = res.turn;
     statusGame.allLogs = res.all_logs;
+
+    statusGame.user_name = res.user_name;
+    statusGame.game_id = res.game_id;
+    statusGame.date_create = res.date_create;
 
 
     updateVar();

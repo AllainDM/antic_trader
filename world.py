@@ -4,7 +4,7 @@ from resources import goods
 
 
 class FirstWorld:
-    def __init__(self, row_id):
+    def __init__(self, row_id, date):
         self.row_id = row_id  # Номер игры
         self.year = -300
         self.turn = 1
@@ -19,6 +19,8 @@ class FirstWorld:
 
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
+
+        self.date_create = date  # Дата создания партии
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
         # , win_points, colony, goods
