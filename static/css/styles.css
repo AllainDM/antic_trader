@@ -205,6 +205,10 @@ div.content {
     visibility: hidden;
     flex-direction: column;
 }
+.menu-buttons-diplomaty {
+    visibility: hidden;
+    flex-direction: column;
+}
 .province-name {
     margin-left: 250px;
 }

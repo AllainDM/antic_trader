@@ -3,13 +3,13 @@ console.log('Стрипт навигации успешно загружен');
 
 function hiddenAllMenu() {  //Скрыть все доп меню
     document.getElementById("menu-buttons-colony").setAttribute('style','display:none');
-    // document.getElementById("menu-buttons-diplomaty").setAttribute('style','display:none');
+    document.getElementById("menu-buttons-diplomaty").setAttribute('style','display:none');
     document.getElementById("menu-buttons-trade").setAttribute('style','display:none');
 };
 
 function hiddenAllAllMenu() {  //Скрыть все меню включая основное
     document.getElementById("menu-buttons-colony").setAttribute('style','display:none');
-    // document.getElementById("menu-buttons-diplomaty").setAttribute('style','display:none');
+    document.getElementById("menu-buttons-diplomaty").setAttribute('style','display:none');
     document.getElementById("menu-buttons-trade").setAttribute('style','display:none');
     document.getElementById("main-menu-buttons").setAttribute('style','display:none');
 
@@ -17,7 +17,7 @@ function hiddenAllAllMenu() {  //Скрыть все меню включая о�
 
 function hiddenMenu() {  //Скрыть все меню кроме основного
     document.getElementById("menu-buttons-colony").setAttribute('style','display:none');
-    // document.getElementById("menu-buttons-diplomaty").setAttribute('style','display:none');
+    document.getElementById("menu-buttons-diplomaty").setAttribute('style','display:none');
     document.getElementById("menu-buttons-trade").setAttribute('style','display:none');
     document.getElementById("menu-buttons").setAttribute('style','visibility:visible');
 };
@@ -48,4 +48,10 @@ document.getElementById('menu-trade').addEventListener('click', () => {
     hiddenAllMenu();
     document.getElementById("main-menu-buttons").setAttribute('style','display:none');
     document.getElementById("menu-buttons-trade").setAttribute('style','visibility:visible');
+});
+
+document.getElementById('menu-diplomaty').addEventListener('click', () => {
+    hiddenAllMenu();
+    document.getElementById("main-menu-buttons").setAttribute('style','display:none');
+    document.getElementById("menu-buttons-diplomaty").setAttribute('style','visibility:visible');
 });
