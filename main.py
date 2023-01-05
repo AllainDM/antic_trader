@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, flash, g, redirect, url_for, 
 import psycopg2
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_required, current_user, login_user, LoginManager, logout_user
+import redis
 
 import config
 from FDataBase import FDataBase
