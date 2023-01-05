@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+
+<div class="container">
+    <p id="status-new-game">Статус игры</p>
+
+</div>
+
+<div class="container">
+    <div class="choose-list"> <!-- Возможно лучше скрыть -->
+        <div class="menu-buttons-choose" id="menu-buttons-choose">
+           <!-- Для отображения кнопок выбора игры -->
+        </div>
+    </div>
+</div>
+
+    <script src="{{ url_for('static', filename='js/choose-game.js') }}"></script>
+
+{% endblock %}
