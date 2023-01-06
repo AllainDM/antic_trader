@@ -24,6 +24,17 @@ login_manager.login_view = "login"
 login_manager.login_message = "Необходимо авторизоваться"
 login_manager.login_message_category = 'error'
 
+# Настройка Redis для хранения глобальной переменной Game
+rediska = redis.StrictRedis(
+    host='127.0.0.1',
+    port=6379,
+    # password='qwerty',
+    charset="utf-8",
+    decode_responses=True
+)
+
+print(rediska)
+
 menu = [{"name": "Авторизация", "url": "login"},
         # {"name": "Игра", "url": "game"},
         {"name": "Feedback", "url": "contact"}]
@@ -60,13 +71,26 @@ dbase = None
 А так надо разобраться как получать такую переменную при каждой созданной игре.
 Это требуется для одновременного создания нескольких игр, пока не понятно как себя поведет движок
 """
-game = {0: FirstWorld(1, "0:0:0")}
+game = {0: FirstWorld(1)}
+# game = {0: FirstWorld(1, "0:0:0")}
 # Массив с АЙДишниками игр, нужен для поиска в словаре(выше), используя как ключ
 game_arr = [0]
 
 # Сделаем глобально массив с активными играми игроков. Индексом будет ИД игрока
 # Временно напихаем сюда нулей. Вообще длинная должна равняться количеству зарегистрированных игроков
 active_games = [0, 0, 0, 0, 0, 0, 0, 0]
+
+
+def main_for_redis():
+    # global game_arr
+    # rediska.set("game", game)
+    rediska.lpush("game_arr", '0')
+    # rediska.set("active_games", active_games)
+    # print(rediska.get("game_arr"))
+    # print(f"index: {rediska.lrange('game_arr', 0, -1)}")
+
+
+# main_for_redis()
 
 
 @app.before_request
@@ -222,9 +246,12 @@ def create_new_game():
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
         game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-        print(f"Игра создана: {date_now}")
+        # Добавим дату в Редис
+        rediska.set(f"game_id_{game_arr[-1]}_date", date_now)
+        print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'game_id_{game_arr[-1]}_date')}")
+        print(f"Игра {game_arr[-1]} создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
-        create_game(game_arr[-1], date_now)
+        create_game(game_arr[-1])  # Дату не передаем , date_now
         # Старое. Возврат страницы, игра создавалась просто по ссылке
         # return render_template("game.html", title="Main", menu=menu_admin)
         return jsonify("Ответ от Python: Игра создалась")
@@ -233,9 +260,9 @@ def create_new_game():
         return ""
 
 
-def create_game(num, date):
+def create_game(num):
     global game
-    game[num] = FirstWorld(game_arr[-1], date)
+    game[num] = FirstWorld(game_arr[-1])
     game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     # Так же присвоим одноименным переменным созданные династии
@@ -305,13 +332,16 @@ def req_status_game():
     global active_games
     player = int(current_user.get_id())
     user_name = current_user.get_name()
+    print(f'Тут блядь, должен быть ид блядь игры сука: {active_games[player]}')
     if game is not None:
         data = {
             "year": game[active_games[player]].year,
             "turn": game[active_games[player]].turn,
             "all_logs": game[active_games[player]].all_logs,
             "game_id": game[active_games[player]].row_id,
-            "date_create": game[active_games[player]].date_create,
+            # "date_create": game[active_games[player]].date_create,
+            "date_create": rediska.get(f'game_id_{active_games[player]}_date'),
+            # "date_create": rediska.get(f'game_id_1_date'),
             "user_name": user_name,
             # "year": game[game_arr[-1]].year,
             # "turn": game[game_arr[-1]].turn,
