@@ -1,0 +1,5 @@
+
+
+Дата создания игры(партии)
+    rediska.set(f"game_id_{game_arr[-1]}_date", date_now)
+    rediska.get(f'game_id_{game_arr[-1]}_date')
