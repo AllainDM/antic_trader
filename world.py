@@ -20,7 +20,7 @@ class FirstWorld:
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
 
-        # Сохраняем в Редис rediska.set(f"game_id_{game_arr[-1]}_date", date_now)
+        # Сохраняем в Редис rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
         # self.date_create = date  # Дата создания партии
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):

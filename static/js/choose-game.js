@@ -3,9 +3,10 @@ console.log('Стрипт странички выбора игры успешн�
 // Будущий список выбора игры
 const chooseList = document.querySelector('.choose-list');
 
+// Запрос статуса для отображения выбора игры
 function requestStatus() {
     const request = new XMLHttpRequest();
-    request.open('GET', '/load-all-my-game');
+    request.open('GET', '/load_all_my_game');
     request.addEventListener('load', () => {
         if (request.status === 200) {
             if (request.response == "") {
@@ -38,11 +39,16 @@ function requestStatus() {
 
 requestStatus();
 
+// Функция выбора игры. 
+
 function chooseGame(gamesList) {
     chooseList.innerHTML = `<span>Выберите игру:</span>`;  // Добавим подсказку
     gamesList.forEach((item, id) => {
         // chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose"><a href="{{url_for('game')}}">Игра номер: ${item}</a></div>`;
-        chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">Игра номер: ${item}</div>`;
+        chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}
+        `<div class="menu-btn menu-buttons-choose">
+            Игра номер: ${item}
+        </div>`;  //   ид: ${id}
     });
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
@@ -53,6 +59,8 @@ function chooseGame(gamesList) {
         });
     });
 };
+
+// При выборе игры, эта игра становится активной для бекенда и сразу идет перенаправление на страничку игры, скачивается "активная" игра с бека
 
 function setActiveGame(id){
     const req = new XMLHttpRequest();

@@ -1,5 +1,12 @@
 
 
 Дата создания игры(партии)
-    rediska.set(f"game_id_{game_arr[-1]}_date", date_now)
-    rediska.get(f'game_id_{game_arr[-1]}_date')
+    rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
+    rediska.get(f'gameId_{game_arr[-1]}_date')
+
+Для игроков:
+    gameID_{тут ид игры}_playerID_{тут ИД игрока}_{тут переменная, например gold}, {а тут значение переменной}
+    rediska.set()
+
+    rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
+    rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{var}')

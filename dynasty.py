@@ -1,5 +1,17 @@
 # from colony_buildings import buildings
 
+import redis
+
+
+# Настройка Redis для хранения данных игроков
+rediska = redis.StrictRedis(
+    host='127.0.0.1',
+    port=6379,
+    # password='qwerty',
+    charset="utf-8",
+    decode_responses=True
+)
+
 
 class Dynasty:
     def __init__(self, game, row_id=0, player_id=0, name="default_name", name_rus="Страна", gold=3000):
@@ -43,11 +55,26 @@ class Dynasty:
 
         self.game = game  # Не помню, но для чего то нужно передать ссылку
 
+    # Отдельно запускаемая функция для хранения данных в Редис.
+    # !!!!!!!!!! Вопрос пишем сохранение заново или нужна опция обновить для Редис ????
+    def save_to_redis(self):
+        # !!!!!!! Тут запишем странам по 9999 золото, чтобы понять что функция работает
+        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}", 9999)
+        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}", {self.name})
+        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}", {self.name_rus})
+        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}, {num})
+        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
+        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
+        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
+        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
+
     def return_var(self):
         data = {
-            "name_rus": self.name_rus,
+            # "name_rus": self.name_rus,
+            "name_rus": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}'),
             "end_turn": self.end_turn,  # Отправим игроку статус хода, чтоб он был в курсе
-            "gold": self.gold,
+            # "gold": self.gold,
+            "gold": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}'),
             "acts": self.acts,
             # "acts_text": self.acts_text,  # Список с текстом не выполненных действий
             "result_logs_text": self.result_logs_text,  # Список с текстом выполненных действий

@@ -194,7 +194,7 @@ def choose_game_html():  # Делаю подпись html, чтоб раздел
         return render_template("choose-game.html", title=user_name, menu=menu_auth)
 
 
-@app.route("/load-all-my-game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
+@app.route("/load_all_my_game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
 @login_required
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game
@@ -246,9 +246,11 @@ def create_new_game():
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
         game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-        # Добавим дату в Редис
-        rediska.set(f"game_id_{game_arr[-1]}_date", date_now)
-        print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'game_id_{game_arr[-1]}_date')}")
+        # Добавим в Редис
+        rediska.set(f"gameId_{game_arr[-1]}_date", date_now)  # Дата создания партии
+        # rediska.set(f"gameId_{game_arr[-1]}_date", date_now)  #
+
+        print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameId_{game_arr[-1]}_date')}")
         print(f"Игра {game_arr[-1]} создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
         create_game(game_arr[-1])  # Дату не передаем , date_now
@@ -268,6 +270,10 @@ def create_game(num):
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
     Barkid = game[num].dynasty['Barkid']
+    # Запустим сохранение параметров в Редис. !!! Пока ИД игроков статичны
+    game[num].dynasty['Magonid'].save_to_redis()
+    game[num].dynasty['Barkid'].save_to_redis()
+    # game[num].dynasty[3].save_to_redis()
     # print(game.dynasty['Barkid'])
     # print(Barkid.name_rus)
     Magonid = game[num].dynasty['Magonid']
@@ -340,7 +346,7 @@ def req_status_game():
             "all_logs": game[active_games[player]].all_logs,
             "game_id": game[active_games[player]].row_id,
             # "date_create": game[active_games[player]].date_create,
-            "date_create": rediska.get(f'game_id_{active_games[player]}_date'),
+            "date_create": rediska.get(f'gameId_{active_games[player]}_date'),
             # "date_create": rediska.get(f'game_id_1_date'),
             "user_name": user_name,
             # "year": game[game_arr[-1]].year,
