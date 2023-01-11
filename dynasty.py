@@ -60,8 +60,8 @@ class Dynasty:
     def save_to_redis(self):
         # !!!!!!! Тут запишем странам по 9999 золото, чтобы понять что функция работает
         rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}", 9999)
-        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}", {self.name})
-        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}", {self.name_rus})
+        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}", self.name)  # {self.name}
+        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}", self.name_rus)
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}, {num})
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})

@@ -308,14 +308,6 @@ def req_status_game_player():
         # player = int(player)  # Это вроде не нужно, была проблема с добавлением строки вместо числа.
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        # print("ТУТ !!!!!!!!!!!")
-        # print(active_games[player])
-        # print(type(active_games[player]))
-        # print(game_arr)
-        # print(type(game_arr))
-        # print(game_arr[active_games[player]])
-        # print(type(game_arr[active_games[player]]))
-        # print(game[game_arr[active_games[player]]])
         # for i in game[game_arr[-1]].dynasty_list:
         #     if player == game[game_arr[-1]].dynasty[i].player_id:
         #         print(f"Наша страна: {game[game_arr[-1]].dynasty[i].name_rus}")
@@ -426,6 +418,16 @@ def post_act():
                 print(post)
                 # Присваиваем список действий игрока конкретному игроку
                 game[active_games[player]].dynasty[i].acts = post
+                print(f"Длинна списка с действиями: {len(post)}")
+                print(post[0])
+                # Перезапишем файл полностью, ибо по факту получаем не один акт, а сразу все
+                file = open("acts.txt", "w")
+                for one_line in range(len(post)):
+                    print(post[one_line])
+                    # file = open("acts.txt", "w")
+                    file.write(f"{post[one_line]}\n")
+                    # file.write(f"Одна строка")
+                file.close()
 
         # Ниже старая версия с отправкой в последнюю СОЗДАННУЮ игру
         # for i in game[game_arr[-1]].dynasty_list:
