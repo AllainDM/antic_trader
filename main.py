@@ -421,7 +421,12 @@ def post_act():
                 print(f"Длинна списка с действиями: {len(post)}")
                 print(post[0])
                 # Перезапишем файл полностью, ибо по факту получаем не один акт, а сразу все
-                file = open("acts.txt", "w")
+                # !!!!!!! Еще нужно отловить ошибку, если папка не существует
+                # !!!!!!! И само собой отлавливать ошибку при чтении, если файла не существует
+                # !!!!!!!!!!!!!!!!!!!!!!
+                # !!!!!!! Или можно всегда создавать файл автоматически при создании игры, пустым
+                file = open(f"acts/gamesID_{game[active_games[player]].row_id}_"
+                            f"playerID_{game[active_games[player]].dynasty[i].player_id}.txt", "w")
                 for one_line in range(len(post)):
                     print(post[one_line])
                     # file = open("acts.txt", "w")
