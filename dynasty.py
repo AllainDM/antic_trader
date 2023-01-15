@@ -59,8 +59,9 @@ class Dynasty:
     # Отдельно запускаемая функция для хранения данных в Редис.
     # !!!!!!!!!! Вопрос пишем сохранение заново или нужна опция обновить для Редис ????
     def save_to_redis(self):
-        # !!!!!!! Тут запишем странам по 9999 золото, чтобы понять что функция работает
-        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}", 9999)
+        # !!!!!!! Тут запишем странам по 9999 золото, чтобы понять, что функция работает
+        # !!!! То что выше, неактуально. Все работало....
+        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}", self.gold)
         rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}", self.name)  # {self.name}
         rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}", self.name_rus)
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}, {num})
@@ -68,6 +69,11 @@ class Dynasty:
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
+
+    def take_var_from_redis(self):
+        self.gold = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}")
+        self.name = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}")
+        self.name_rus = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}")
 
     def return_var(self):
         print("Почему эта функция запускается больше одного раза?")
@@ -138,16 +144,30 @@ class Dynasty:
     # Производство товаров будет обрабатываться здесь
     def calc_end_turn(self):
         self.prod_goods()  # Произведем товары в "колониях"
+
+        # Очистим файл с ходом(актами)
+        self.acts = []  # !!!!!! Возможно без self, типо самостоятельная переменная
+        with open(f"acts/gamesID_{self.game.row_id}_playerID_{self.player_id}.ag", "wb") as f:
+            pickle.dump(self.acts, f, pickle.HIGHEST_PROTOCOL)
+
         # Выставим False для параметра end_turn
         self.end_turn = False
 
     def act_build_colony(self, buildings_index):     # 101 id
         print(self.game.buildings.buildings)
         # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
+        # Скачаем параметры из Редис. В данном случае нужно золото
+        self.take_var_from_redis()
+        # Преобразуем строку с золотом в число
+        # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
+        self.gold = int(self.gold)
         if self.gold >= self.game.buildings.buildings[buildings_index][1]:  # Индекс 1 это цена у постройки
             # print(buildings[buildings_index])
             self.colony_buildings[buildings_index] += 1
             self.gold -= self.game.buildings.buildings[buildings_index][1]
+            # Сохраним новый результат в Редис. Пока только по золоту, но возможно и что-то еще.
+            # !!!!!!!!!!! Саму постройку например
+            self.save_to_redis()
             self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
             self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
             print(self.game.buildings.buildings[buildings_index])
