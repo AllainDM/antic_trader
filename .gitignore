@@ -1,6 +1,8 @@
 config.py
 __pycache__
 .idea
+.gitignore
 
+старый код.txt
 # Новые пользователи
 new.py

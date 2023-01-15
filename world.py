@@ -1,10 +1,12 @@
+import pickle
+
 from dynasty import Dynasty
 from colony_buildings import buildings
 from resources import goods
 
 
 class FirstWorld:
-    def __init__(self, row_id):  # date
+    def __init__(self, row_id):
         self.row_id = row_id  # Номер игры
         self.year = -300
         self.turn = 1
@@ -29,6 +31,11 @@ class FirstWorld:
         # Нужно ли передавать ссылку self при создании Dynasty ?
         self.dynasty[name] = Dynasty(self, row_id=row_id, player_id=player_id, name=name, name_rus=name_rus, gold=gold)
         self.dynasty_list.append(name)
+        # Создадим файл с записью хода игрока. Он должен быть пустым при каждом создании игры
+        acts = []
+        with open(f"acts/gamesID_{self.row_id}_playerID_{player_id}.ag", 'wb') as f:
+            # Сериализация словаря data с использованием последней доступной версии протокола.
+            pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
         return self.dynasty[name]
 
     def calculate_turn(self):

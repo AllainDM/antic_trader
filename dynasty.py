@@ -1,6 +1,7 @@
 # from colony_buildings import buildings
 
 import redis
+import pickle
 
 
 # Настройка Redis для хранения данных игроков
@@ -69,40 +70,19 @@ class Dynasty:
         # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
 
     def return_var(self):
-        # file = open(f"acts/gamesID_{self.game.row_id}_playerID_{self.player_id}.txt", "r")
-        # text = file.read()
-        # # print(f"Читаем файл: {text}")
-        # print(f"Читаем файл: ")
-        # while True:
-        #     # считываем строку
-        #     line = file.readline()
-        #     # прерываем цикл, если строка пустая
-        #     if not line:
-        #         break
-        #     # выводим строку
-        #     print(line)
-        #     print(line.strip())
-        #
-        # # закрываем файл
-        # file.close()
-
-        with open(f"acts/gamesID_{self.game.row_id}_playerID_{self.player_id}.txt", 'r') as f:
-            # my_list = [line.split() for line in f]
-            # # nums = f.read().splitlines()
-            # print(f"Читаем файл: {my_list}")
-            arr = []
-            for line in f:
-                new_line = line.replace('n', 'yyy')
-                arr.append(new_line)
-            print(f"Массив? {arr}")
-
+        print("Почему эта функция запускается больше одного раза?")
+        # Извлекём ход(действия) из файла
+        with open(f"acts/gamesID_{self.game.row_id}_playerID_{self.player_id}.ag", "rb") as f:
+            acts = pickle.load(f)
         data = {
             # "name_rus": self.name_rus,
             "name_rus": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}'),
             "end_turn": self.end_turn,  # Отправим игроку статус хода, чтоб он был в курсе
             # "gold": self.gold,
             "gold": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}'),
-            "acts": self.acts,
+            # "acts": self.acts,
+            # Возьмём список действий с документа
+            "acts": acts,
             # "acts_text": self.acts_text,  # Список с текстом не выполненных действий
             "result_logs_text": self.result_logs_text,  # Список с текстом выполненных действий
             # Товары и колонии

@@ -1,4 +1,5 @@
 from datetime import datetime
+import pickle
 
 from flask import Flask, render_template, request, flash, g, redirect, url_for, jsonify
 import psycopg2
@@ -198,6 +199,7 @@ def choose_game_html():  # Делаю подпись html, чтоб раздел
 @login_required
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game
+    global game_arr
     # user_admin = current_user.get_admin()
     # user_name = current_user.get_name()
     # if user_admin == 1:
@@ -330,7 +332,7 @@ def req_status_game():
     global active_games
     player = int(current_user.get_id())
     user_name = current_user.get_name()
-    print(f'Тут блядь, должен быть ид блядь игры сука: {active_games[player]}')
+    # print(f'Тут должен быть ид игры: {active_games[player]}')
     if game is not None:
         data = {
             "year": game[active_games[player]].year,
@@ -427,12 +429,24 @@ def post_act():
                 # !!!!!!! Или можно всегда создавать файл автоматически при создании игры, пустым
                 file = open(f"acts/gamesID_{game[active_games[player]].row_id}_"
                             f"playerID_{game[active_games[player]].dynasty[i].player_id}.txt", "w")
-                for one_line in range(len(post)):
-                    print(post[one_line])
-                    # file = open("acts.txt", "w")
-                    file.write(f"{post[one_line]}\n")
-                    # file.write(f"Одна строка")
+                # Запишем построчно
+                # for one_line in range(len(post)):
+                #     print(post[one_line])
+                #     file.write(f"{post[one_line]}\n")
+                # Запишем не построчно
+                file.write(f"{post}")
                 file.close()
+
+                # Тут вариант с pickle
+                with open(f"acts/gamesID_{game[active_games[player]].row_id}_"
+                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.ag", 'wb') as f:
+                    # Сериализация словаря data с использованием последней доступной версии протокола.
+                    pickle.dump(post, f, pickle.HIGHEST_PROTOCOL)
+                # Просто для теста возвращаем результат
+                with open(f"acts/gamesID_{game[active_games[player]].row_id}_"
+                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.ag", 'rb') as f:
+                    data = pickle.load(f)
+                    print(f"Pickle: {data}")
 
         # Ниже старая версия с отправкой в последнюю СОЗДАННУЮ игру
         # for i in game[game_arr[-1]].dynasty_list:
@@ -507,7 +521,20 @@ def profile():
 
 
 # postgreTables.create_tables()
-# create_game()
+
+# Создадим игру при заргузке, чтоб было проще тестить
+
+date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
+create_game(game_arr[-1])
+
+date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
+create_game(game_arr[-1])
+
+print(game_arr)
 
 if __name__ == '__main__':
     app.run(debug=True)
