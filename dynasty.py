@@ -26,20 +26,6 @@ class Dynasty:
         self.win_points = 0
         # Возможно вместо объектов использовать массив, для упрощенного поиска...
         # Пока в колонии может производиться только один вид товара
-        # self.colony = {
-        #     "colony_goods1": 0,
-        #     "colony_goods2": 0,
-        #     "colony_goods3": 0,
-        #     "colony_goods4": 0,
-        #     "colony_goods5": 0,
-        # }
-        # self.goods = {
-        #     "goods1": 0,
-        #     "goods2": 0,
-        #     "goods3": 0,
-        #     "goods4": 0,
-        #     "goods5": 0,
-        # }
         self.goods = [0, 0, 0, 0, 0]
         self.colony_buildings = [0, 0, 0, 0, 0]
 
@@ -64,11 +50,6 @@ class Dynasty:
         rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}", self.gold)
         rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}", self.name)  # {self.name}
         rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}", self.name_rus)
-        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}, {num})
-        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
-        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
-        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
-        # rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
 
     def take_var_from_redis(self):
         self.gold = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}")
@@ -107,16 +88,6 @@ class Dynasty:
                 self.colony_buildings[3],
                 self.colony_buildings[4],
             ],
-            # "colony_goods1": self.colony["colony_goods1"],
-            # "colony_goods2": self.colony["colony_goods2"],
-            # "colony_goods3": self.colony["colony_goods3"],
-            # "colony_goods4": self.colony["colony_goods4"],
-            # "colony_goods5": self.colony["colony_goods5"],
-            # "goods1": self.goods["goods1"],
-            # "goods2": self.goods["goods2"],
-            # "goods3": self.goods["goods3"],
-            # "goods4": self.goods["goods4"],
-            # "goods5": self.goods["goods5"],
         }
         return data
 

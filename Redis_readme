@@ -9,4 +9,3 @@
     rediska.set()
 
     rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
-    rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{var}')

@@ -140,27 +140,6 @@ def admin_create_new_game():
     return render_template('index.html',  title="Main", menu=menu_auth)
 
 
-# @app.route("/game")
-# @login_required
-# def play():
-#     global game
-#     user_admin = current_user.get_admin()
-#     user_name = current_user.get_name()
-#     # Проверим на админку и проверим на наличие созданной игры
-#     if user_admin == 1:
-#         print("this is admin2")
-#         if game is not None:
-#             # Если игра создана, отобразим базовый интерфейс, с бека никакие параметры не загрузятся
-#             return render_template("game.html", title=user_name, menu=menu_admin)
-#         else:  # Если игра не создана перекинуть на окошко создания новой игры
-#             return render_template("create-game.html", title=user_name, menu=menu_admin)
-#     else:
-#         if game is not None:  # Если игра создана откроем страничку игры, после произойдет запрос с фронта параметров
-#             return render_template('game.html',  title=user_name, menu=menu_auth)
-#         else:  # Если игра не создана, перекинем на страничку присоединения к новой игре
-#             return render_template('new-game.html', title=user_name, menu=menu_auth)
-
-
 @app.route("/game")
 @login_required
 def play():
@@ -176,11 +155,6 @@ def play():
             return render_template("new-game.html", title=user_name, menu=menu_auth)
         else:
             return render_template("game.html", title=user_name, menu=menu_auth)
-    # else:
-    #     if user_admin == 1:
-    #         return render_template("new-game.html", title=user_name, menu=menu_admin)
-    #     else:
-    #         return render_template("new-game.html", title=user_name, menu=menu_auth)
 
 
 @app.route("/choose-game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
@@ -200,12 +174,6 @@ def choose_game_html():  # Делаю подпись html, чтоб раздел
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game
     global game_arr
-    # user_admin = current_user.get_admin()
-    # user_name = current_user.get_name()
-    # if user_admin == 1:
-    #     return render_template("choose-game.html", title=user_name, menu=menu_admin)
-    # else:
-    #     return render_template("choose-game.html", title=user_name, menu=menu_auth)
     player = int(current_user.get_id())
     games_list = []
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -231,11 +199,8 @@ def set_active_games():
     # player подсвечивается, но работает, мне бы понять почему
     # Уже не подсвечивается, преобразовал переменную в Int
     active_games[player] = int(game_id)
-    # print("Каким типом данных мы сделали active_games[player]")
-    # print(type(active_games[player]))
     print(f"Игрок {user_name} сделал активной игру номер: {game_id}")
     return ""
-    # return render_template("game.html", title=f"Игра: {game_id}", menu=menu_auth)
 
 
 @app.route("/create_new_game")
@@ -250,7 +215,6 @@ def create_new_game():
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
         # Добавим в Редис
         rediska.set(f"gameId_{game_arr[-1]}_date", date_now)  # Дата создания партии
-        # rediska.set(f"gameId_{game_arr[-1]}_date", date_now)  #
 
         print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameId_{game_arr[-1]}_date')}")
         print(f"Игра {game_arr[-1]} создана: {date_now}")
@@ -276,14 +240,8 @@ def create_game(num):
     game[num].dynasty['Magonid'].save_to_redis()
     game[num].dynasty['Barkid'].save_to_redis()
     # game[num].dynasty[3].save_to_redis()
-    # print(game.dynasty['Barkid'])
-    # print(Barkid.name_rus)
     Magonid = game[num].dynasty['Magonid']
-    # print(Magonid)
-    # print(game.dynasty['Magonid'])
     print(game[num].dynasty_list)
-    # print(game.dynasty["Barkid"].player_id)
-    # print(game.dynasty["Magonid"].player_id)
 
 
 # !!!!!!!!!! Отменять надо у Активной игры
@@ -307,15 +265,6 @@ def req_status_game_player():
     # Берём последнюю игру из найденных
     if game is not None:
         player = int(current_user.get_id())
-        # player = int(player)  # Это вроде не нужно, была проблема с добавлением строки вместо числа.
-        # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
-        # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        # for i in game[game_arr[-1]].dynasty_list:
-        #     if player == game[game_arr[-1]].dynasty[i].player_id:
-        #         print(f"Наша страна: {game[game_arr[-1]].dynasty[i].name_rus}")
-        #         var_to_front = game[game_arr[-1]].dynasty[i].return_var()
-        #         print(game[game_arr[-1]].dynasty[i].return_var())
-        #         return jsonify(var_to_front)
         for i in game[active_games[player]].dynasty_list:
             if player == game[active_games[player]].dynasty[i].player_id:
                 print(f"Наша страна: {game[active_games[player]].dynasty[i].name_rus}")
@@ -378,19 +327,6 @@ def post_turn():
         # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
         game[active_games[player]].calculate_turn()
 
-        # Ниже старая версия с отправкой в последнюю СОЗДАННУЮ игру
-        # for i in game[game_arr[-1]].dynasty_list:
-        #     if player == game[game_arr[-1]].dynasty[i].player_id:
-        #         # Получаем список с действиями игрока
-        #         post = request.get_json()
-        #         print(post)
-        #         # Присваиваем список действий игрока конкретному игроку
-        #         game[game_arr[-1]].dynasty[i].acts = post
-        #         # Меняем переменную отвечающую за готовность хода
-        #         game[game_arr[-1]].dynasty[i].end_turn = True
-        # # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
-        # game[game_arr[-1]].calculate_turn()
-
     # Временно возвращаем пустую строку
     return ""
 
@@ -427,16 +363,6 @@ def post_act():
                 # !!!!!!! И само собой отлавливать ошибку при чтении, если файла не существует
                 # !!!!!!!!!!!!!!!!!!!!!!
                 # !!!!!!! Или можно всегда создавать файл автоматически при создании игры, пустым
-                file = open(f"acts/gamesID_{game[active_games[player]].row_id}_"
-                            f"playerID_{game[active_games[player]].dynasty[i].player_id}.txt", "w")
-                # Запишем построчно
-                # for one_line in range(len(post)):
-                #     print(post[one_line])
-                #     file.write(f"{post[one_line]}\n")
-                # Запишем не построчно
-                file.write(f"{post}")
-                file.close()
-
                 # Тут вариант с pickle
                 with open(f"acts/gamesID_{game[active_games[player]].row_id}_"
                           f"playerID_{game[active_games[player]].dynasty[i].player_id}.ag", 'wb') as f:
@@ -447,15 +373,6 @@ def post_act():
                           f"playerID_{game[active_games[player]].dynasty[i].player_id}.ag", 'rb') as f:
                     data = pickle.load(f)
                     print(f"Pickle: {data}")
-
-        # Ниже старая версия с отправкой в последнюю СОЗДАННУЮ игру
-        # for i in game[game_arr[-1]].dynasty_list:
-            # if player == game[game_arr[-1]].dynasty[i].player_id:
-            #     # Получаем список с действиями игрока
-            #     post = request.get_json()
-            #     print(post)
-            #     # Присваиваем список действий игрока конкретному игроку
-            #     game[game_arr[-1]].dynasty[i].acts = post
     # Временно возвращаем пустую строку
     return ""
 
@@ -487,14 +404,10 @@ def login():
         # return render_template('profile.html', title="Авторизация", menu=menu)
     if request.method == "POST":
         user = dbase.get_user_by_login(request.form['login'])
-        # print(user[2])
-        # print(request.form['psw'])
         if user and check_password_hash(user[2], request.form['psw']):
             user_login = UserLogin().create(user)
             login_user(user_login)
             print(f"Текущий пользователь:", current_user.get_id())
-
-            # return redirect(url_for('index'))
             return redirect(request.args.get("next") or url_for("profile"))
         flash("Wrong login/password", category="error")
         print("Ошибка авторизации")
@@ -519,10 +432,8 @@ def profile():
         return render_template("profile.html", title="Профиль", menu=menu_admin)
     return render_template("profile.html", title="Профиль", menu=menu_auth)
 
-
-# postgreTables.create_tables()
-
 # Создадим игру при заргузке, чтоб было проще тестить
+
 
 date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
 game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
