@@ -1,5 +1,6 @@
 from datetime import datetime
 import pickle
+import json
 
 from flask import Flask, render_template, request, flash, g, redirect, url_for, jsonify
 import psycopg2
@@ -72,14 +73,30 @@ dbase = None
 А так надо разобраться как получать такую переменную при каждой созданной игре.
 Это требуется для одновременного создания нескольких игр, пока не понятно как себя поведет движок
 """
-game = {0: FirstWorld(1)}
+# game = {0: FirstWorld(1)}
 # game = {0: FirstWorld(1, "0:0:0")}
 # Массив с АЙДишниками игр, нужен для поиска в словаре(выше), используя как ключ
-game_arr = [0]
+# game_arr = []
+
+# Запускать для обнуления файла со списком ИД игр
+with open(f"games/list.trader", 'wb') as f:
+    game_arr = []
+    # Сериализация словаря data с использованием последней доступной версии протокола.
+    pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
+
+# Прочитаем файл с обьектами игр
+with open(f"games/game_objs.trader", "rb") as f:
+    # global game_arr
+    game = pickle.load(f)
+
+# Прочитаем файл со скиском игр
+with open(f"games/list.trader", "rb") as f:
+    # global game_arr
+    game_arr = pickle.load(f)
 
 # Сделаем глобально массив с активными играми игроков. Индексом будет ИД игрока
 # Временно напихаем сюда нулей. Вообще длинная должна равняться количеству зарегистрированных игроков
-active_games = [0, 0, 0, 0, 0, 0, 0, 0]
+active_games = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
 def main_for_redis():
@@ -172,18 +189,31 @@ def choose_game_html():  # Делаю подпись html, чтоб раздел
 @app.route("/load_all_my_game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
 @login_required
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
-    global game
+    # global game
     global game_arr
     player = int(current_user.get_id())
-    games_list = []
+    games_list = []  # Это список игр для отправки игроку для выбора
+    # with open(f"games/gamesID_{game_arr[-1]}_list_players.trader", "rb") as f:
+    #     dynasty_list = pickle.load(f)  # Тут список ИД игроков у выбранной партии
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # Пока используем уже проверенный способ найти ид игрока в созданной игры
     # Потом сменить на нормальный поиск
     # И пока не понятно нужный ли ИД возвращается
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    for my_g in game_arr:
-        for i in game[my_g].dynasty_list:
-            if player == game[my_g].dynasty[i].player_id:
+    # for my_g in game_arr:
+    #     for i in game[my_g].dynasty_list:
+    #         if player == game[my_g].dynasty[i].player_id:
+    #             print(f"Найдена игра с ИД: {my_g}")
+    #             games_list.append(my_g)
+    # Версия с извлечением списка игроков из файла
+    for my_g in game_arr:  # game_arr  прочитан из файла глобально
+        # Тут должен быть перебор всех файлов с играми
+        # !!!!!!!!! Возможно быстрее создать отдельный файл с играми игрока заранее...... а может нет
+        with open(f"games/gameID_{game_arr[my_g]}_list_players.trader", "rb") as f:
+            dynasty_list = pickle.load(f)  # Тут список ИД игроков в выбранной партии
+            print(f"Тут должен быть отображен список игроков у партии(ид: {game_arr[my_g]}): {dynasty_list}")
+        for i in dynasty_list:
+            if player == i:
                 print(f"Найдена игра с ИД: {my_g}")
                 games_list.append(my_g)
     return jsonify(games_list)
@@ -205,7 +235,7 @@ def set_active_games():
 
 @app.route("/create_new_game")
 @login_required
-def create_new_game():
+def create_new_game(year=1200):
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
     user_admin = current_user.get_admin()
     if user_admin == 1:
@@ -213,13 +243,20 @@ def create_new_game():
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
         game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-        # Добавим в Редис
-        rediska.set(f"gameId_{game_arr[-1]}_date", date_now)  # Дата создания партии
+        # Добавим в Редис общие параметры
+        rediska.set(f"gameID_{game_arr[-1]}_date", date_now)  # Время создания партии
+        rediska.set(f"gameID_{game_arr[-1]}_turn", 1)  # Номер первого хода
+        rediska.set(f"gameID_{game_arr[-1]}_date", year)  # Стартовая дата
 
-        print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameId_{game_arr[-1]}_date')}")
+        # Обновим список ИД игр с помощью pickle
+        with open(f"games/list.trader", 'wb') as f:
+            pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
+
+        print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameID_{game_arr[-1]}_date')}")
         print(f"Игра {game_arr[-1]} создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
-        create_game(game_arr[-1])  # Дату не передаем , date_now
+        create_game(game_arr[-1])  # Дату не передаем, она сохраняется сразу тут в Редис # date_now
+
         # Старое. Возврат страницы, игра создавалась просто по ссылке
         # return render_template("game.html", title="Main", menu=menu_admin)
         return jsonify("Ответ от Python: Игра создалась")
@@ -229,19 +266,36 @@ def create_new_game():
 
 
 def create_game(num):
-    global game
-    game[num] = FirstWorld(game_arr[-1])
-    game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
-    game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+    # global game
+    # game[num] = FirstWorld(game_arr[-1])
+    # game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
+    # game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+
+    this_game = FirstWorld(game_arr[-1])
+    this_game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
+    this_game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+
+    # Попробуем создать файл json со всем обьектом игры
+    with open('data.txt', 'w') as outfile:
+        json.dump(this_game, outfile)
+
+    # Создадим список игроков для игры
+    with open(f"games/gameID_{game_arr[-1]}_list_players.trader", 'wb') as f:
+        # Тут нам нужно как то передать список(ИД) всех назначенных игроков
+        list_players = [2, 3]
+        pickle.dump(list_players, f, pickle.HIGHEST_PROTOCOL)
+
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
-    Barkid = game[num].dynasty['Barkid']
+    # Barkid = game[num].dynasty['Barkid']
     # Запустим сохранение параметров в Редис. !!! Пока ИД игроков статичны
-    game[num].dynasty['Magonid'].save_to_redis()
-    game[num].dynasty['Barkid'].save_to_redis()
+    # game[num].dynasty['Magonid'].save_to_redis()
+    # game[num].dynasty['Barkid'].save_to_redis()
+    this_game.dynasty['Magonid'].save_to_redis()
+    this_game.dynasty['Barkid'].save_to_redis()
     # game[num].dynasty[3].save_to_redis()
-    Magonid = game[num].dynasty['Magonid']
-    print(game[num].dynasty_list)
+    # Magonid = game[num].dynasty['Magonid']
+    print(this_game.dynasty_list)
 
 
 # !!!!!!!!!! Отменять надо у Активной игры
@@ -289,7 +343,7 @@ def req_status_game():
             "all_logs": game[active_games[player]].all_logs,
             "game_id": game[active_games[player]].row_id,
             # "date_create": game[active_games[player]].date_create,
-            "date_create": rediska.get(f'gameId_{active_games[player]}_date'),
+            "date_create": rediska.get(f'gameID_{active_games[player]}_date'),
             # "date_create": rediska.get(f'game_id_1_date'),
             "user_name": user_name,
             # "year": game[game_arr[-1]].year,
@@ -364,13 +418,13 @@ def post_act():
                 # !!!!!!!!!!!!!!!!!!!!!!
                 # !!!!!!! Или можно всегда создавать файл автоматически при создании игры, пустым
                 # Тут вариант с pickle
-                with open(f"acts/gamesID_{game[active_games[player]].row_id}_"
-                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.ag", 'wb') as f:
+                with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
+                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'wb') as f:
                     # Сериализация словаря data с использованием последней доступной версии протокола.
                     pickle.dump(post, f, pickle.HIGHEST_PROTOCOL)
                 # Просто для теста возвращаем результат
-                with open(f"acts/gamesID_{game[active_games[player]].row_id}_"
-                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.ag", 'rb') as f:
+                with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
+                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'rb') as f:
                     data = pickle.load(f)
                     print(f"Pickle: {data}")
     # Временно возвращаем пустую строку
@@ -432,18 +486,19 @@ def profile():
         return render_template("profile.html", title="Профиль", menu=menu_admin)
     return render_template("profile.html", title="Профиль", menu=menu_auth)
 
+
 # Создадим игру при заргузке, чтоб было проще тестить
+def create_two_base_games():
+    date_now_gl = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+    game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+    rediska.set(f"gameId_{game_arr[-1]}_date", date_now_gl)
+    create_game(game_arr[-1])
 
+    date_now_gl = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+    game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+    rediska.set(f"gameId_{game_arr[-1]}_date", date_now_gl)
+    create_game(game_arr[-1])
 
-date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
-rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
-create_game(game_arr[-1])
-
-date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
-rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
-create_game(game_arr[-1])
 
 print(game_arr)
 

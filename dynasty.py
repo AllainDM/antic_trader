@@ -59,7 +59,7 @@ class Dynasty:
     def return_var(self):
         print("Почему эта функция запускается больше одного раза?")
         # Извлекём ход(действия) из файла
-        with open(f"acts/gamesID_{self.game.row_id}_playerID_{self.player_id}.ag", "rb") as f:
+        with open(f"games/acts/gameID_{self.game.row_id}_playerID_{self.player_id}.trader", "rb") as f:
             acts = pickle.load(f)
         data = {
             # "name_rus": self.name_rus,
@@ -118,7 +118,7 @@ class Dynasty:
 
         # Очистим файл с ходом(актами)
         self.acts = []  # !!!!!! Возможно без self, типо самостоятельная переменная
-        with open(f"acts/gamesID_{self.game.row_id}_playerID_{self.player_id}.ag", "wb") as f:
+        with open(f"games/acts/gameID_{self.game.row_id}_playerID_{self.player_id}.trader", "wb") as f:
             pickle.dump(self.acts, f, pickle.HIGHEST_PROTOCOL)
 
         # Выставим False для параметра end_turn

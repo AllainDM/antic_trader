@@ -1,8 +1,11 @@
 
 
-Дата создания игры(партии)
-    rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
+При создании игры стартовые общие параметры. Номер хода, стартовый год. Время создания партии
+    rediska.set(f"gameId_{game_arr[-1]}_date", date_now) Время создания игры(партии)
     rediska.get(f'gameId_{game_arr[-1]}_date')
+
+    rediska.set(f"gameId_{game_arr[-1]}_turn", 1)  # Номер первого хода
+    rediska.set(f"gameId_{game_arr[-1]}_date", year)  # Стартовая дата
 
 Для игроков:
     gameID_{тут ид игры}_playerID_{тут ИД игрока}_{тут переменная, например gold}, {а тут значение переменной}

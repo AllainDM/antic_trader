@@ -33,7 +33,7 @@ class FirstWorld:
         self.dynasty_list.append(name)
         # Создадим файл с записью хода игрока. Он должен быть пустым при каждом создании игры
         acts = []
-        with open(f"acts/gamesID_{self.row_id}_playerID_{player_id}.ag", 'wb') as f:
+        with open(f"games/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
             # Сериализация словаря data с использованием последней доступной версии протокола.
             pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
         return self.dynasty[name]
