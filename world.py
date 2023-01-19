@@ -1,4 +1,6 @@
 import pickle
+import json
+from datetime import datetime
 
 from dynasty import Dynasty
 from colony_buildings import buildings
@@ -22,8 +24,26 @@ class FirstWorld:
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
 
-        # Сохраняем в Редис rediska.set(f"gameId_{game_arr[-1]}_date", date_now)
-        # self.date_create = date  # Дата создания партии
+        # Сохраняем в Редис # rediska.set(f"gameId_{row_id}_date", date_now)
+        self.date_create = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата создания партии
+
+    def save_to_file(self):
+        data = {
+            "row_id": self.row_id,
+            "year": self.year,
+            "turn": self.turn,
+            "dynasty": self.dynasty,
+            "dynasty_list": self.dynasty_list,
+            "goods": self.goods,
+            "buildings": self.buildings,
+            "all_logs": self.all_logs,
+        }
+        # В JSON не записывается из-за обьектов с Династиями, товарами и постройками
+        # with open(f'games/gameID_{self.row_id}.json', 'w') as outfile:
+        #     json.dump(data, outfile)
+        # Поэтому пишем в pickle. !!!!!!!! Правда не знаю как это будет работать.....
+        with open(f"games/gameID_{self.row_id}.trader", 'wb') as f:
+            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
         # , win_points, colony, goods
@@ -31,10 +51,11 @@ class FirstWorld:
         # Нужно ли передавать ссылку self при создании Dynasty ?
         self.dynasty[name] = Dynasty(self, row_id=row_id, player_id=player_id, name=name, name_rus=name_rus, gold=gold)
         self.dynasty_list.append(name)
+        self.dynasty[name].save_to_file()
+        # !!!!!!!!!! Еще нужно запустить у Династии функцию сохранения ее данных в файл
         # Создадим файл с записью хода игрока. Он должен быть пустым при каждом создании игры
         acts = []
         with open(f"games/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
-            # Сериализация словаря data с использованием последней доступной версии протокола.
             pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
         return self.dynasty[name]
 

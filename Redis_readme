@@ -12,3 +12,7 @@
     rediska.set()
 
     rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{var}", {num})
+
+Так же сохраним сюда активную игру для игрока
+rediska.set(f"playerID_{player}_active_gameID", {game_id})
+rediska.get(f'playerID_{player}_active_gameID')

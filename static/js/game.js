@@ -26,7 +26,7 @@ let statusGame = {
     colony_goods4: 0,
     colony_goods5: 0,
     user_name: "",
-    game_id: "",
+    game_id: "",        // ИД партии. Будем передавать вместе с ходом.
     date_create: "",
 };
 
@@ -267,12 +267,12 @@ function cancelAct(what) {
 
 // Отправка хода
 document.getElementById('end-turn-btn').addEventListener('click', () => {
-    postTurn();
+    postTurn(statusGame.game_id); // Передадим ИД партии аргументом, он сразу уйдет на Бек для определения к какой партии присвоить ход
 })
 
-function postTurn() {
+function postTurn(gameId) {
     const request = new XMLHttpRequest();
-    request.open('POST', `/post_turn`);
+    request.open('POST', `/post_turn?gameID=${gameId}`);
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     
     // console.log(JSON.stringify(country.acts))
@@ -305,9 +305,9 @@ function postTurn() {
 // Функция Необходима для отображения актуального списка действий, 
 // который не будет пропадать и сбиваться при обновлении странички 
 // Ход при этом не считается отправленным
-function postAct() {
+function postAct(gameId) {
     const request = new XMLHttpRequest();
-    request.open('POST', `/post_act`);
+    request.open('POST', `/post_act?gameID=${gameId}`);
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
     // Помимо самих ид действий, нужно еще отправить текстовое описание действий.
@@ -375,7 +375,7 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
             statusGame.acts.push([`Строим: ${colonyList[i]}`, 101, i]);         
             // 101 это главный ид действия. i индекс постройки в списке построек в беке. Ну и текст описание действия
             // statusGame.actsText.push(`Построим постройку`);
-            postAct();
+            postAct(statusGame.game_id);
             logStart();
             console.log(statusGame.acts);
             exitToMainMenuButtons();    // Скрываем меню

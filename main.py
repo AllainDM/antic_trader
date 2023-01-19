@@ -12,6 +12,7 @@ import config
 from FDataBase import FDataBase
 from world import FirstWorld
 from UserLogin import UserLogin
+from dynasty import Dynasty
 # import postgreTables
 
 
@@ -85,9 +86,10 @@ with open(f"games/list.trader", 'wb') as f:
     pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
 # Прочитаем файл с обьектами игр
-with open(f"games/game_objs.trader", "rb") as f:
-    # global game_arr
-    game = pickle.load(f)
+# Зачем ???
+# with open(f"games/game_objs.trader", "rb") as f:
+#     # global game_arr
+#     game = pickle.load(f)
 
 # Прочитаем файл со скиском игр
 with open(f"games/list.trader", "rb") as f:
@@ -160,7 +162,6 @@ def admin_create_new_game():
 @app.route("/game")
 @login_required
 def play():
-    global game
     user_admin = current_user.get_admin()
     user_name = current_user.get_name()
     player = int(current_user.get_id())
@@ -168,7 +169,9 @@ def play():
         # Интересно, что открывается game-admin.html, но путь в адресной строке висит как "game"
         return render_template("game-admin.html", title=user_name, menu=menu_admin)
     else:
-        if active_games[player] == 0:
+        # Извлекем активную игру из Редиски
+        active_game = rediska.get(f'playerID_{player}_active_gameID')
+        if active_game == 0:
             return render_template("new-game.html", title=user_name, menu=menu_auth)
         else:
             return render_template("game.html", title=user_name, menu=menu_auth)
@@ -177,7 +180,6 @@ def play():
 @app.route("/choose-game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
 @login_required
 def choose_game_html():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
-    global game
     user_admin = current_user.get_admin()
     user_name = current_user.get_name()
     if user_admin == 1:
@@ -223,13 +225,17 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
 @login_required
 def set_active_games():
     game_id = request.args.get('id')
-    global active_games
+    # game_id = int(game_id)
+    active_game = int(game_id)
+    # global active_games
     player = int(current_user.get_id())
     user_name = current_user.get_name()
     # player подсвечивается, но работает, мне бы понять почему
     # Уже не подсвечивается, преобразовал переменную в Int
-    active_games[player] = int(game_id)
-    print(f"Игрок {user_name} сделал активной игру номер: {game_id}")
+    # active_games[player] = int(game_id)
+    # Теперь сохраняем в редиску, можно так и оставить, если будет норм работать
+    rediska.set(f"playerID_{player}_active_gameID", active_game)
+    print(f"Игрок {user_name} сделал активной игру номер: {active_game}")
     return ""
 
 
@@ -244,9 +250,9 @@ def create_new_game(year=1200):
         game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
         # Добавим в Редис общие параметры
-        rediska.set(f"gameID_{game_arr[-1]}_date", date_now)  # Время создания партии
-        rediska.set(f"gameID_{game_arr[-1]}_turn", 1)  # Номер первого хода
-        rediska.set(f"gameID_{game_arr[-1]}_date", year)  # Стартовая дата
+        # rediska.set(f"gameID_{game_arr[-1]}_date", date_now)  # Время создания партии
+        # rediska.set(f"gameID_{game_arr[-1]}_turn", 1)  # Номер первого хода
+        # rediska.set(f"gameID_{game_arr[-1]}_date", year)  # Стартовая дата
 
         # Обновим список ИД игр с помощью pickle
         with open(f"games/list.trader", 'wb') as f:
@@ -274,14 +280,11 @@ def create_game(num):
     this_game = FirstWorld(game_arr[-1])
     this_game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     this_game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
-
-    # Попробуем создать файл json со всем обьектом игры
-    with open('data.txt', 'w') as outfile:
-        json.dump(this_game, outfile)
+    this_game.save_to_file()
 
     # Создадим список игроков для игры
     with open(f"games/gameID_{game_arr[-1]}_list_players.trader", 'wb') as f:
-        # Тут нам нужно как то передать список(ИД) всех назначенных игроков
+        # !!!!!!!!!!! Тут нам нужно как то передать список(ИД) всех назначенных игроков
         list_players = [2, 3]
         pickle.dump(list_players, f, pickle.HIGHEST_PROTOCOL)
 
@@ -291,8 +294,8 @@ def create_game(num):
     # Запустим сохранение параметров в Редис. !!! Пока ИД игроков статичны
     # game[num].dynasty['Magonid'].save_to_redis()
     # game[num].dynasty['Barkid'].save_to_redis()
-    this_game.dynasty['Magonid'].save_to_redis()
-    this_game.dynasty['Barkid'].save_to_redis()
+    # this_game.dynasty['Magonid'].save_to_redis()
+    # this_game.dynasty['Barkid'].save_to_redis()
     # game[num].dynasty[3].save_to_redis()
     # Magonid = game[num].dynasty['Magonid']
     print(this_game.dynasty_list)
@@ -314,59 +317,84 @@ def cancel_act():
 @app.route("/req_status_game_player", methods=["GET"])
 @login_required
 def req_status_game_player():
-    global game
-    global active_games
-    # Берём последнюю игру из найденных
-    if game is not None:
-        player = int(current_user.get_id())
-        for i in game[active_games[player]].dynasty_list:
-            if player == game[active_games[player]].dynasty[i].player_id:
-                print(f"Наша страна: {game[active_games[player]].dynasty[i].name_rus}")
-                var_to_front = game[active_games[player]].dynasty[i].return_var()
-                print(game[active_games[player]].dynasty[i].return_var())
-                return jsonify(var_to_front)
-        return ""
+    # global game
+    # global active_games
+    # # Берём последнюю игру из найденных
+    # if game is not None:
+    #     player = int(current_user.get_id())
+    #     for i in game[active_games[player]].dynasty_list:
+    #         if player == game[active_games[player]].dynasty[i].player_id:
+    #             print(f"Наша страна: {game[active_games[player]].dynasty[i].name_rus}")
+    #             var_to_front = game[active_games[player]].dynasty[i].return_var()
+    #             print(game[active_games[player]].dynasty[i].return_var())
+    #             return jsonify(var_to_front)
+    #     return ""
+    player = int(current_user.get_id())
+    game_id = rediska.get(f'playerID_{player}_active_gameID')
+    print(f"ИД игры при запросе статуса: {game_id}")
+    # Выходит что нам не нужно обращаться к классу Династии запуская ее метод
+    with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+        data = pickle.load(f)
+    print(f"Параметры династии: {data}")
+    return jsonify(data)
 
 
 @app.route("/req_status_game", methods=["GET"])
 @login_required
 def req_status_game():
-    global game
-    global active_games
+    # global active_games
+    # player = int(current_user.get_id())
+    # user_name = current_user.get_name()
+    # # print(f'Тут должен быть ид игры: {active_games[player]}')
+    # if game is not None:
+    #     data = {
+    #         "year": game[active_games[player]].year,
+    #         "turn": game[active_games[player]].turn,
+    #         "all_logs": game[active_games[player]].all_logs,
+    #         "game_id": game[active_games[player]].row_id,
+    #         # "date_create": game[active_games[player]].date_create,
+    #         "date_create": rediska.get(f'gameID_{active_games[player]}_date'),
+    #         # "date_create": rediska.get(f'game_id_1_date'),
+    #         "user_name": user_name,
+    #         # "year": game[game_arr[-1]].year,
+    #         # "turn": game[game_arr[-1]].turn,
+    #         # "all_logs": game[game_arr[-1]].all_logs,
+    #     }
+    #     print(game)
+    #     return jsonify(data)
+    # else:
+    #     return ""
     player = int(current_user.get_id())
     user_name = current_user.get_name()
-    # print(f'Тут должен быть ид игры: {active_games[player]}')
-    if game is not None:
-        data = {
-            "year": game[active_games[player]].year,
-            "turn": game[active_games[player]].turn,
-            "all_logs": game[active_games[player]].all_logs,
-            "game_id": game[active_games[player]].row_id,
-            # "date_create": game[active_games[player]].date_create,
-            "date_create": rediska.get(f'gameID_{active_games[player]}_date'),
-            # "date_create": rediska.get(f'game_id_1_date'),
+    game_id = rediska.get(f'playerID_{player}_active_gameID')
+    print(f"ИД игры при запросе статуса династии: {game_id}")
+    # !!!!!!!!! Тут еще нужна проверка на существование самой партии
+    with open(f"games/gameID_{game_id}.trader", 'rb') as f:
+        world = pickle.load(f)
+    print(world)
+    data = {
+            "year": world["year"],
+            "turn": world["turn"],
+            "all_logs": world["all_logs"],
+            "game_id": world["row_id"],
+            "date_create": rediska.get(f'gameID_{world["row_id"]}_date'),
             "user_name": user_name,
-            # "year": game[game_arr[-1]].year,
-            # "turn": game[game_arr[-1]].turn,
-            # "all_logs": game[game_arr[-1]].all_logs,
         }
-        print(game)
-        return jsonify(data)
-    else:
-        return ""
+    return jsonify(data)
 
 
 @app.route("/post_turn", methods=["POST"])
 @login_required
 def post_turn():
-    global game
-    global active_games
+    # Получим ИД партии, ей будем присваивать ход !!!!!!!!!!!! после проверки
+    game_id = request.args.get('gameID')
+    print(f"ИД партии которой передается ход: {game_id}")
+    global active_games  # Список. Остается глобальной переменной, загружается при загрузке файла
+    # Определим игрока, чтоб понять от кого получен ход и куда его записать
     player = int(current_user.get_id())
     if request.method == "POST":
         print('Запрос с js')
         # Тут нужно получить переменные с фронта
-        # Определим игрока, чтоб понять от кого получен ход и куда его записать
-        player = int(current_user.get_id())
         # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
         # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
         for i in game[active_games[player]].dynasty_list:
@@ -380,9 +408,27 @@ def post_turn():
                 game[active_games[player]].dynasty[i].end_turn = True
         # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
         game[active_games[player]].calculate_turn()
-
     # Временно возвращаем пустую строку
     return ""
+    # Старый вариант
+    # if request.method == "POST":
+    #     print('Запрос с js')
+    #     # Тут нужно получить переменные с фронта
+    #     # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
+    #     # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
+    #     for i in game[active_games[player]].dynasty_list:
+    #         if player == game[active_games[player]].dynasty[i].player_id:
+    #             # Получаем список с действиями игрока
+    #             post = request.get_json()
+    #             print(post)
+    #             # Присваиваем список действий игрока конкретному игроку
+    #             game[active_games[player]].dynasty[i].acts = post
+    #             # Меняем переменную отвечающую за готовность хода
+    #             game[active_games[player]].dynasty[i].end_turn = True
+    #     # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
+    #     game[active_games[player]].calculate_turn()
+    # # Временно возвращаем пустую строку
+    # return ""
 
 
 @app.route("/post_act", methods=["POST"])
@@ -394,41 +440,54 @@ def post_act():
         который не будет пропадать и сбиваться при обновлении странички.
         Ход при этом не считается отправленным.
     """
-    global game
     global active_games
     if request.method == "POST":
         print('Запрос с js')
-        # Тут нужно получить переменные с фронта
         # Определим игрока, чтоб понять от кого получен ход и куда его записать
         player = int(current_user.get_id())
-        # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
-        # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        for i in game[active_games[player]].dynasty_list:
-            if player == game[active_games[player]].dynasty[i].player_id:
-                # Получаем список с действиями игрока
-                post = request.get_json()
-                print(post)
-                # Присваиваем список действий игрока конкретному игроку
-                game[active_games[player]].dynasty[i].acts = post
-                print(f"Длинна списка с действиями: {len(post)}")
-                print(post[0])
-                # Перезапишем файл полностью, ибо по факту получаем не один акт, а сразу все
-                # !!!!!!! Еще нужно отловить ошибку, если папка не существует
-                # !!!!!!! И само собой отлавливать ошибку при чтении, если файла не существует
-                # !!!!!!!!!!!!!!!!!!!!!!
-                # !!!!!!! Или можно всегда создавать файл автоматически при создании игры, пустым
-                # Тут вариант с pickle
-                with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
-                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'wb') as f:
-                    # Сериализация словаря data с использованием последней доступной версии протокола.
-                    pickle.dump(post, f, pickle.HIGHEST_PROTOCOL)
-                # Просто для теста возвращаем результат
-                with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
-                          f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'rb') as f:
-                    data = pickle.load(f)
-                    print(f"Pickle: {data}")
+        game_id = request.args.get('gameID')
+        print(f"ИД партии которой передается ход: {game_id}")
+        # Получаем список с действиями игрока
+        post = request.get_json()
+        print(f"Ход от игрока {player}: {post}")
     # Временно возвращаем пустую строку
     return ""
+
+    # Старый вариант
+    # global active_games
+    # if request.method == "POST":
+    #     print('Запрос с js')
+    #     # Тут нужно получить переменные с фронта
+    #     # Определим игрока, чтоб понять от кого получен ход и куда его записать
+    #     player = int(current_user.get_id())
+    #     # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
+    #     # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
+    #     for i in game[active_games[player]].dynasty_list:
+    #         if player == game[active_games[player]].dynasty[i].player_id:
+    #             # Получаем список с действиями игрока
+    #             post = request.get_json()
+    #             print(post)
+    #             # Присваиваем список действий игрока конкретному игроку
+    #             game[active_games[player]].dynasty[i].acts = post
+    #             print(f"Длинна списка с действиями: {len(post)}")
+    #             print(post[0])
+    #             # Перезапишем файл полностью, ибо по факту получаем не один акт, а сразу все
+    #             # !!!!!!! Еще нужно отловить ошибку, если папка не существует
+    #             # !!!!!!! И само собой отлавливать ошибку при чтении, если файла не существует
+    #             # !!!!!!!!!!!!!!!!!!!!!!
+    #             # !!!!!!! Или можно всегда создавать файл автоматически при создании игры, пустым
+    #             # Тут вариант с pickle
+    #             with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
+    #                       f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'wb') as f:
+    #                 # Сериализация словаря data с использованием последней доступной версии протокола.
+    #                 pickle.dump(post, f, pickle.HIGHEST_PROTOCOL)
+    #             # Просто для теста возвращаем результат
+    #             with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
+    #                       f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'rb') as f:
+    #                 data = pickle.load(f)
+    #                 print(f"Pickle: {data}")
+    # # Временно возвращаем пустую строку
+    # return ""
 
 
 @app.route("/contact", methods=["POST", "GET"])

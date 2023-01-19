@@ -41,55 +41,83 @@ class Dynasty:
         # self.active_game = 0  # Id Активной игры. Надо что-то решить и убрать 0
 
         self.game = game  # Не помню, но для чего то нужно передать ссылку
+        self.game_id = game.row_id  # Сохраним ИД игры, для создания правильной ссылки при необходимости
+        # Но конечно же, можно было бы передать ее аргументом при создании династии
 
+    def save_to_file(self):
+        data = {
+            "row_id": self.row_id,
+            "game_id": self.game_id,
+            "player_id": self.player_id,
+            "name": self.name,
+            "name_rus": self.name_rus,
+            "gold": self.gold,
+            "win_points": self.win_points,
+            "goods": self.goods,
+            "colony_buildings": self.colony_buildings,
+            "acts": self.acts,
+            "result_logs_text": self.result_logs_text,
+            "end_turn": self.end_turn,
+            "end_turn_know": self.end_turn_know,
+        }
+        # В JSON не записывается из-за обьектов с Династиями, товарами и постройками
+        # with open(f'games/gameID_{self.row_id}_playerID_{self.player_id}.json', 'w') as outfile:
+        #     json.dump(data, outfile)
+        # Поэтому пишем в pickle. !!!!!!!! Правда не знаю как это будет работать.....
+        with open(f"games/gameID_{self.game_id}_playerID_{self.player_id}.trader", 'wb') as f:
+            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
+
+    # Неактуально, все параметры страны теперь записываются в файл
     # Отдельно запускаемая функция для хранения данных в Редис.
     # !!!!!!!!!! Вопрос пишем сохранение заново или нужна опция обновить для Редис ????
-    def save_to_redis(self):
-        # !!!!!!! Тут запишем странам по 9999 золото, чтобы понять, что функция работает
-        # !!!! То что выше, неактуально. Все работало....
-        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}", self.gold)
-        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}", self.name)  # {self.name}
-        rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}", self.name_rus)
+    # def save_to_redis(self):
+    #     # !!!!!!! Тут запишем странам по 9999 золото, чтобы понять, что функция работает
+    #     # !!!! То что выше, неактуально. Все работало....
+    #     rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}", self.gold)
+    #     rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}", self.name)  # {self.name}
+    #     rediska.set(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}", self.name_rus)
+    #
+    # def take_var_from_redis(self):
+    #     self.gold = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}")
+    #     self.name = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}")
+    #     self.name_rus = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}")
 
-    def take_var_from_redis(self):
-        self.gold = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}")
-        self.name = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name}")
-        self.name_rus = rediska.get(f"gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}")
-
-    def return_var(self):
-        print("Почему эта функция запускается больше одного раза?")
-        # Извлекём ход(действия) из файла
-        with open(f"games/acts/gameID_{self.game.row_id}_playerID_{self.player_id}.trader", "rb") as f:
-            acts = pickle.load(f)
-        data = {
-            # "name_rus": self.name_rus,
-            "name_rus": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}'),
-            "end_turn": self.end_turn,  # Отправим игроку статус хода, чтоб он был в курсе
-            # "gold": self.gold,
-            "gold": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}'),
-            # "acts": self.acts,
-            # Возьмём список действий с документа
-            "acts": acts,
-            # "acts_text": self.acts_text,  # Список с текстом не выполненных действий
-            "result_logs_text": self.result_logs_text,  # Список с текстом выполненных действий
-            # Товары и колонии
-            # Сделаем списком
-            "goods": [
-                self.goods[0],
-                self.goods[1],
-                self.goods[2],
-                self.goods[3],
-                self.goods[4],
-            ],
-            "colony_buildings": [
-                self.colony_buildings[0],
-                self.colony_buildings[1],
-                self.colony_buildings[2],
-                self.colony_buildings[3],
-                self.colony_buildings[4],
-            ],
-        }
-        return data
+    # Неактуальный метод. Теперь данные берутся напрямую из файла
+    # def return_var(self):
+    #     print("Почему эта функция запускается больше одного раза?")
+        # # Извлекём ход(действия) из файла
+        # with open(f"games/acts/gameID_{self.game.row_id}_playerID_{self.player_id}.trader", "rb") as f:
+        #     acts = pickle.load(f)
+        # data = {
+        #     # "name_rus": self.name_rus,
+        #     "name_rus": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.name_rus}'),
+        #     "end_turn": self.end_turn,  # Отправим игроку статус хода, чтоб он был в курсе
+        #     # "gold": self.gold,
+        #     "gold": rediska.get(f'gameID_{self.game.row_id}_playerID_{self.player_id}_{self.gold}'),
+        #     # "acts": self.acts,
+        #     # Возьмём список действий с документа
+        #     "acts": acts,
+        #     # "acts_text": self.acts_text,  # Список с текстом не выполненных действий
+        #     "result_logs_text": self.result_logs_text,  # Список с текстом выполненных действий
+        #     # Товары и колонии
+        #     # Сделаем списком
+        #     "goods": [
+        #         self.goods[0],
+        #         self.goods[1],
+        #         self.goods[2],
+        #         self.goods[3],
+        #         self.goods[4],
+        #     ],
+        #     "colony_buildings": [
+        #         self.colony_buildings[0],
+        #         self.colony_buildings[1],
+        #         self.colony_buildings[2],
+        #         self.colony_buildings[3],
+        #         self.colony_buildings[4],
+        #     ],
+        # }
+        # return data
 
     def calc_act(self):  # Подсчет одного действия для династии
         # if len(self.acts) > 0:
@@ -124,24 +152,25 @@ class Dynasty:
         # Выставим False для параметра end_turn
         self.end_turn = False
 
-    def act_build_colony(self, buildings_index):     # 101 id
-        print(self.game.buildings.buildings)
-        # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
-        # Скачаем параметры из Редис. В данном случае нужно золото
-        self.take_var_from_redis()
-        # Преобразуем строку с золотом в число
-        # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
-        self.gold = int(self.gold)
-        if self.gold >= self.game.buildings.buildings[buildings_index][1]:  # Индекс 1 это цена у постройки
-            # print(buildings[buildings_index])
-            self.colony_buildings[buildings_index] += 1
-            self.gold -= self.game.buildings.buildings[buildings_index][1]
-            # Сохраним новый результат в Редис. Пока только по золоту, но возможно и что-то еще.
-            # !!!!!!!!!!! Саму постройку например
-            self.save_to_redis()
-            self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
-            self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
-            print(self.game.buildings.buildings[buildings_index])
+    # Неактуальный метод. Теперь запускается как функция получая аргументами ИД партии и страны.
+    # def act_build_colony(self, buildings_index):     # 101 id
+        # print(self.game.buildings.buildings)
+        # # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
+        # # Скачаем параметры из Редис. В данном случае нужно золото
+        # self.take_var_from_redis()
+        # # Преобразуем строку с золотом в число
+        # # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
+        # self.gold = int(self.gold)
+        # if self.gold >= self.game.buildings.buildings[buildings_index][1]:  # Индекс 1 это цена у постройки
+        #     # print(buildings[buildings_index])
+        #     self.colony_buildings[buildings_index] += 1
+        #     self.gold -= self.game.buildings.buildings[buildings_index][1]
+        #     # Сохраним новый результат в Редис. Пока только по золоту, но возможно и что-то еще.
+        #     # !!!!!!!!!!! Саму постройку например
+        #     self.save_to_redis()
+        #     self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
+        #     self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
+        #     print(self.game.buildings.buildings[buildings_index])
 
     def act_sell_goods(self):     # 201 id
         pass
@@ -158,3 +187,11 @@ class Dynasty:
             self.acts = []
         elif what == "last":
             self.acts.pop(-1)
+
+
+def act_build_colony(player_id, game_id, buildings_index):     # 101 id
+    # print(self.game.buildings.buildings)
+    # # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
+    # Скачаем параметры из файла
+    with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
+        data = pickle.load(f)
