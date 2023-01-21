@@ -450,6 +450,17 @@ def post_act():
         # Получаем список с действиями игрока
         post = request.get_json()
         print(f"Ход от игрока {player}: {post}")
+        # Прочитаем файл игрока
+        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+            data = pickle.load(f)
+        print(f"Тут вот {data}")
+        # Присвоим ход игроку
+        data["acts"] = post
+        print(f"Тут вот {data}")
+        # Снова запишем ход
+        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
+            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        print(f"Тут вот снова {data}")
     # Временно возвращаем пустую строку
     return ""
 
