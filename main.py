@@ -383,31 +383,33 @@ def req_status_game():
     return jsonify(data)
 
 
+# !!!!!!!!!!!!! Запустить функцию подсчета хода
 @app.route("/post_turn", methods=["POST"])
 @login_required
 def post_turn():
-    # Получим ИД партии, ей будем присваивать ход !!!!!!!!!!!! после проверки
-    game_id = request.args.get('gameID')
-    print(f"ИД партии которой передается ход: {game_id}")
     global active_games  # Список. Остается глобальной переменной, загружается при загрузке файла
-    # Определим игрока, чтоб понять от кого получен ход и куда его записать
-    player = int(current_user.get_id())
     if request.method == "POST":
         print('Запрос с js')
-        # Тут нужно получить переменные с фронта
-        # Определим принадлежность игры к игроку через цикл, пройдясь по параметру player_id
-        # Сравним с ид игрока, если совпадает запрашиваем и отправляет параметры
-        for i in game[active_games[player]].dynasty_list:
-            if player == game[active_games[player]].dynasty[i].player_id:
-                # Получаем список с действиями игрока
-                post = request.get_json()
-                print(post)
-                # Присваиваем список действий игрока конкретному игроку
-                game[active_games[player]].dynasty[i].acts = post
-                # Меняем переменную отвечающую за готовность хода
-                game[active_games[player]].dynasty[i].end_turn = True
-        # Запускаем саму обработку хода, там будет доп проверка все ли игроки прислали ход
-        game[active_games[player]].calculate_turn()
+        # Определим игрока, чтоб понять от кого получен ход и куда его записать
+        player = int(current_user.get_id())
+        # Получим ИД партии, ей будем присваивать ход !!!!!!!!!!!! после проверки
+        # !!!!!!!!! Нужна проверка участвует ли игрок в этой игре!!!!!!!!!!!!!!!!!!!!!!!!!!
+        game_id = request.args.get('gameID')
+        print(f"ИД партии которой передается ход: {game_id}")
+        # Получаем список с действиями игрока
+        post = request.get_json()
+        print(f"Ход от игрока {player}: {post}")
+        # Прочитаем файл игрока
+        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+            data = pickle.load(f)
+        print(f"Тут вот {data}")
+        # Присвоим ход игроку
+        data["end_turn"] = True
+        print(f"Тут вот {data}")
+        # Снова запишем ход
+        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
+            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        print(f"Тут вот снова {data}")
     # Временно возвращаем пустую строку
     return ""
     # Старый вариант
@@ -440,12 +442,14 @@ def post_act():
         который не будет пропадать и сбиваться при обновлении странички.
         Ход при этом не считается отправленным.
     """
-    global active_games
+    # global active_games # Как бы да, оно загружается глобально. Но тут передача ИД игры идет с фронта
     if request.method == "POST":
         print('Запрос с js')
         # Определим игрока, чтоб понять от кого получен ход и куда его записать
         player = int(current_user.get_id())
+        # Получим ИД партии, ей будем присваивать акт !!!!!!!!!!!! после проверки
         game_id = request.args.get('gameID')
+        # !!!!!!!!! Нужна проверка участвует ли игрок в этой игре!!!!!!!!!!!!!!!!!!!!!!!!!!
         print(f"ИД партии которой передается ход: {game_id}")
         # Получаем список с действиями игрока
         post = request.get_json()
