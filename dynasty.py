@@ -60,13 +60,29 @@ class Dynasty:
             "end_turn": self.end_turn,
             "end_turn_know": self.end_turn_know,
         }
-        # В JSON не записывается из-за обьектов с Династиями, товарами и постройками
-        # with open(f'games/gameID_{self.row_id}_playerID_{self.player_id}.json', 'w') as outfile:
-        #     json.dump(data, outfile)
-        # Поэтому пишем в pickle. !!!!!!!! Правда не знаю как это будет работать.....
+        # Пишем в pickle.
         with open(f"games/gameID_{self.game_id}_playerID_{self.player_id}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
+
+    def load_from_file(self, game_id, player_id):
+        with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
+            data = pickle.load(f)
+            print(f"Восстанавливаем династию: {data}")
+        self.row_id = data["row_id"]
+        self.game_id = data["game_id"]
+        self.player_id = data["player_id"]
+        self.name = data["name"]
+        self.name_rus = data["name_rus"]
+        self.gold = data["gold"]
+        self.win_points = data["win_points"]
+        self.goods = data["goods"]
+        self.colony_buildings = data["colony_buildings"]
+        self.acts = data["acts"]
+        self.result_logs_text = data["result_logs_text"]
+        self.end_turn = data["end_turn"]
+        self.end_turn_know = data["end_turn_know"]
+        print(f"Данные династии {self.name_rus} восстановились")
 
     # Неактуально, все параметры страны теперь записываются в файл
     # Отдельно запускаемая функция для хранения данных в Редис.
@@ -153,24 +169,24 @@ class Dynasty:
         self.end_turn = False
 
     # Неактуальный метод. Теперь запускается как функция получая аргументами ИД партии и страны.
-    # def act_build_colony(self, buildings_index):     # 101 id
-        # print(self.game.buildings.buildings)
-        # # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
+    def act_build_colony(self, buildings_index):     # 101 id
+        print(self.game.buildings.buildings)
+        # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
         # # Скачаем параметры из Редис. В данном случае нужно золото
         # self.take_var_from_redis()
-        # # Преобразуем строку с золотом в число
-        # # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
-        # self.gold = int(self.gold)
-        # if self.gold >= self.game.buildings.buildings[buildings_index][1]:  # Индекс 1 это цена у постройки
-        #     # print(buildings[buildings_index])
-        #     self.colony_buildings[buildings_index] += 1
-        #     self.gold -= self.game.buildings.buildings[buildings_index][1]
-        #     # Сохраним новый результат в Редис. Пока только по золоту, но возможно и что-то еще.
-        #     # !!!!!!!!!!! Саму постройку например
-        #     self.save_to_redis()
-        #     self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
-        #     self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
-        #     print(self.game.buildings.buildings[buildings_index])
+        # Преобразуем строку с золотом в число
+        # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
+        self.gold = int(self.gold)
+        if self.gold >= self.game.buildings.buildings[buildings_index][1]:  # Индекс 1 это цена у постройки
+            # print(buildings[buildings_index])
+            self.colony_buildings[buildings_index] += 1
+            self.gold -= self.game.buildings.buildings[buildings_index][1]
+            # # Сохраним новый результат в Редис. Пока только по золоту, но возможно и что-то еще.
+            # # !!!!!!!!!!! Саму постройку например
+            # self.save_to_redis()
+            self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
+            self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
+            print(self.game.buildings.buildings[buildings_index])
 
     def act_sell_goods(self):     # 201 id
         pass
@@ -189,9 +205,9 @@ class Dynasty:
             self.acts.pop(-1)
 
 
-def act_build_colony(player_id, game_id, buildings_index):     # 101 id
-    # print(self.game.buildings.buildings)
-    # # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
-    # Скачаем параметры из файла
-    with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
-        data = pickle.load(f)
+# def act_build_colony(player_id, game_id, buildings_index):     # 101 id
+#     # print(self.game.buildings.buildings)
+#     # # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
+#     # Скачаем параметры из файла
+#     with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
+#         data = pickle.load(f)

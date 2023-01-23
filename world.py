@@ -82,14 +82,52 @@ class FirstWorld:
         return self.dynasty[name]
 
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
-    def restore_dynasty(self):
+    def restore_dynasty(self, game_id, player_id):
         for i in self.dynasty:
             print(f"Восстанавливаем династию: {i}")
             self.dynasty[i] = Dynasty(self)
             print(self.dynasty[i])
-            self.dynasty[i] = Dynasty(self)
+            self.dynasty[i].load_from_file(game_id, player_id)
 
-    # Старый метод до переноса данных в pickle
+
+def check_readiness(game_id):  # Проверить все ли страны отправили ход
+    with open(f"games/gameID_{game_id}.trader", 'rb') as f:
+        data_main = pickle.load(f)
+    # num_player = len(data_main["player_list"])
+    # num_dynasty = len(data_main["dynasty_list"])
+    # print(f"Всего игроков: {num_player}")
+    # print(f"Всего династий: {num_dynasty}")
+    for i in data_main["player_list"]:
+        with open(f"games/gameID_{game_id}_playerID_{i}.trader", 'rb') as f:
+            end_turn_reading = pickle.load(f)
+            if not end_turn_reading["end_turn"]:
+                print("Как минимум один из игроков еще не готов")
+                print(f"Игрок: {i}")
+                return
+    print("Все игроки готовы")
+    calculate_turn(game_id)
+
+
+def calculate_turn(game_id):
+    # Сначала запускается отдельная функция определяющая готовность хода игроков
+    # Теперь восстановим все классы игры взяв параметры из pickle
+    game = FirstWorld(game_id)  # Восстановим саму игру.
+    game.load_from_file(game_id)  # Запустим метод считающий данные из файла.
+    for player_id in game.player_list:
+        # !!!!!!!!!!! Мы тут получаем ИД игрока, а надо бы ИД династии.
+        # !!!!!!!!!!! Можно было бы это совместить, но что будет, если меняется игрок на династии(стране)....
+        # !!!!!!!!!!! Хотя вроде все верно, мы же забираем из подписанного файла ИДшником игрока
+        print(f"Пред восстанавливаем династию: {player_id}")
+        game.restore_dynasty(game_id, player_id)
+    # Теперь нужно запустить собственно саму обработку действий
+    # В случае начала обсчета хода, необходимо почистить лог прошлого хода у стран.
+    # Проверю вообще считается ли действия через ссылку
+    for dynasty_name in game.dynasty:
+        print(f"Проверка ссылки: {dynasty_name}")
+        print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
+        game.dynasty[dynasty_name].calc_act()
+
+    # Старый метод до переноса данных в pickle !!!!!!!!! Пока не удаляем !!!!!!!!!!
     # def calculate_turn(self):
     #     # Если хоть одна из стран не закончила ход, то выходим из функции
     #     # На будущее сделать проверку по таймеру, когда будет введено ограничение по времени хода
@@ -118,30 +156,3 @@ class FirstWorld:
     #     # Добавим 1 к номеру хода и года
     #     self.year += 1
     #     self.turn += 1
-
-
-def calculate_turn(game_id):
-    # Сначала запускается отдельная функция определяющая готовность хода игроков
-    # Теперь восстановим все классы игры взяв параметры из pickle
-    game = FirstWorld(game_id)  # Восстановим саму игру.
-    game.load_from_file(game_id)  # Запустим метод считающий данные из файла.
-
-    game.restore_dynasty()
-
-
-def check_readiness(game_id):  # Проверить все ли страны отправили ход
-    with open(f"games/gameID_{game_id}.trader", 'rb') as f:
-        data_main = pickle.load(f)
-    # num_player = len(data_main["player_list"])
-    # num_dynasty = len(data_main["dynasty_list"])
-    # print(f"Всего игроков: {num_player}")
-    # print(f"Всего династий: {num_dynasty}")
-    for i in data_main["player_list"]:
-        with open(f"games/gameID_{game_id}_playerID_{i}.trader", 'rb') as f:
-            end_turn_reading = pickle.load(f)
-            if not end_turn_reading["end_turn"]:
-                print("Как минимум один из игроков еще не готов")
-                print(f"Игрок: {i}")
-                return
-    print("Все игроки готовы")
-    calculate_turn(game_id)
