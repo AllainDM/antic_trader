@@ -15,7 +15,7 @@ rediska = redis.StrictRedis(
 
 
 class Dynasty:
-    def __init__(self, game, row_id=0, player_id=0, name="default_name", name_rus="Страна", gold=3000):
+    def __init__(self, game, row_id=0, player_id=0, name="default_name", name_rus="Страна", gold=0):
         self.row_id = row_id
         self.player_id = player_id
         self.name = name

@@ -242,7 +242,7 @@ def set_active_games():
 
 @app.route("/create_new_game")
 @login_required
-def create_new_game(year=1200):
+def create_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
     user_admin = current_user.get_admin()
     if user_admin == 1:
@@ -259,7 +259,7 @@ def create_new_game(year=1200):
         with open(f"games/list.trader", 'wb') as f:
             pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
-        print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameID_{game_arr[-1]}_date')}")
+        # print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameID_{game_arr[-1]}_date')}")
         print(f"Игра {game_arr[-1]} создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
         create_game(game_arr[-1])  # Дату не передаем, она сохраняется сразу тут в Редис # date_now
@@ -332,11 +332,11 @@ def req_status_game_player():
     #     return ""
     player = int(current_user.get_id())
     game_id = rediska.get(f'playerID_{player}_active_gameID')
-    print(f"ИД игры при запросе статуса: {game_id}")
+    # print(f"ИД игры при запросе статуса: {game_id}")
     # Выходит что нам не нужно обращаться к классу Династии запуская ее метод
     with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
         data = pickle.load(f)
-    print(f"Параметры династии: {data}")
+    # print(f"Параметры династии: {data}")
     return jsonify(data)
 
 
@@ -368,7 +368,7 @@ def req_status_game():
     player = int(current_user.get_id())
     user_name = current_user.get_name()
     game_id = rediska.get(f'playerID_{player}_active_gameID')
-    print(f"ИД игры при запросе статуса династии: {game_id}")
+    # print(f"ИД игры при запросе статуса династии: {game_id}")
     # !!!!!!!!! Тут еще нужна проверка на существование самой партии
     with open(f"games/gameID_{game_id}.trader", 'rb') as f:
         world = pickle.load(f)
@@ -378,7 +378,7 @@ def req_status_game():
             "turn": world["turn"],
             "all_logs": world["all_logs"],
             "game_id": world["row_id"],
-            "date_create": rediska.get(f'gameID_{world["row_id"]}_date'),
+            "date_create": world["date_create"],
             "user_name": user_name,
         }
     return jsonify(data)
@@ -390,27 +390,27 @@ def req_status_game():
 def post_turn():
     global active_games  # Список. Остается глобальной переменной, загружается при загрузке файла
     if request.method == "POST":
-        print('Запрос с js')
+        # print('Запрос с js')
         # Определим игрока, чтоб понять от кого получен ход и куда его записать
         player = int(current_user.get_id())
         # Получим ИД партии, ей будем присваивать ход !!!!!!!!!!!! после проверки
         # !!!!!!!!! Нужна проверка участвует ли игрок в этой игре!!!!!!!!!!!!!!!!!!!!!!!!!!
         game_id = request.args.get('gameID')
-        print(f"ИД партии которой передается ход: {game_id}")
+        # print(f"ИД партии которой передается ход: {game_id}")
         # Получаем список с действиями игрока
         post = request.get_json()
-        print(f"Ход от игрока {player}: {post}")
+        # print(f"Ход от игрока {player}: {post}")
         # Прочитаем файл игрока
         with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
             data = pickle.load(f)
-        print(f"Тут вот {data}")
+        # print(f"Тут вот {data}")
         # Присвоим ход игроку
         data["end_turn"] = True
-        print(f"Тут вот {data}")
+        # print(f"Тут вот {data}")
         # Снова запишем ход
         with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
-        print(f"Тут вот снова {data}")
+        # print(f"Тут вот снова {data}")
         world.check_readiness(game_id)
     # Временно возвращаем пустую строку
     return ""
@@ -446,27 +446,27 @@ def post_act():
     """
     # global active_games # Как бы да, оно загружается глобально. Но тут передача ИД игры идет с фронта
     if request.method == "POST":
-        print('Запрос с js')
+        # print('Запрос с js')
         # Определим игрока, чтоб понять от кого получен ход и куда его записать
         player = int(current_user.get_id())
         # Получим ИД партии, ей будем присваивать акт !!!!!!!!!!!! после проверки
         game_id = request.args.get('gameID')
         # !!!!!!!!! Нужна проверка участвует ли игрок в этой игре!!!!!!!!!!!!!!!!!!!!!!!!!!
-        print(f"ИД партии которой передается ход: {game_id}")
+        # print(f"ИД партии которой передается ход: {game_id}")
         # Получаем список с действиями игрока
         post = request.get_json()
-        print(f"Ход от игрока {player}: {post}")
+        # print(f"Ход от игрока {player}: {post}")
         # Прочитаем файл игрока
         with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
             data = pickle.load(f)
-        print(f"Тут вот {data}")
+        # print(f"Тут вот {data}")
         # Присвоим ход игроку
         data["acts"] = post
-        print(f"Тут вот {data}")
+        # print(f"Тут вот {data}")
         # Снова запишем ход
         with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
-        print(f"Тут вот снова {data}")
+        # print(f"Тут вот снова {data}")
     # Временно возвращаем пустую строку
     return ""
 
