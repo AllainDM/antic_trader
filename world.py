@@ -15,6 +15,7 @@ class FirstWorld:
 
         self.dynasty = {}  # Основной объект с династиями
         self.dynasty_list = []  # Массив стран, для перебора при обсчете хода
+        self.player_list = []
 
         # Товары и производство
         # А зачем нам это надо?
@@ -34,14 +35,12 @@ class FirstWorld:
             "turn": self.turn,
             "dynasty": self.dynasty,
             "dynasty_list": self.dynasty_list,
+            "player_list": self.player_list,
             "goods": self.goods,
             "buildings": self.buildings,
             "all_logs": self.all_logs,
         }
-        # В JSON не записывается из-за обьектов с Династиями, товарами и постройками
-        # with open(f'games/gameID_{self.row_id}.json', 'w') as outfile:
-        #     json.dump(data, outfile)
-        # Поэтому пишем в pickle. !!!!!!!! Правда не знаю как это будет работать.....
+        # Пишем в pickle.
         with open(f"games/gameID_{self.row_id}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
@@ -51,6 +50,7 @@ class FirstWorld:
         # Нужно ли передавать ссылку self при создании Dynasty ?
         self.dynasty[name] = Dynasty(self, row_id=row_id, player_id=player_id, name=name, name_rus=name_rus, gold=gold)
         self.dynasty_list.append(name)
+        self.player_list.append(player_id)
         self.dynasty[name].save_to_file()
         # !!!!!!!!!! Еще нужно запустить у Династии функцию сохранения ее данных в файл
         # Создадим файл с записью хода игрока. Он должен быть пустым при каждом создании игры
@@ -87,3 +87,20 @@ class FirstWorld:
         # Добавим 1 к номеру хода и года
         self.year += 1
         self.turn += 1
+
+
+def check_readiness(game_id):  # Проверить все ли страны отправили ход
+    with open(f"games/gameID_{game_id}.trader", 'rb') as f:
+        data_main = pickle.load(f)
+    num_player = len(data_main["player_list"])
+    num_dynasty = len(data_main["dynasty_list"])
+    print(f"Всего игроков: {num_player}")
+    print(f"Всего династий: {num_dynasty}")
+    for i in data_main["player_list"]:
+        with open(f"games/gameID_{game_id}_playerID_{i}.trader", 'rb') as f:
+            end_turn_reading = pickle.load(f)
+            if end_turn_reading["end_turn"] == False:
+                print("Как минимум один из игроков еще не готов")
+                print(f"Игрок: {i}")
+            else:
+                print("Все игроки готовы")

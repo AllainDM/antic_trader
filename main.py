@@ -9,6 +9,7 @@ from flask_login import login_required, current_user, login_user, LoginManager, 
 import redis
 
 import config
+import world
 from FDataBase import FDataBase
 from world import FirstWorld
 from UserLogin import UserLogin
@@ -410,6 +411,7 @@ def post_turn():
         with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         print(f"Тут вот снова {data}")
+        world.check_readiness(game_id)
     # Временно возвращаем пустую строку
     return ""
     # Старый вариант
