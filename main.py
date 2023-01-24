@@ -86,13 +86,8 @@ with open(f"games/list.trader", 'wb') as f:
     # Сериализация словаря data с использованием последней доступной версии протокола.
     pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
-# Прочитаем файл с обьектами игр
-# Зачем ???
-# with open(f"games/game_objs.trader", "rb") as f:
-#     # global game_arr
-#     game = pickle.load(f)
 
-# Прочитаем файл со скиском игр
+# Прочитаем файл со списком игр
 with open(f"games/list.trader", "rb") as f:
     # global game_arr
     game_arr = pickle.load(f)
@@ -100,18 +95,6 @@ with open(f"games/list.trader", "rb") as f:
 # Сделаем глобально массив с активными играми игроков. Индексом будет ИД игрока
 # Временно напихаем сюда нулей. Вообще длинная должна равняться количеству зарегистрированных игроков
 active_games = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-
-# def main_for_redis():
-#     # global game_arr
-#     # rediska.set("game", game)
-#     rediska.lpush("game_arr", '0')
-#     # rediska.set("active_games", active_games)
-#     # print(rediska.get("game_arr"))
-#     # print(f"index: {rediska.lrange('game_arr', 0, -1)}")
-
-
-# main_for_redis()
 
 
 @app.before_request
@@ -192,8 +175,11 @@ def choose_game_html():  # Делаю подпись html, чтоб раздел
 @app.route("/load_all_my_game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
 @login_required
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
-    # global game
     global game_arr
+    # Прочитаем файл со списком игр
+    with open(f"games/list.trader", "rb") as f:
+        game_arr = pickle.load(f)
+    # global game_arr
     player = int(current_user.get_id())
     games_list = []  # Это список игр для отправки игроку для выбора
     # with open(f"games/gamesID_{game_arr[-1]}_list_players.trader", "rb") as f:
@@ -209,7 +195,7 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     #             print(f"Найдена игра с ИД: {my_g}")
     #             games_list.append(my_g)
     # Версия с извлечением списка игроков из файла
-    for my_g in game_arr:  # game_arr  прочитан из файла глобально
+    for my_g in game_arr:  # game_arr прочитан из файла глобально !!!!!! НЕТ !!!!!!!! глобально опять ошибка
         # Тут должен быть перебор всех файлов с играми
         # !!!!!!!!! Возможно быстрее создать отдельный файл с играми игрока заранее...... а может нет
         with open(f"games/gameID_{game_arr[my_g]}_list_players.trader", "rb") as f:
