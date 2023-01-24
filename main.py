@@ -102,13 +102,13 @@ with open(f"games/list.trader", "rb") as f:
 active_games = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
-def main_for_redis():
-    # global game_arr
-    # rediska.set("game", game)
-    rediska.lpush("game_arr", '0')
-    # rediska.set("active_games", active_games)
-    # print(rediska.get("game_arr"))
-    # print(f"index: {rediska.lrange('game_arr', 0, -1)}")
+# def main_for_redis():
+#     # global game_arr
+#     # rediska.set("game", game)
+#     rediska.lpush("game_arr", '0')
+#     # rediska.set("active_games", active_games)
+#     # print(rediska.get("game_arr"))
+#     # print(f"index: {rediska.lrange('game_arr', 0, -1)}")
 
 
 # main_for_redis()
@@ -262,7 +262,7 @@ def create_new_game():
         # print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameID_{game_arr[-1]}_date')}")
         print(f"Игра {game_arr[-1]} создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
-        create_game(game_arr[-1])  # Дату не передаем, она сохраняется сразу тут в Редис # date_now
+        create_game(game_arr[-1], date_now)  # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
 
         # Старое. Возврат страницы, игра создавалась просто по ссылке
         # return render_template("game.html", title="Main", menu=menu_admin)
@@ -272,13 +272,13 @@ def create_new_game():
         return ""
 
 
-def create_game(num):
+def create_game(num, date_now):  # Num, то есть ИД игры сейчас ну нужно, ибо не создается словарь с играми
     # global game
     # game[num] = FirstWorld(game_arr[-1])
     # game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     # game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
 
-    this_game = FirstWorld(game_arr[-1])
+    this_game = FirstWorld(game_arr[-1], date_now)
     this_game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     this_game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     this_game.save_to_file()
@@ -564,19 +564,19 @@ def profile():
 
 
 # Создадим игру при заргузке, чтоб было проще тестить
-def create_two_base_games():
-    date_now_gl = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-    game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
-    rediska.set(f"gameId_{game_arr[-1]}_date", date_now_gl)
-    create_game(game_arr[-1])
-
-    date_now_gl = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-    game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
-    rediska.set(f"gameId_{game_arr[-1]}_date", date_now_gl)
-    create_game(game_arr[-1])
-
-
-print(game_arr)
+# def create_two_base_games():
+#     date_now_gl = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+#     game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+#     rediska.set(f"gameId_{game_arr[-1]}_date", date_now_gl)
+#     create_game(game_arr[-1])
+#
+#     date_now_gl = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+#     game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+#     rediska.set(f"gameId_{game_arr[-1]}_date", date_now_gl)
+#     create_game(game_arr[-1])
+#
+#
+# print(game_arr)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -2,3 +2,5 @@ flask
 flask_login
 psycopg2
 redis
+# Сервер редис так же нужно установить, если подключение на 127.0.0.1
+# sudo apt-get install redis-server
