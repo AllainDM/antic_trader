@@ -81,10 +81,10 @@ dbase = None
 # game_arr = []
 
 # Запускать для обнуления файла со списком ИД игр
-with open(f"games/list.trader", 'wb') as f:
-    game_arr = []
-    # Сериализация словаря data с использованием последней доступной версии протокола.
-    pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
+# with open(f"games/list.trader", 'wb') as f:
+#     game_arr = []
+#     # Сериализация словаря data с использованием последней доступной версии протокола.
+#     pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
 
 # Прочитаем файл со списком игр
@@ -230,9 +230,13 @@ def set_active_games():
 @login_required
 def create_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
+    global game_arr
     user_admin = current_user.get_admin()
     if user_admin == 1:
         print("this is admin3")
+        # Прочитаем файл со списком игр
+        with open(f"games/list.trader", "rb") as f:
+            game_arr = pickle.load(f)
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
         game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
