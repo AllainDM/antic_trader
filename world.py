@@ -83,11 +83,16 @@ class FirstWorld:
 
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
     def restore_dynasty(self, game_id, player_id):
-        for i in self.dynasty:
-            print(f"Восстанавливаем династию: {i}")
-            self.dynasty[i] = Dynasty(self)
-            print(self.dynasty[i])
-            self.dynasty[i].load_from_file(game_id, player_id)
+        # Тут лишний цикл, он и так проходит при вызове цункции
+        # for i in self.dynasty:
+        #     print(f"Восстанавливаем династию: {i}")
+        #     self.dynasty[i] = Dynasty(self)
+        #     print(self.dynasty[i])
+        #     self.dynasty[i].load_from_file(game_id, player_id)
+        print(f"Восстанавливаем династию: {player_id}")
+        self.dynasty[player_id] = Dynasty(self)
+        print(self.dynasty[player_id])
+        self.dynasty[player_id].load_from_file(game_id, player_id)
 
 
 def check_readiness(game_id):  # Проверить все ли страны отправили ход
@@ -121,11 +126,28 @@ def calculate_turn(game_id):
         game.restore_dynasty(game_id, player_id)
     # Теперь нужно запустить собственно саму обработку действий
     # В случае начала обсчета хода, необходимо почистить лог прошлого хода у стран.
+        # Или еще лучше, сделать массив вообще со всеми логами.
+        # Лучше сделать отдельный массив в котором просто будут храниться все логи.
+    for dyns in game.dynasty:
+        game.dynasty[dyns].result_logs_text = []
     # Проверю вообще считается ли действия через ссылку
+    # Пока по 5 действий
+    for cont in range(5):
+        for dynasty_name in game.dynasty:
+            print(f"Проверка ссылки: {dynasty_name}")
+            print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
+            game.dynasty[dynasty_name].calc_act()
+            # game.dynasty[dynasty_name].calc_act()
+    # Пост обсчет хода
     for dynasty_name in game.dynasty:
-        print(f"Проверка ссылки: {dynasty_name}")
-        print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
-        game.dynasty[dynasty_name].calc_act()
+        game.dynasty[dynasty_name].calc_end_turn()
+    # Сохраним данные для стран
+    for dynasty_name in game.dynasty:
+        game.dynasty[dynasty_name].save_to_file()
+    # Добавим 1 к номеру хода и года
+    game.year += 1
+    game.turn += 1
+    game.save_to_file()
 
     # Старый метод до переноса данных в pickle !!!!!!!!! Пока не удаляем !!!!!!!!!!
     # def calculate_turn(self):

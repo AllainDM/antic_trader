@@ -64,6 +64,7 @@ class Dynasty:
         with open(f"games/gameID_{self.game_id}_playerID_{self.player_id}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
+        print(data)
 
     def load_from_file(self, game_id, player_id):
         with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
@@ -137,6 +138,7 @@ class Dynasty:
 
     def calc_act(self):  # Подсчет одного действия для династии
         # if len(self.acts) > 0:
+        print(f"Считаем ход для династии: {self.name}")
         if self.acts:
             # 1 индекс это первое по списку действие, первый элемент в списке, оно выполняется и удаляется
             # 2 индекс это индекс с ИД действия, он под индексом 1, под 0 текстовое описание. Начиная с 2 аргументы
@@ -160,13 +162,16 @@ class Dynasty:
     def calc_end_turn(self):
         self.prod_goods()  # Произведем товары в "колониях"
 
+        # !!!!!!!!!! Нам не нужно чистить акты, они могут остаться на следующий ход
         # Очистим файл с ходом(актами)
-        self.acts = []  # !!!!!! Возможно без self, типо самостоятельная переменная
-        with open(f"games/acts/gameID_{self.game.row_id}_playerID_{self.player_id}.trader", "wb") as f:
-            pickle.dump(self.acts, f, pickle.HIGHEST_PROTOCOL)
+        # self.acts = []  # !!!!!! Возможно без self, типо самостоятельная переменная
+        # with open(f"games/acts/gameID_{self.game.row_id}_playerID_{self.player_id}.trader", "wb") as f:
+        #     pickle.dump(self.acts, f, pickle.HIGHEST_PROTOCOL)
 
         # Выставим False для параметра end_turn
         self.end_turn = False
+        self.save_to_file()
+        print(f"Функция обработки конца хода")
 
     # Неактуальный метод. Теперь запускается как функция получая аргументами ИД партии и страны.
     def act_build_colony(self, buildings_index):     # 101 id
