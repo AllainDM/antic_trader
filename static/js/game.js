@@ -249,7 +249,7 @@ document.getElementById('cancel-act').addEventListener('click', () => {
 
 function cancelAct(what) {
     const req = new XMLHttpRequest();
-    req.open("GET", `/cancel_act?what=${what}`);
+    req.open("GET", `/cancel_act?gameId=${statusGame.game_id}&what=${what}`);
     req.addEventListener('load', () => {
         console.log("Xmmm")
         requestStatusPlayer();

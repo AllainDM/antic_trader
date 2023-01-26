@@ -81,10 +81,10 @@ dbase = None
 # game_arr = []
 
 # Запускать для обнуления файла со списком ИД игр
-# with open(f"games/list.trader", 'wb') as f:
-#     game_arr = []
-#     # Сериализация словаря data с использованием последней доступной версии протокола.
-#     pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
+with open(f"games/list.trader", 'wb') as f:
+    game_arr = []
+    # Сериализация словаря data с использованием последней доступной версии протокола.
+    pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
 
 # Прочитаем файл со списком игр
@@ -297,12 +297,33 @@ def create_game(num, date_now):  # Num, то есть ИД игры сейчас
 def cancel_act():
     what = request.args.get('what')
     # response = dbase.read_router_comment(id_router)
-    global game
     player = int(current_user.get_id())
-    for i in game[0].dynasty_list:
-        if player == game[0].dynasty[i].player_id:
-            game[0].dynasty[i].cancel_act(what)
-    return "ok"
+    # Получим ИД партии !!!!!!!!!!!! Обязательно проверку
+    game_id = request.args.get('gameId')
+    try:  # Блок на случай отсутсвия файла
+        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+            data = pickle.load(f)
+            print("Файл прочитан")
+            print(data["acts"])
+            if what == "all":
+                data["acts"] = []
+            elif what == "last":
+                data["acts"].pop(-1)
+            print(data["acts"])
+            with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as new_f:
+                pickle.dump(data, new_f, pickle.HIGHEST_PROTOCOL)
+        return "ok"
+    except:
+        print("Файл не найден")
+        return ""
+    # what = request.args.get('what')
+    # # response = dbase.read_router_comment(id_router)
+    # global game
+    # player = int(current_user.get_id())
+    # for i in game[0].dynasty_list:
+    #     if player == game[0].dynasty[i].player_id:
+    #         game[0].dynasty[i].cancel_act(what)
+    # return "ok"
 
 
 @app.route("/req_status_game_player", methods=["GET"])
@@ -388,7 +409,7 @@ def post_turn():
         game_id = request.args.get('gameID')
         # print(f"ИД партии которой передается ход: {game_id}")
         # Получаем список с действиями игрока
-        post = request.get_json()
+        # post = request.get_json()  # Нет необходимости, функция просто пдтверждает готовность
         # print(f"Ход от игрока {player}: {post}")
         # Прочитаем файл игрока
         with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
