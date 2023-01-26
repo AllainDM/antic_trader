@@ -1,2 +1,6 @@
     with open('data.json', 'w') as outfile:
         json.dump(arr_arr, outfile)
+
+
+    with open('data.json', 'r') as outfile:
+        data = json.load(outfile)

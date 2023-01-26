@@ -50,8 +50,8 @@ document.getElementById('menu-trade').addEventListener('click', () => {
     document.getElementById("menu-buttons-trade").setAttribute('style','visibility:visible');
 });
 
-document.getElementById('menu-diplomaty').addEventListener('click', () => {
-    hiddenAllMenu();
-    document.getElementById("main-menu-buttons").setAttribute('style','display:none');
-    document.getElementById("menu-buttons-diplomaty").setAttribute('style','visibility:visible');
-});
+// document.getElementById('menu-diplomaty').addEventListener('click', () => {
+//     hiddenAllMenu();
+//     document.getElementById("main-menu-buttons").setAttribute('style','display:none');
+//     document.getElementById("menu-buttons-diplomaty").setAttribute('style','visibility:visible');
+// });

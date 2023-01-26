@@ -195,12 +195,13 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     #             print(f"Найдена игра с ИД: {my_g}")
     #             games_list.append(my_g)
     # Версия с извлечением списка игроков из файла
+    print(f"game_arr: {game_arr}")
     for my_g in game_arr:  # game_arr прочитан из файла глобально !!!!!! НЕТ !!!!!!!! глобально опять ошибка
         # Тут должен быть перебор всех файлов с играми
         # !!!!!!!!! Возможно быстрее создать отдельный файл с играми игрока заранее...... а может нет
-        with open(f"games/gameID_{game_arr[my_g]}_list_players.trader", "rb") as f:
+        with open(f"games/gameID_{game_arr[my_g-1]}_list_players.trader", "rb") as f:
             dynasty_list = pickle.load(f)  # Тут список ИД игроков в выбранной партии
-            print(f"Тут должен быть отображен список игроков у партии(ид: {game_arr[my_g]}): {dynasty_list}")
+            print(f"Тут должен быть отображен список игроков у партии(ид: {game_arr[my_g-1]}): {dynasty_list}")
         for i in dynasty_list:
             if player == i:
                 print(f"Найдена игра с ИД: {my_g}")
@@ -238,7 +239,10 @@ def create_new_game():
         with open(f"games/list.trader", "rb") as f:
             game_arr = pickle.load(f)
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
-        game_arr.append(len(game_arr))  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+        if len(game_arr) == 0:
+            game_arr.append(1)
+        else:
+            game_arr.append(game_arr[-1]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
         # Добавим в Редис общие параметры
         # rediska.set(f"gameID_{game_arr[-1]}_date", date_now)  # Время создания партии
@@ -278,6 +282,11 @@ def create_game(num, date_now):  # Num, то есть ИД игры сейчас
         # !!!!!!!!!!! Тут нам нужно как то передать список(ИД) всех назначенных игроков
         list_players = [2, 3]
         pickle.dump(list_players, f, pickle.HIGHEST_PROTOCOL)
+    # Переведем в json, чтоб открывать проверять файл вручную
+    # with open(f'games/gameID_{game_arr[-1]}_list_players.json', 'w') as outfile:
+    #     # !!!!!!!!!!! Тут нам нужно как то передать список(ИД) всех назначенных игроков
+    #     list_players = [2, 3]
+    #     json.dump(list_players, outfile)
 
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
@@ -324,6 +333,32 @@ def cancel_act():
     #     if player == game[0].dynasty[i].player_id:
     #         game[0].dynasty[i].cancel_act(what)
     # return "ok"
+
+
+@app.route("/req_status_all_player", methods=["GET"])
+@login_required
+def req_status_all_player():
+    player = int(current_user.get_id())
+    game_id = request.args.get('gameId')
+    return_data = []
+    with open(f"games/gameID_{game_id}.trader", 'rb') as f:
+        data_players = pickle.load(f)
+    print(f"data_players: {data_players}")
+    for player_id in data_players["player_list"]:
+        print(f"player_id: {player_id}")
+        with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
+            data_one_player = pickle.load(f)
+            one_player = {
+                "name_rus": data_one_player["name_rus"],
+                "gold": data_one_player["gold"],
+                "end_turn": data_one_player["end_turn"],
+            }
+            return_data.append(one_player)
+            print(f"return_data: {return_data}")
+            print(f"one_player: {one_player}")
+            print(f"data_one_player: {data_one_player}")
+    # print(f"Параметры династии: {data}")
+    return jsonify(return_data)
 
 
 @app.route("/req_status_game_player", methods=["GET"])

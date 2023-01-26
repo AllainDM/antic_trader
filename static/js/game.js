@@ -384,3 +384,62 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     });
 
 }) 
+
+// Просмотр "Дипломатии"
+document.getElementById('menu-diplomaty').addEventListener('click', () => {
+    hiddenAllMenu();
+    document.getElementById("main-menu-buttons").setAttribute('style','display:none');
+    document.getElementById("menu-buttons-diplomaty").setAttribute('style','visibility:visible');
+    req_status_all_player();
+});
+
+function req_status_all_player() {
+    console.log(statusGame.game_id)
+    const request = new XMLHttpRequest();
+    request.open("GET", `/req_status_all_player?gameId=${statusGame.game_id}`);
+    request.addEventListener('load', () => {
+        console.log("Xmmm")
+        if (request.status === 200) {
+            if (request.response == "") {
+                console.log("К нам пришла пустая строка");
+                
+            } else {
+                const response = JSON.parse(request.response);
+                console.log(response)
+                displayStatisticsOfAllPlayers(response);
+            };
+        } else {
+            console.log("Ответ от сервера не получен");
+        }
+    });
+    request.addEventListener('error', () => {
+        console.log('error')
+    });
+    request.send();
+};
+
+function displayStatisticsOfAllPlayers(playersList) {
+    playersList.forEach((item, id) => {
+        status_end_turn = ""
+        if (playersList[id]["end_turn"] == true) {
+            status_end_turn = "Готов"
+        } else {
+            status_end_turn = "НЕ готов"
+        }
+        console.log(status_end_turn)    
+        chooseList.innerHTML += 
+        `<div class="menu-btn menu-buttons-show-diplomaty">
+        ${playersList[id]["name_rus"]}.
+        Золото: ${playersList[id]["gold"]}.
+        Статус: ${status_end_turn}
+        </div>`;
+        console.log(playersList[id]["name_rus"])
+        console.log(playersList[item])    
+    });
+    // Нарисуем кнопку отмены(выхода)    
+    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-diplomaty-exit">Выход</div>`;
+        document.getElementById('menu-show-diplomaty-exit').addEventListener('click', () => { 
+            chooseList.innerHTML = ''; 
+            exitToMainMenuButtons(); 
+        });
+}
