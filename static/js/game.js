@@ -6,7 +6,7 @@ const chooseList = document.querySelector('.choose-list');
 
 // Отображаемые в интерфейсе параметры, одновляются при запросе на сервер
 let statusGame = {
-    dynastyName: "none",
+    dynastyName: "Страна не загрузилась",
     year: -300,
     turn: 1,
     end_turn: false,
