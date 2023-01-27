@@ -251,7 +251,7 @@ function cancelAct(what) {
     const req = new XMLHttpRequest();
     req.open("GET", `/cancel_act?gameId=${statusGame.game_id}&what=${what}`);
     req.addEventListener('load', () => {
-        console.log("Xmmm")
+        console.log("Xmmm");
         requestStatusPlayer();
         // То что ниже в комментах оставим, интересно....
         // Если ответ есть, запустить функцию отображения

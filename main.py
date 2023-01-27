@@ -49,7 +49,7 @@ menu_auth = [{"name": "Профиль", "url": "profile"},
              {"name": "Feedback", "url": "contact"}]
 
 menu_admin = [{"name": "Профиль", "url": "profile"},
-              {"name": "Игра", "url": "game"},
+              {"name": "Игры", "url": "games"},
               {"name": "Создать игру", "url": "create-game"},
               {"name": "Feedback", "url": "contact"}]
 
@@ -175,7 +175,53 @@ def choose_game_html():  # Делаю подпись html, чтоб раздел
         return render_template("choose-game.html", title=user_name, menu=menu_auth)
 
 
-@app.route("/load_all_my_game")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
+@app.route("/games")  # !!!!!!! Тире или нижнее подчеркивание??? Фронт тоже править
+@login_required
+def all_games_html():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
+    user_admin = current_user.get_admin()
+    user_name = current_user.get_name()
+    if user_admin == 1:
+        return render_template("games.html", title=user_name, menu=menu_admin)
+    else:
+        return render_template("game.html", title=user_name, menu=menu_auth)
+
+
+@app.route("/load_all_games")
+@login_required
+def load_all_games():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
+    global game_arr
+    # Прочитаем файл со списком игр
+    try:
+        with open(f"games/list.trader", "rb") as f:
+            game_arr = pickle.load(f)
+    except FileNotFoundError:
+        print(f"Файл 'games/list.trader' не найден")
+        return ""
+    games_list = []  # Это список игр для отправки админу
+    for game in game_arr:
+        games_list.append(game)
+    print(f"games_list {games_list}")
+    return jsonify(games_list)
+
+
+@app.route("/delete_game")  # Удалить игру
+@login_required
+def delete_game():
+    user_admin = current_user.get_admin()
+    game_id = int(request.args.get('id'))
+    if user_admin == 1:
+        try:
+            with open(f"games/list.trader", "rb") as f:  # Скачаем списко игр
+                games = pickle.load(f)
+                games.remove(game_id)  # Удалим по значение(ид игры с фронта)
+            with open(f"games/list.trader", 'wb') as new_f:  # Обновим файл
+                pickle.dump(games, new_f, pickle.HIGHEST_PROTOCOL)
+        except FileNotFoundError:
+            print(f"Файл 'games/list.trader' не найден")
+    return ""
+
+
+@app.route("/load_all_my_game")
 @login_required
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game_arr
@@ -183,6 +229,7 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     try:
         with open(f"games/list.trader", "rb") as f:
             game_arr = pickle.load(f)
+            print(f"game_arr {game_arr}")
     except FileNotFoundError:
         print(f"Файл 'games/list.trader' не найден")
         return ""
@@ -203,20 +250,23 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     #             games_list.append(my_g)
     # Версия с извлечением списка игроков из файла
     print(f"game_arr: {game_arr}")
+    game_index = 0  # Индекс выбранной игры
     for my_g in game_arr:  # game_arr прочитан из файла глобально !!!!!! НЕТ !!!!!!!! глобально опять ошибка
+        print(f"my_g {my_g}")
         # Тут должен быть перебор всех файлов с играми
         # !!!!!!!!! Возможно быстрее создать отдельный файл с играми игрока заранее...... а может нет
         try:
-            with open(f"games/gameID_{game_arr[my_g-1]}_list_players.trader", "rb") as f:
+            with open(f"games/gameID_{game_arr[game_index]}_list_players.trader", "rb") as f:
                 dynasty_list = pickle.load(f)  # Тут список ИД игроков в выбранной партии
-                print(f"Тут должен быть отображен список игроков у партии(ид: {game_arr[my_g-1]}): {dynasty_list}")
+                print(f"Тут должен быть отображен список игроков у партии(ид: {game_arr[game_index]}): {dynasty_list}")
         except FileNotFoundError:
-            print(f"Файл 'games/gameID_{game_arr[my_g-1]}_list_players.trader' не найден")
+            print(f"Файл 'games/gameID_{game_arr[game_index]}_list_players.trader' не найден")
             return ""
         for i in dynasty_list:
             if player == i:
                 print(f"Найдена игра с ИД: {my_g}")
                 games_list.append(my_g)
+        game_index += 1
     return jsonify(games_list)
 
 
