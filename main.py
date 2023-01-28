@@ -46,11 +46,13 @@ menu = [{"name": "Авторизация", "url": "login"},
 menu_auth = [{"name": "Профиль", "url": "profile"},
              {"name": "Игра", "url": "game"},
              {"name": "Выбор игры", "url": "choose-game"},
+             {"name": "Игроки", "url": "players"},
              {"name": "Feedback", "url": "contact"}]
 
 menu_admin = [{"name": "Профиль", "url": "profile"},
               {"name": "Игры", "url": "games"},
               {"name": "Создать игру", "url": "create-game"},
+              {"name": "Игроки", "url": "players"},
               {"name": "Feedback", "url": "contact"}]
 
 
@@ -80,11 +82,11 @@ dbase = None
 # Массив с АЙДишниками игр, нужен для поиска в словаре(выше), используя как ключ
 # game_arr = []
 
-# Запускать для обнуления файла со списком ИД игр
-with open(f"games/list.trader", 'wb') as f:
-    game_arr = []
-    # Сериализация словаря data с использованием последней доступной версии протокола.
-    pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
+# # Запускать для обнуления файла со списком ИД игр
+# with open(f"games/list.trader", 'wb') as f:
+#     game_arr = []
+#     # Сериализация словаря data с использованием последней доступной версии протокола.
+#     pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
 
 # Прочитаем файл со списком игр
@@ -95,9 +97,10 @@ try:
 except FileNotFoundError:
     print(f"Файл 'games/list.trader' не найден")
 
+# На данный момент сохранение идет в Редис. Планируется перенести в БД
 # Сделаем глобально массив с активными играми игроков. Индексом будет ИД игрока
 # Временно напихаем сюда нулей. Вообще длинная должна равняться количеству зарегистрированных игроков
-active_games = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# active_games = []
 
 
 @app.before_request
@@ -288,6 +291,40 @@ def set_active_games():
     return ""
 
 
+@app.route("/players")
+@login_required
+def players_html():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
+    user_admin = current_user.get_admin()
+    user_name = current_user.get_name()
+    if user_admin == 1:
+        return render_template("players.html", title=user_name, menu=menu_admin)
+    else:
+        return render_template("players.html", title=user_name, menu=menu_auth)
+
+
+@app.route("/req_list_players")
+@login_required
+def req_list_players():
+    # Поиск игрока по участию в игре. В БД у пользователей планируется запись со списком игр с участием этого игрока
+    # Проверка или в тексте запроса к БД. Тут нужен доп аргумент в виде ИД игры
+    # Или проверка тут, через цикл по списку каждого пользователя.
+    # Подходящие уже тогда добавляются на отправки на фронт
+    # who = request.args.get('who')
+    list_users_to_front = []
+    # try:  # Блок на случай отсутствия файла
+    #     # Прочитаем весь список активных игр
+    #     with open(f"games/list.trader", 'rb') as f_games:
+    #         list_games = pickle.load(f_games)
+    users = dbase.get_all_user()
+    for user in users:
+        # Возвращаем имя пользователя(не логин) и ИД пользователя(для админа)
+        list_users_to_front.append([user[0], user[3]])
+    return jsonify(list_users_to_front)
+    # except FileNotFoundError:
+    #     print(f"Файл 'games/list.trader' не найден")
+    #     return ""
+
+
 @app.route("/create_new_game")
 @login_required
 def create_new_game():
@@ -374,7 +411,7 @@ def cancel_act():
     player = int(current_user.get_id())
     # Получим ИД партии !!!!!!!!!!!! Обязательно проверку
     game_id = request.args.get('gameId')
-    try:  # Блок на случай отсутсвия файла
+    try:  # Блок на случай отсутствия файла
         with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
             data = pickle.load(f)
             if what == "all":

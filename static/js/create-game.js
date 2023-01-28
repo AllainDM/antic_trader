@@ -24,4 +24,28 @@ function createNewGame() {
     });
     request.send();
 
-}
+};
+
+
+function reqUsers() {
+    const request = new XMLHttpRequest();
+    request.open('GET', '/req_list_players');
+    request.addEventListener('load', () => {
+        if (request.status === 200) {
+            if (request.response == "") {
+                console.log("К нам пришла пустая строка");                
+            } else {
+                const response = JSON.parse(request.response);
+                console.log(response);
+                console.log("Ответ от js: Игра создалась");    
+                // actualVar(response);
+            };
+        } else {
+            console.log("Ответ от сервера не получен");
+        }
+    });
+    request.send();
+
+};
+
+reqUsers();

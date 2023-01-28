@@ -10,6 +10,20 @@ class FDataBase:
     def get_menu(self):
         pass
 
+    def get_all_user(self):  # На будущее надо как то передавать ИД игры в которой участвует игрок.
+        try:
+            self.__cur.execute(f"SELECT * FROM users")
+            res = self.__cur.fetchall()
+            if not res:
+                print("Users not found")
+                return False
+
+            return res
+        except Exception as _ex:
+            print("Ошибка поиска пользователей в БД", _ex)
+
+        return False
+
     def get_user(self, user_id):
         try:
             self.__cur.execute(f"SELECT * FROM users WHERE row_id = {user_id} LIMIT 1")
