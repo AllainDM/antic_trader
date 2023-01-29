@@ -1,7 +1,7 @@
 # from colony_buildings import buildings
-
-import redis
+import os
 import pickle
+import redis
 
 
 # Настройка Redis для хранения данных игроков
@@ -61,13 +61,14 @@ class Dynasty:
             "end_turn_know": self.end_turn_know,
         }
         # Пишем в pickle.
-        with open(f"games/gameID_{self.game_id}_playerID_{self.player_id}.trader", 'wb') as f:
+        # Тут нужно отловить ошибку отсутствия файла
+        with open(f"games/{self.game_id}/gameID_{self.game_id}_playerID_{self.player_id}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
         print(data)
 
     def load_from_file(self, game_id, player_id):
-        with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
             data = pickle.load(f)
             print(f"Восстанавливаем династию: {data}")
         self.row_id = data["row_id"]

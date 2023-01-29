@@ -1,6 +1,7 @@
 from datetime import datetime
 import pickle
 import json
+import os
 
 from flask import Flask, render_template, request, flash, g, redirect, url_for, jsonify
 import psycopg2
@@ -72,30 +73,31 @@ def close_db(error):
 
 
 dbase = None
+
 """
 Создадим глобальную переменную - game. 
 А так надо разобраться как получать такую переменную при каждой созданной игре.
 Это требуется для одновременного создания нескольких игр, пока не понятно как себя поведет движок
 """
-# game = {0: FirstWorld(1)}
-# game = {0: FirstWorld(1, "0:0:0")}
-# Массив с АЙДишниками игр, нужен для поиска в словаре(выше), используя как ключ
-# game_arr = []
 
-# # Запускать для обнуления файла со списком ИД игр
-# with open(f"games/list.trader", 'wb') as f:
+# Массив с АЙДишниками игр
+game_arr = []
+
+# Запускать для обнуления файла со списком ИД игр
+# with open(f"games/list.trade1r", 'wb') as f:
 #     game_arr = []
 #     # Сериализация словаря data с использованием последней доступной версии протокола.
 #     pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
 
 # Прочитаем файл со списком игр
-try:
-    with open(f"games/list.trader", "rb") as f:
-        # global game_arr
-        game_arr = pickle.load(f)
-except FileNotFoundError:
-    print(f"Файл 'games/list.trader' не найден")
+# try:
+#     with open(f"games/list.trade1r", "rb") as f:
+#         # global game_arr
+#         game_arr = pickle.load(f)
+# except FileNotFoundError:
+#     print(f"Файл 'games/list.trade1r' не найден")
+
 
 # На данный момент сохранение идет в Редис. Планируется перенести в БД
 # Сделаем глобально массив с активными играми игроков. Индексом будет ИД игрока
@@ -125,6 +127,12 @@ def connect_db():
         database=config.db_name
     )
     return connect
+
+
+# def get_games():
+#     # global game_arr
+#     games = dbase.get_all_games()
+#     print(f"games: {games}")
 
 
 @app.route("/")
@@ -194,16 +202,17 @@ def all_games_html():  # Делаю подпись html, чтоб раздели
 def load_all_games():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game_arr
     # Прочитаем файл со списком игр
-    try:
-        with open(f"games/list.trader", "rb") as f:
-            game_arr = pickle.load(f)
-    except FileNotFoundError:
-        print(f"Файл 'games/list.trader' не найден")
-        return ""
+    game_arr = dbase.get_all_games()
+    # try:
+    #     with open(f"games/list.trade1r", "rb") as f:
+    #         game_arr = pickle.load(f)
+    # except FileNotFoundError:
+    #     print(f"Файл 'games/list.trade1r' не найден")
+    #     return ""
     games_list = []  # Это список игр для отправки админу
     for game in game_arr:
-        games_list.append(game)
-    print(f"games_list {games_list}")
+        games_list.append(game[0])
+    # print(f"games_list {games_list}")
     return jsonify(games_list)
 
 
@@ -213,14 +222,19 @@ def delete_game():
     user_admin = current_user.get_admin()
     game_id = int(request.args.get('id'))
     if user_admin == 1:
-        try:
-            with open(f"games/list.trader", "rb") as f:  # Скачаем списко игр
-                games = pickle.load(f)
-                games.remove(game_id)  # Удалим по значение(ид игры с фронта)
-            with open(f"games/list.trader", 'wb') as new_f:  # Обновим файл
-                pickle.dump(games, new_f, pickle.HIGHEST_PROTOCOL)
-        except FileNotFoundError:
-            print(f"Файл 'games/list.trader' не найден")
+        # list_games = dbase.get_all_games()  # Запросим список игр для теста
+        # print(f"list_games: {list_games}")
+        dbase.delete_game(game_id)  # Удалим из БД выбранную игру
+        # list_games = dbase.get_all_games()  # Запросим список игр для теста
+        # print(f"list_games: {list_games}")
+        # try:
+        #     with open(f"games/list.trade1r", "rb") as f:  # Скачаем список игр
+        #         games = pickle.load(f)
+        #         games.remove(game_id)  # Удалим по значение(ид игры с фронта)
+        #     with open(f"games/list.trade1r", 'wb') as new_f:  # Обновим файл
+        #         pickle.dump(games, new_f, pickle.HIGHEST_PROTOCOL)
+        # except FileNotFoundError:
+        #     print(f"Файл 'games/list.trade1r' не найден")
     return ""
 
 
@@ -228,18 +242,18 @@ def delete_game():
 @login_required
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game_arr
+    game_arr = dbase.get_all_games()
     # Прочитаем файл со списком игр
-    try:
-        with open(f"games/list.trader", "rb") as f:
-            game_arr = pickle.load(f)
-            print(f"game_arr {game_arr}")
-    except FileNotFoundError:
-        print(f"Файл 'games/list.trader' не найден")
-        return ""
-    # global game_arr
+    # try:
+    #     with open(f"games/list.trade1r", "rb") as f:
+    #         game_arr = pickle.load(f)
+    #         print(f"game_arr {game_arr}")
+    # except FileNotFoundError:
+    #     print(f"Файл 'games/list.trade1r' не найден")
+    #     return ""
     player = int(current_user.get_id())
     games_list = []  # Это список игр для отправки игроку для выбора
-    # with open(f"games/gamesID_{game_arr[-1]}_list_players.trader", "rb") as f:
+    # with open(f"games/gamesID_{game_arr[-1]}_list_players.trade1r", "rb") as f:
     #     dynasty_list = pickle.load(f)  # Тут список ИД игроков у выбранной партии
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # Пока используем уже проверенный способ найти ид игрока в созданной игры
@@ -253,23 +267,25 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     #             games_list.append(my_g)
     # Версия с извлечением списка игроков из файла
     print(f"game_arr: {game_arr}")
-    game_index = 0  # Индекс выбранной игры
-    for my_g in game_arr:  # game_arr прочитан из файла глобально !!!!!! НЕТ !!!!!!!! глобально опять ошибка
-        print(f"my_g {my_g}")
+    # game_index = 0  # Индекс выбранной игры
+    for my_g in game_arr:
+        # print(f"my_g {my_g}")
+        if player in my_g[3]:
+            print(f"Игрок есть в игре номер: {my_g[0]}")
+            games_list.append(my_g[0])
         # Тут должен быть перебор всех файлов с играми
         # !!!!!!!!! Возможно быстрее создать отдельный файл с играми игрока заранее...... а может нет
-        try:
-            with open(f"games/gameID_{game_arr[game_index]}_list_players.trader", "rb") as f:
-                dynasty_list = pickle.load(f)  # Тут список ИД игроков в выбранной партии
-                print(f"Тут должен быть отображен список игроков у партии(ид: {game_arr[game_index]}): {dynasty_list}")
-        except FileNotFoundError:
-            print(f"Файл 'games/gameID_{game_arr[game_index]}_list_players.trader' не найден")
-            return ""
-        for i in dynasty_list:
-            if player == i:
-                print(f"Найдена игра с ИД: {my_g}")
-                games_list.append(my_g)
-        game_index += 1
+        # try:
+        #     with open(f"games/gameID_{game_arr[game_index][0]}_list_players.trade1r", "rb") as f:
+        #         dynasty_list = pickle.load(f)  # Тут список ИД игроков в выбранной партии
+        # except FileNotFoundError:
+        #     print(f"Файл 'games/gameID_{game_arr[game_index][0]}_list_players.trade1r' не найден")
+        #     return ""
+        # for i in dynasty_list:
+        #     if player == i:
+        #         print(f"Найдена игра с ИД: {my_g[0]}")
+        #         games_list.append(my_g[0])
+        # game_index += 1
     return jsonify(games_list)
 
 
@@ -313,15 +329,18 @@ def req_list_players():
     list_users_to_front = []
     # try:  # Блок на случай отсутствия файла
     #     # Прочитаем весь список активных игр
-    #     with open(f"games/list.trader", 'rb') as f_games:
+    #     with open(f"games/list.trade1r", 'rb') as f_games:
     #         list_games = pickle.load(f_games)
     users = dbase.get_all_user()
+    print(f"users: {users}")
+    games = dbase.get_all_games()
+    print(f"games: {games}")
     for user in users:
         # Возвращаем имя пользователя(не логин) и ИД пользователя(для админа)
         list_users_to_front.append([user[0], user[3]])
     return jsonify(list_users_to_front)
     # except FileNotFoundError:
-    #     print(f"Файл 'games/list.trader' не найден")
+    #     print(f"Файл 'games/list.trade1r' не найден")
     #     return ""
 
 
@@ -330,32 +349,41 @@ def req_list_players():
 def create_test_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
     global game_arr
+    game_arr = []
+    game_arr = dbase.get_all_games()
+    print(f"games: {game_arr}")
     user_admin = current_user.get_admin()
     if user_admin == 1:
         print("this is admin3")
         # Прочитаем файл со списком игр
-        try:
-            with open(f"games/list.trader", "rb") as f:
-                game_arr = pickle.load(f)
-        except FileNotFoundError:
-            print(f"Файл 'games/list.trader' не найден")
-            return ""
+        # try:
+        #     with open(f"games/list.trade1r", "rb") as f:
+        #         game_arr = pickle.load(f)
+        # except FileNotFoundError:
+        #     print(f"Файл 'games/list.trade1r' не найден")
+        #     return ""
         # Создадим игру, пока она одна, позже проработать возможность создания нескольких
         if len(game_arr) == 0:
+
             game_arr.append(1)
         else:
-            game_arr.append(game_arr[-1]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+            game_arr.append(game_arr[-1][0]+1)  # Последняя запись с нулевым индексом(row_id) +1 для новой игры
+            print(game_arr)
+            print(f"Я реально тут высчитал правильно????")
         date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-        # Добавим в Редис общие параметры
-        # rediska.set(f"gameID_{game_arr[-1]}_date", date_now)  # Время создания партии
-        # rediska.set(f"gameID_{game_arr[-1]}_turn", 1)  # Номер первого хода
-        # rediska.set(f"gameID_{game_arr[-1]}_date", year)  # Стартовая дата
 
         # Обновим список ИД игр с помощью pickle
-        with open(f"games/list.trader", 'wb') as f:
-            pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
+        # with open(f"games/list.trade1r", 'wb') as f:
+        #     pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
 
         # print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameID_{game_arr[-1]}_date')}")
+        # Создадим папку игры и папку ходов если их не существует
+        # Может делать проверку при создании игры, и удалять/создавать заново если она есть
+        if not os.path.exists(f"games/{game_arr[-1]}"):
+            os.makedirs(f"games/{game_arr[-1]}")
+        if not os.path.exists(f"games/{game_arr[-1]}/acts"):
+            os.makedirs(f"games/{game_arr[-1]}/acts")
+        print(f"Папка игры {game_arr[-1]} создана")
         print(f"Игра {game_arr[-1]} создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
         create_game(game_arr[-1], date_now)  # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
@@ -372,32 +400,20 @@ def create_test_new_game():
 @login_required
 def create_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
-    global game_arr
-    user_admin = current_user.get_admin()
-    if user_admin == 1:
-        print("this is admin3")
-        # Прочитаем файл со списком игр
-        try:
-            with open(f"games/list.trader", "rb") as f:
-                game_arr = pickle.load(f)
-        except FileNotFoundError:
-            print(f"Файл 'games/list.trader' не найден")
-            return ""
-        # Создадим игру, пока она одна, позже проработать возможность создания нескольких
-        if len(game_arr) == 0:
-            game_arr.append(1)
-        else:
-            game_arr.append(game_arr[-1]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
-        date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+    if request.method == "POST":
+        global game_arr  # Зачем?
+        user_admin = current_user.get_admin()
+        if user_admin == 1:
+            print("this is admin3")
+            # Прочитаем файл со списком игр
+            game_arr = dbase.get_all_games()
+            if len(game_arr) == 0:
+                game_arr.append(1)
+            else:
+                game_arr.append(game_arr[-1][0]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+            date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
 
-        # Обновим список ИД игр с помощью pickle
-        with open(f"games/list.trader", 'wb') as f:
-            pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
-
-        print(f"Игра {game_arr[-1]} создана: {date_now}")
-        print(f"ID новой игры: {game_arr[-1]}")
-        create_game(game_arr[-1], date_now)  # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
-        return jsonify("Ответ от Python: Игра создалась")
+            return jsonify("Ответ от Python: Игра создалась")
     else:
         return ""
 
@@ -407,17 +423,20 @@ def create_game(num, date_now):  # Num, то есть ИД игры сейчас
     # game[num] = FirstWorld(game_arr[-1])
     # game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     # game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+    all_games = dbase.get_all_games()
+    print(f"all_games: {all_games}")
 
     this_game = FirstWorld(game_arr[-1], date_now)
     this_game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
     this_game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     this_game.save_to_file()
+    dbase.add_game(1, -300, [2, 3])
 
-    # Создадим список игроков для игры
-    with open(f"games/gameID_{game_arr[-1]}_list_players.trader", 'wb') as f:
-        # !!!!!!!!!!! Тут нам нужно как то передать список(ИД) всех назначенных игроков
-        list_players = [2, 3]
-        pickle.dump(list_players, f, pickle.HIGHEST_PROTOCOL)
+    # # Создадим список игроков для игры
+    # with open(f"games/gameID_{game_arr[-1]}_list_players.trade1r", 'wb') as f:
+    #     # !!!!!!!!!!! Тут нам нужно как то передать список(ИД) всех назначенных игроков
+    #     list_players = [2, 3]
+    #     pickle.dump(list_players, f, pickle.HIGHEST_PROTOCOL)
     # Переведем в json, чтоб открывать проверять файл вручную
     # with open(f'games/gameID_{game_arr[-1]}_list_players.json', 'w') as outfile:
     #     # !!!!!!!!!!! Тут нам нужно как то передать список(ИД) всех назначенных игроков
@@ -426,14 +445,6 @@ def create_game(num, date_now):  # Num, то есть ИД игры сейчас
 
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
-    # Barkid = game[num].dynasty['Barkid']
-    # Запустим сохранение параметров в Редис. !!! Пока ИД игроков статичны
-    # game[num].dynasty['Magonid'].save_to_redis()
-    # game[num].dynasty['Barkid'].save_to_redis()
-    # this_game.dynasty['Magonid'].save_to_redis()
-    # this_game.dynasty['Barkid'].save_to_redis()
-    # game[num].dynasty[3].save_to_redis()
-    # Magonid = game[num].dynasty['Magonid']
     print(this_game.dynasty_list)
 
 
@@ -446,17 +457,17 @@ def cancel_act():
     # Получим ИД партии !!!!!!!!!!!! Обязательно проверку
     game_id = request.args.get('gameId')
     try:  # Блок на случай отсутствия файла
-        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
             data = pickle.load(f)
             if what == "all":
                 data["acts"] = []
             elif what == "last":
                 data["acts"].pop(-1)
-            with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as new_f:
+            with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'wb') as new_f:
                 pickle.dump(data, new_f, pickle.HIGHEST_PROTOCOL)
         return "ok"
     except FileNotFoundError:
-        print(f"Файл 'games/gameID_{game_id}_playerID_{player}.trader' не найден")
+        print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player}.trader' не найден")
         return ""
     # what = request.args.get('what')
     # # response = dbase.read_router_comment(id_router)
@@ -475,16 +486,16 @@ def req_status_all_player():
     game_id = request.args.get('gameId')
     return_data = []
     try:
-        with open(f"games/gameID_{game_id}.trader", 'rb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
             data_players = pickle.load(f)
     except FileNotFoundError:
-        print(f"Файл 'games/gameID_{game_id}.trader' не найден")
+        print(f"Файл 'games/{game_id}/gameID_{game_id}.trader' не найден")
         return ""
     # print(f"data_players: {data_players}")
     for player_id in data_players["player_list"]:
         # print(f"player_id: {player_id}")
         try:
-            with open(f"games/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
+            with open(f"games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
                 data_one_player = pickle.load(f)
                 one_player = {
                     "name_rus": data_one_player["name_rus"],
@@ -493,7 +504,7 @@ def req_status_all_player():
                 }
                 return_data.append(one_player)
         except FileNotFoundError:
-            print(f"Файл 'games/gameID_{game_id}_playerID_{player_id}.trader' не найден")
+            print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader' не найден")
             return ""
     return jsonify(return_data)
 
@@ -518,10 +529,10 @@ def req_status_game_player():
     # print(f"ИД игры при запросе статуса: {game_id}")
     # Выходит что нам не нужно обращаться к классу Династии запуская ее метод
     try:
-        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
             data = pickle.load(f)
     except FileNotFoundError:
-        print(f"Файл 'games/gameID_{game_id}_playerID_{player}.trader' не найден")
+        print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player}.trader' не найден")
         return ""
     # print(f"Параметры династии: {data}")
     return jsonify(data)
@@ -558,18 +569,18 @@ def req_status_game():
     # print(f"ИД игры при запросе статуса династии: {game_id}")
     # !!!!!!!!! Тут еще нужна проверка на существование самой партии
     try:
-        with open(f"games/gameID_{game_id}.trader", 'rb') as f:
-            world = pickle.load(f)
+        with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
+            my_world = pickle.load(f)
     except FileNotFoundError:
-        print(f"Файл 'games/gameID_{game_id}.trader' не найден")
+        print(f"Файл 'games/{game_id}/gameID_{game_id}.trader' не найден")
         return ""
-    print(world)
+    print(f"my_world: {my_world}")
     data = {
-            "year": world["year"],
-            "turn": world["turn"],
-            "all_logs": world["all_logs"],
-            "game_id": world["row_id"],
-            "date_create": world["date_create"],
+            "year": my_world["year"],
+            "turn": my_world["turn"],
+            "all_logs": my_world["all_logs"],
+            "game_id": my_world["row_id"],
+            "date_create": my_world["date_create"],
             "user_name": user_name,
         }
     return jsonify(data)
@@ -579,7 +590,7 @@ def req_status_game():
 @app.route("/post_turn", methods=["POST"])
 @login_required
 def post_turn():
-    global active_games  # Список. Остается глобальной переменной, загружается при загрузке файла
+    # global active_games  # Список. Остается глобальной переменной, загружается при загрузке файла
     if request.method == "POST":
         # print('Запрос с js')
         # Определим игрока, чтоб понять от кого получен ход и куда его записать
@@ -593,17 +604,17 @@ def post_turn():
         # print(f"Ход от игрока {player}: {post}")
         # Прочитаем файл игрока
         try:
-            with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+            with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
                 data = pickle.load(f)
         except FileNotFoundError:
-            print(f"Файл 'games/gameID_{game_id}_playerID_{player}.trader' не найден")
+            print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player}.trader' не найден")
             return ""
         # print(f"Тут вот {data}")
         # Присвоим ход игроку
         data["end_turn"] = True
         # print(f"Тут вот {data}")
         # Снова запишем ход
-        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         # print(f"Тут вот снова {data}")
         world.check_readiness(game_id)
@@ -653,17 +664,17 @@ def post_act():
         # print(f"Ход от игрока {player}: {post}")
         # Прочитаем файл игрока
         try:
-            with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+            with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
                 data = pickle.load(f)
         except FileNotFoundError:
-            print(f"Файл 'games/gameID_{game_id}_playerID_{player}.trader' не найден")
+            print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player}.trader' не найден")
             return ""
         # print(f"Тут вот {data}")
         # Присвоим ход игроку
         data["acts"] = post
         # print(f"Тут вот {data}")
         # Снова запишем ход
-        with open(f"games/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         # print(f"Тут вот снова {data}")
     # Временно возвращаем пустую строку
@@ -694,12 +705,12 @@ def post_act():
     #             # !!!!!!! Или можно всегда создавать файл автоматически при создании игры, пустым
     #             # Тут вариант с pickle
     #             with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
-    #                       f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'wb') as f:
+    #                       f"playerID_{game[active_games[player]].dynasty[i].player_id}.trade1r", 'wb') as f:
     #                 # Сериализация словаря data с использованием последней доступной версии протокола.
     #                 pickle.dump(post, f, pickle.HIGHEST_PROTOCOL)
     #             # Просто для теста возвращаем результат
     #             with open(f"games/acts/gameID_{game[active_games[player]].row_id}_"
-    #                       f"playerID_{game[active_games[player]].dynasty[i].player_id}.trader", 'rb') as f:
+    #                       f"playerID_{game[active_games[player]].dynasty[i].player_id}.trade1r", 'rb') as f:
     #                 data = pickle.load(f)
     #                 print(f"Pickle: {data}")
     # # Временно возвращаем пустую строку
@@ -776,6 +787,7 @@ def profile():
 #
 #
 # print(game_arr)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -42,7 +42,7 @@ class FirstWorld:
             "date_create": self.date_create,
         }
         # Пишем в pickle.
-        with open(f"games/gameID_{self.row_id}.trader", 'wb') as f:
+        with open(f"games/{self.row_id}/gameID_{self.row_id}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         # Сохраняем в Редис дату создания
         # rediska.set(f"gameId_{self.row_id}_date_create", self.date_create)
@@ -52,7 +52,7 @@ class FirstWorld:
 
     def load_from_file(self, game_id):
         # Прочитаем из pickle весь файл
-        with open(f"games/gameID_{game_id}.trader", 'rb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
             data = pickle.load(f)
         # Присвоим параметры
         self.row_id = data["row_id"]
@@ -79,7 +79,7 @@ class FirstWorld:
         # !!!!!!!!!! Еще нужно запустить у Династии функцию сохранения ее данных в файл
         # Создадим файл с записью хода игрока. Он должен быть пустым при каждом создании игры
         acts = []
-        with open(f"games/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
+        with open(f"games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
             pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
         return self.dynasty[name]
 
@@ -98,14 +98,14 @@ class FirstWorld:
 
 
 def check_readiness(game_id):  # Проверить все ли страны отправили ход
-    with open(f"games/gameID_{game_id}.trader", 'rb') as f:
+    with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
         data_main = pickle.load(f)
     # num_player = len(data_main["player_list"])
     # num_dynasty = len(data_main["dynasty_list"])
     # print(f"Всего игроков: {num_player}")
     # print(f"Всего династий: {num_dynasty}")
     for i in data_main["player_list"]:
-        with open(f"games/gameID_{game_id}_playerID_{i}.trader", 'rb') as f:
+        with open(f"games/{game_id}/gameID_{game_id}_playerID_{i}.trader", 'rb') as f:
             end_turn_reading = pickle.load(f)
             if not end_turn_reading["end_turn"]:
                 print("Как минимум один из игроков еще не готов")
