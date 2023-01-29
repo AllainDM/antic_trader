@@ -187,6 +187,7 @@ div.content {
 }
 .menu-btn {
     user-select: none;
+    /* cursor: pointer; */
     flex-basis: calc(50% - 4px);
     flex-shrink: 0;
     text-align: center;
@@ -196,6 +197,23 @@ div.content {
     background-color: rgb(218, 211, 197);
     border: solid black 1px;
     border-radius: 8px;
+}
+/* .menu-btn:hover {
+    cursor: pointer;
+    background-color: #21DB56;
+} */
+.show-list {
+    user-select: none;
+    /* flex-basis: calc(50% - 4px); */
+    /* flex-shrink: 0; */
+    /* text-align: center; */
+    line-height: 2;
+    margin-top: 3px;
+    margin-left: 2px;
+    background-color: rgb(243, 240, 235);
+    border: solid rgb(179, 164, 164) 1px;
+    border-radius: 3px;
+    font-size: 16pt;
 }
 .menu-buttons-colony {
     visibility: hidden;
@@ -231,3 +249,87 @@ div.content {
 .stats4 {
     margin-left: 385px;
 }
+
+.set-dynasty
+/* Модальное окно настройки стран для новой игры */
+
+.modal-choose {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+#overlay {
+    height: 50%;
+    width: 50%;
+    position: absolute;
+    width: 600px;
+    height: 400px;
+    top: 200px;
+    left: 250px;
+    background-color: rgba(230, 217, 217, 1);
+    border: solid #bdc8d3;
+}
+
+#modal-window {
+    width: 400px;
+    height: 700px;
+    border: 1px solid black;
+    background-color: rgb(201, 186, 186);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 50px;
+
+}
+
+.set-dynasty {
+
+    font-size: 12px;
+    line-height: 3;
+}
+
+/* Модальный (фон) */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed; /* Оставаться на месте */
+    z-index: 1; /* Сидеть на вершине */
+    left: 0;
+    top: 0;
+    width: 100%; /* Полная ширина */
+    height: 100%; /* Полная высота */
+    overflow: auto; /* Включите прокрутку, если это необходимо */
+    background-color: rgb(0,0,0); /* Цвет запасной вариант */
+    background-color: rgba(0,0,0,0.4); /* Черный с непрозрачностью */
+  }
+  
+  /* Модальное содержание/коробка */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% сверху и по центру */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Может быть больше или меньше, в зависимости от размера экрана */
+  }
+  
+  /* Кнопка закрытия */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  } 

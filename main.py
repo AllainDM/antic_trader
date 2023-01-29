@@ -325,9 +325,9 @@ def req_list_players():
     #     return ""
 
 
-@app.route("/create_new_game")
+@app.route("/create_test_new_game")
 @login_required
-def create_new_game():
+def create_test_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
     global game_arr
     user_admin = current_user.get_admin()
@@ -365,6 +365,40 @@ def create_new_game():
         return jsonify("Ответ от Python: Игра создалась")
     else:
         # return render_template("game.html", title="Main", menu=menu_auth)
+        return ""
+
+
+@app.route("/create_new_game")
+@login_required
+def create_new_game():
+    # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
+    global game_arr
+    user_admin = current_user.get_admin()
+    if user_admin == 1:
+        print("this is admin3")
+        # Прочитаем файл со списком игр
+        try:
+            with open(f"games/list.trader", "rb") as f:
+                game_arr = pickle.load(f)
+        except FileNotFoundError:
+            print(f"Файл 'games/list.trader' не найден")
+            return ""
+        # Создадим игру, пока она одна, позже проработать возможность создания нескольких
+        if len(game_arr) == 0:
+            game_arr.append(1)
+        else:
+            game_arr.append(game_arr[-1]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+        date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+
+        # Обновим список ИД игр с помощью pickle
+        with open(f"games/list.trader", 'wb') as f:
+            pickle.dump(game_arr, f, pickle.HIGHEST_PROTOCOL)
+
+        print(f"Игра {game_arr[-1]} создана: {date_now}")
+        print(f"ID новой игры: {game_arr[-1]}")
+        create_game(game_arr[-1], date_now)  # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
+        return jsonify("Ответ от Python: Игра создалась")
+    else:
         return ""
 
 

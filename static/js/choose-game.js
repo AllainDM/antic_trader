@@ -42,7 +42,13 @@ requestStatus();
 // Функция выбора игры. 
 
 function chooseGame(gamesList) {
-    chooseList.innerHTML = `<span>Выберите игру:</span>`;  // Добавим подсказку
+    // Добавим подсказку
+    if (gamesList.length > 0) {
+        console.log("Игры есть");
+        chooseList.innerHTML = `<span>Выберите игру:</span>`;  
+    } else {
+        chooseList.innerHTML = `<span>Нет доступных игр</span>`;  
+    };
     gamesList.forEach((item, id) => {
         // chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose"><a href="{{url_for('game')}}">Игра номер: ${item}</a></div>`;
         chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}
