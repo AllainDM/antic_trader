@@ -379,6 +379,8 @@ def create_test_new_game():
         # print(f"Игра {game_arr[-1]} создана(Redis): {rediska.get(f'gameID_{game_arr[-1]}_date')}")
         # Создадим папку игры и папку ходов если их не существует
         # Может делать проверку при создании игры, и удалять/создавать заново если она есть
+        if not os.path.exists(f"games"):
+            os.makedirs(f"games")
         if not os.path.exists(f"games/{game_arr[-1]}"):
             os.makedirs(f"games/{game_arr[-1]}")
         if not os.path.exists(f"games/{game_arr[-1]}/acts"):
