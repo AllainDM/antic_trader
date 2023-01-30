@@ -25,7 +25,6 @@ class FirstWorld:
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
 
-        # self.date_create = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата создания партии
         self.date_create = date_create
 
     def save_to_file(self):
@@ -44,11 +43,6 @@ class FirstWorld:
         # Пишем в pickle.
         with open(f"games/{self.row_id}/gameID_{self.row_id}.trader", 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
-        # Сохраняем в Редис дату создания
-        # rediska.set(f"gameId_{self.row_id}_date_create", self.date_create)
-        # Проверим на ошибку чтение только что записанных данных
-        # print(f"Проверяем запись чтение файла партии. Запись: {data}")
-        # self.load_from_file(self.row_id)
 
     def load_from_file(self, game_id):
         # Прочитаем из pickle весь файл
@@ -66,7 +60,6 @@ class FirstWorld:
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]
         # Проверим на ошибку чтение только что записанных данных
-        # print(f"Проверяем запись чтение файла партии. Чтение: {data}")
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
         # , win_points, colony, goods
@@ -85,12 +78,6 @@ class FirstWorld:
 
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
     def restore_dynasty(self, game_id, player_id):
-        # Тут лишний цикл, он и так проходит при вызове цункции
-        # for i in self.dynasty:
-        #     print(f"Восстанавливаем династию: {i}")
-        #     self.dynasty[i] = Dynasty(self)
-        #     print(self.dynasty[i])
-        #     self.dynasty[i].load_from_file(game_id, player_id)
         print(f"Восстанавливаем династию: {player_id}")
         self.dynasty[player_id] = Dynasty(self)
         print(self.dynasty[player_id])
@@ -100,10 +87,6 @@ class FirstWorld:
 def check_readiness(game_id):  # Проверить все ли страны отправили ход
     with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
         data_main = pickle.load(f)
-    # num_player = len(data_main["player_list"])
-    # num_dynasty = len(data_main["dynasty_list"])
-    # print(f"Всего игроков: {num_player}")
-    # print(f"Всего династий: {num_dynasty}")
     for i in data_main["player_list"]:
         with open(f"games/{game_id}/gameID_{game_id}_playerID_{i}.trader", 'rb') as f:
             end_turn_reading = pickle.load(f)
@@ -141,7 +124,6 @@ def calculate_turn(game_id):
             print(f"Проверка ссылки: {dynasty_name}")
             print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
             game.dynasty[dynasty_name].calc_act()
-            # game.dynasty[dynasty_name].calc_act()
     # Пост обсчет хода
     for dynasty_name in game.dynasty:
         game.dynasty[dynasty_name].calc_end_turn()
@@ -152,33 +134,3 @@ def calculate_turn(game_id):
     game.year += 1
     game.turn += 1
     game.save_to_file()
-
-    # Старый метод до переноса данных в pickle !!!!!!!!! Пока не удаляем !!!!!!!!!!
-    # def calculate_turn(self):
-    #     # Если хоть одна из стран не закончила ход, то выходим из функции
-    #     # На будущее сделать проверку по таймеру, когда будет введено ограничение по времени хода
-    #     # Проверку можно сделать и при запуске самой функции
-    #     for i in range(len(self.dynasty)):
-    #         if not self.dynasty[self.dynasty_list[i]].end_turn:
-    #             # Если хоть у одной страны ход не "отправлен" функция прекращает работу
-    #             return
-    #     # В случае начала обсчета хода, необходимо почистить лог прошлого хода у стран.
-    #     # Или еще лучше, сделать массив вообще со всеми логами.
-    #     # Лучше сделать отдельный массив в котором просто будут храниться все логи.
-    #     for dyns in range(len(self.dynasty_list)):
-    #         self.dynasty[self.dynasty_list[dyns]].result_logs_text = []
-    #     # Перебираем все династии и делаем по одному действию
-    #     # Пока по 5 действий
-    #     for cont in range(5):
-    #         for dyns in range(len(self.dynasty_list)):
-    #             self.dynasty[self.dynasty_list[dyns]].calc_act()
-    #     # Пост обсчет хода
-    #     for dyns in range(len(self.dynasty_list)):
-    #         self.dynasty[self.dynasty_list[dyns]].calc_end_turn()
-    #     # !!! Переношу это в пост обсчет для династии
-    #     # В конце обсчета выставим end_turn = False для династий
-    #     # for i in range(len(self.dynasty)):
-    #     #     self.dynasty[self.dynasty_list[i]].end_turn = False
-    #     # Добавим 1 к номеру хода и года
-    #     self.year += 1
-    #     self.turn += 1
