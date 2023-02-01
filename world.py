@@ -8,8 +8,9 @@ from resources import goods
 
 
 class FirstWorld:
-    def __init__(self, row_id, date_create="0:0:0"):
+    def __init__(self, row_id, date_create="0:0:0", is_active=1):
         self.row_id = row_id  # Номер игры
+        self.is_active = 1  # Не активная игра считается как завершенная
         self.year = -300
         self.turn = 1
 
@@ -30,6 +31,7 @@ class FirstWorld:
     def save_to_file(self):
         data = {
             "row_id": self.row_id,
+            "is_active": self.is_active,
             "year": self.year,
             "turn": self.turn,
             "dynasty": self.dynasty,

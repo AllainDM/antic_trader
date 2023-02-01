@@ -53,13 +53,13 @@ class FDataBase:
 
         return True
 
-    def add_game(self, turn, year, players):
+    def add_game(self, turn, year, players, is_active=1):
         try:
             # Пока без даты, надо модифицировать таблицу
             date_create = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-            self.__cur.execute("INSERT INTO games (turn, year, players, date_create) "
-                               "VALUES(%s, %s, %s, %s)",
-                               (turn, year, players, date_create))
+            self.__cur.execute("INSERT INTO games (is_active, turn, year, players, date_create) "
+                               "VALUES(%s, %s, %s, %s, %s)",
+                               (is_active, turn, year, players, date_create))
             self.__db.commit()
             print(f"Добавилось? turn:{turn} year: {year} players: {players} "
                   f"date_create: {date_create}")
@@ -69,20 +69,23 @@ class FDataBase:
 
         return True
 
-    def delete_game(self, game_id):
+    def delete_game(self, game_id):  # "Удаление" игры на самом деле просто делает ее не активной
+        # Возможно будет смысл сделать и кнопку полного удаления
+        # Просто возникла сложность при создании новой игры, если ни одной не создано
+        # Типо игра получает ИД 1, а в БД используется порядковый номер
         try:
-            self.__cur.execute(f"DELETE FROM games WHERE row_id = {game_id}")
+            self.__cur.execute(f"UPDATE games set is_active = 0 WHERE row_id = {game_id}")
             self.__db.commit()
-            print(f"Удалилось?")
+            print(f"Игра сделалась НЕ активной?")
         except Exception as _ex:
-            print("Ошибка удаления данных из БД", _ex)
+            print("Ошибка обновления данных из БД", _ex)
             return False
 
         return True
 
     def get_all_games(self):
         try:
-            self.__cur.execute(f"SELECT * FROM games")
+            self.__cur.execute(f"SELECT * FROM games WHERE is_active = 1")
             res = self.__cur.fetchall()
             if not res:
                 print("games not found")

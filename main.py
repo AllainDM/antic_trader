@@ -141,8 +141,11 @@ def play():
     else:
         # Извлекаем активную игру из Редиски
         active_game = rediska.get(f'playerID_{player}_active_gameID')
-        if active_game == 0:
-            return render_template("new-game.html", title=user_name, menu=menu_auth)
+        my_game_arr = dbase.get_all_games()
+        if len(my_game_arr) == 0:
+            return render_template("choose-game.html", title=user_name, menu=menu_auth)
+        # if active_game == 0:
+        #     return render_template("new-game.html", title=user_name, menu=menu_auth)
         else:
             return render_template("game.html", title=user_name, menu=menu_auth)
 
@@ -205,7 +208,7 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     games_list = []  # Это список игр для отправки игроку для выбора
     print(f"game_arr: {game_arr}")
     for my_g in game_arr:
-        if player in my_g[3]:
+        if player in my_g[4]:
             print(f"Игрок есть в игре номер: {my_g[0]}")
             games_list.append(my_g[0])
     return jsonify(games_list)
