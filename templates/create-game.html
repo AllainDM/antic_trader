@@ -15,7 +15,7 @@
 		<p id="status-new-game">Расширенная настройка новой игры</p>
 	
 		<!-- Открыть модальное окно -->
-		<button id="myBtn">Добавить игрока</button>
+		<button id="add-new-dynasty">Добавить игрока</button>
 
 	</div>
 
@@ -32,7 +32,7 @@
 
 
 	<!-- Модальный -->
-	<div id="myModal" class="modal">
+	<div id="my-modal" class="modal">
 
 	<!-- Модальное содержание -->
 	<div class="modal-content">
@@ -41,8 +41,8 @@
 			<b>Добавление нового игрока</b> 
 			<div>
 				Выберите игрока:
-				<select class="add-players" id="add-players">
-					<option value="001"></option>		
+				<select class="add-players" id="choose-players">
+					<!-- <option value="001"></option>		 -->
 				</select>
 			</div>
 		</div>
@@ -60,14 +60,24 @@
 		</div>
 		<div class="set-dynasty">
 			<div>
-				Стартовое золото:
+				Стартовое золото(не обязательно):
 				<input type="text" id="start-gold" size="10px" value="">
+			</div>
+		</div>
+		<div class="set-dynasty" id="add-dynasty">
+			<div>
+				<button>Добавить</button>
 			</div>
 		</div>
 		
 	</div>
 
+
+
 	</div> 
+	<div class="menu-btn" id="create-new-set-game">
+		Создать
+	</div>
 
 		<script src="{{ url_for('static', filename='js/create-game.js') }}"></script>
 

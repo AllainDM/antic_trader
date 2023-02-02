@@ -296,7 +296,7 @@ def create_test_new_game():
         return ""
 
 
-@app.route("/create_new_game")
+@app.route("/create_new_game", methods=["POST"])
 @login_required
 def create_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
@@ -305,6 +305,8 @@ def create_new_game():
         user_admin = current_user.get_admin()
         if user_admin == 1:
             print("this is admin3")
+            post = request.get_json()
+            print(f"post: {post}")
             # Прочитаем файл со списком игр
             game_arr = dbase.get_all_games()
             if len(game_arr) == 0:
@@ -312,6 +314,7 @@ def create_new_game():
             else:
                 game_arr.append(game_arr[-1][0]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
             date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
+            create_game(game_arr[-1], date_now)
 
             return jsonify("Ответ от Python: Игра создалась")
     else:
