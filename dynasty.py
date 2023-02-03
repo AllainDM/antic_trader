@@ -62,8 +62,12 @@ class Dynasty:
         }
         # Пишем в pickle.
         # Тут нужно отловить ошибку отсутствия файла
-        with open(f"games/{self.game_id}/gameID_{self.game_id}_playerID_{self.player_id}.trader", 'wb') as f:
-            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        try:
+            with open(f"games/{self.game_id}/gameID_{self.game_id}_playerID_{self.player_id}.trader", 'wb') as f:
+                pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        except FileNotFoundError:
+            print(f"Файл 'games/{self.game_id}/gameID_{self.game_id}_playerID_{self.player_id}.trader' не найден")
+            return ""
         print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
         print(data)
 

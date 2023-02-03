@@ -289,7 +289,9 @@ def create_test_new_game():
         print(f"Папка игры {game_arr[-1]} создана")
         print(f"Игра {game_arr[-1]} создана: {date_now}")
         print(f"ID новой игры: {game_arr[-1]}")
-        create_game(game_arr[-1], date_now)  # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
+        players_dynasty = [[2, "Barkid", "Баркиды"], [3, "Magonid", "Магониды"]]
+        # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
+        create_game(game_arr[-1], date_now, players_dynasty)
 
         return jsonify("Ответ от Python: Игра создалась")
     else:
@@ -314,14 +316,15 @@ def create_new_game():
             else:
                 game_arr.append(game_arr[-1][0]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
             date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-            create_game(game_arr[-1], date_now)
+            players_dynasty = [[2,"Barkid", "Баркиды"], [3, "Magonid", "Магониды"]]
+            create_game(game_arr[-1], date_now, players_dynasty)
 
             return jsonify("Ответ от Python: Игра создалась")
     else:
         return ""
 
 
-def create_game(num, date_now):  # Num, то есть ИД игры сейчас ну нужно, ибо не создается словарь с играми
+def create_game(num, date_now, players_dynasty):  # ИД новой игры. Уже не понятно нафига так
     # global game
     # game[num] = FirstWorld(game_arr[-1])
     # game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
@@ -329,11 +332,16 @@ def create_game(num, date_now):  # Num, то есть ИД игры сейчас
     all_games = dbase.get_all_games()
     print(f"all_games: {all_games}")
 
-    this_game = FirstWorld(game_arr[-1], date_now)
-    this_game.create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
-    this_game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+    this_game = FirstWorld(num, date_now)
+
+    # Создадим династии
+    id_players_for_add_db = []  # Массив и ИД игроков, передается в БД, для записи партии
+    for player in players_dynasty:
+        this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
+        id_players_for_add_db.append(player[0])
+    # this_game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
     this_game.save_to_file()
-    dbase.add_game(1, -300, [2, 3])
+    dbase.add_game(1, -300, id_players_for_add_db)
 
     # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
