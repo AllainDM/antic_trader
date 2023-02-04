@@ -206,7 +206,7 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     game_arr = dbase.get_all_games()
     player = int(current_user.get_id())
     games_list = []  # Это список игр для отправки игроку для выбора
-    print(f"game_arr: {game_arr}")
+    print(f"game_arr1: {game_arr}")
     for my_g in game_arr:
         if player in my_g[4]:
             print(f"Игрок есть в игре номер: {my_g[0]}")
@@ -260,39 +260,12 @@ def req_list_players():
 @app.route("/create_test_new_game")
 @login_required
 def create_test_new_game():
-    # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
-    global game_arr
-    game_arr = []
-    game_arr = dbase.get_all_games()
-    print(f"games: {game_arr}")
     user_admin = current_user.get_admin()
     if user_admin == 1:
         print("this is admin3")
-        # Создадим игру, пока она одна, позже проработать возможность создания нескольких
-        if len(game_arr) == 0:
-
-            game_arr.append(1)
-        else:
-            game_arr.append(game_arr[-1][0]+1)  # Последняя запись с нулевым индексом(row_id) +1 для новой игры
-            print(game_arr)
-            print(f"Я реально тут высчитал правильно????")
-        date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-
-        # Создадим папку игры и папку ходов если их не существует
-        # Может делать проверку при создании игры, и удалять/создавать заново если она есть
-        if not os.path.exists(f"games"):
-            os.makedirs(f"games")
-        if not os.path.exists(f"games/{game_arr[-1]}"):
-            os.makedirs(f"games/{game_arr[-1]}")
-        if not os.path.exists(f"games/{game_arr[-1]}/acts"):
-            os.makedirs(f"games/{game_arr[-1]}/acts")
-        print(f"Папка игры {game_arr[-1]} создана")
-        print(f"Игра {game_arr[-1]} создана: {date_now}")
-        print(f"ID новой игры: {game_arr[-1]}")
         players_dynasty = [[2, "Barkid", "Баркиды"], [3, "Magonid", "Магониды"]]
         # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
-        create_game(game_arr[-1], date_now, players_dynasty)
-
+        create_game(players_dynasty)
         return jsonify("Ответ от Python: Игра создалась")
     else:
         return ""
@@ -303,47 +276,51 @@ def create_test_new_game():
 def create_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
     if request.method == "POST":
-        global game_arr  # Зачем?
+        # global game_arr  # Зачем?
         user_admin = current_user.get_admin()
         if user_admin == 1:
-            print("this is admin3")
+            print("this is admin")
             post = request.get_json()
             print(f"post: {post}")
-            # Прочитаем файл со списком игр
-            game_arr = dbase.get_all_games()
-            if len(game_arr) == 0:
-                game_arr.append(1)
-            else:
-                game_arr.append(game_arr[-1][0]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
-            date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-            players_dynasty = [[2,"Barkid", "Баркиды"], [3, "Magonid", "Магониды"]]
-            create_game(game_arr[-1], date_now, players_dynasty)
-
+            create_game(post)
             return jsonify("Ответ от Python: Игра создалась")
     else:
         return ""
 
 
-def create_game(num, date_now, players_dynasty):  # ИД новой игры. Уже не понятно нафига так
-    # global game
-    # game[num] = FirstWorld(game_arr[-1])
-    # game[num].create_dynasty(1, 2, "Barkid", "Баркиды", 10000)
-    # game[num].create_dynasty(2, 3, "Magonid", "Магониды", 12000)
-    all_games = dbase.get_all_games()
-    print(f"all_games: {all_games}")
+def create_game(players_dynasty):  # Получаем только список игроков
+    # all_games = dbase.get_all_games()
+    # print(f"all_games: {all_games}")
+    global game_arr  # Зачем?
+    # Прочитаем файл со списком игр
+    game_arr = dbase.get_all_games()
+    if len(game_arr) == 0:
+        game_arr.append(1)
+    else:
+        game_arr.append(game_arr[-1][0]+1)  # +1 тут по умолчанию, 0 индекс уже есть, длинна массива 1
+    date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
 
-    this_game = FirstWorld(num, date_now)
+    # Создадим мир
+    this_game = FirstWorld(game_arr[-1], date_now)
+
+    # Создадим папку игры и папку ходов если их не существует
+    # Может делать проверку при создании игры, и удалять/создавать заново если она есть
+    if not os.path.exists(f"games"):
+        os.makedirs(f"games")
+    if not os.path.exists(f"games/{game_arr[-1]}"):
+        os.makedirs(f"games/{game_arr[-1]}")
+    if not os.path.exists(f"games/{game_arr[-1]}/acts"):
+        os.makedirs(f"games/{game_arr[-1]}/acts")
 
     # Создадим династии
     id_players_for_add_db = []  # Массив и ИД игроков, передается в БД, для записи партии
     for player in players_dynasty:
         this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
         id_players_for_add_db.append(player[0])
-    # this_game.create_dynasty(2, 3, "Magonid", "Магониды", 12000)
+
     this_game.save_to_file()
     dbase.add_game(1, -300, id_players_for_add_db)
 
-    # Так же присвоим одноименным переменным созданные династии
     print("Игра на двоих создана")
     print(this_game.dynasty_list)
 
