@@ -1,5 +1,8 @@
 console.log('Стрипт странички создания игры успешно загружен');
 
+// Список для отображения добавляемых игроков
+const list = document.querySelector('.list');
+
 document.getElementById('create-new-game').addEventListener('click', () => {
     console.log("Попытка создания игры засчитана")
     createTestNewGame();
@@ -137,6 +140,8 @@ document.getElementById("add-dynasty").addEventListener("click", () => {
     console.log(newDynasty);
     modal.style.display = "none";
     console.log(newGame);
+    // Обновим список добавленных игроков
+    showPlayers(newGame)
 });
 
 document.getElementById("create-new-set-game").addEventListener("click", () => {
@@ -164,3 +169,24 @@ function createNewGame(post) {
 //     modal.style.display = "none";
 //   }
 // } 
+
+// Отображение добавляемых игроков
+function showPlayers(players) {
+    console.log(players);
+    list.innerHTML = `<span>Игроки:</span>`;  // Добавим подсказку
+    players.forEach((item, id) => {
+        // chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose"><a href="{{url_for('game')}}">Игра номер: ${item}</a></div>`;
+        list.innerHTML +=         
+        `<div class="show-list">
+            ${item[1]}
+        </div>`;  //   ид: ${id}
+    });
+
+    // Определяем позицию кнопки и "создаем" соответсвующий приказ
+    document.querySelectorAll(".show-list").forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+            console.log(`Вы выбрали игрока: ${players[i][1]}`);  // -1
+
+        });
+    });
+};

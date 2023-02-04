@@ -43,13 +43,21 @@ class FirstWorld:
             "date_create": self.date_create,
         }
         # Пишем в pickle.
-        with open(f"games/{self.row_id}/gameID_{self.row_id}.trader", 'wb') as f:
-            pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        try:
+            with open(f"games/{self.row_id}/gameID_{self.row_id}.trader", 'wb') as f:
+                pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        except FileNotFoundError:
+            print(f"Файл 'games/{self.row_id}/gameID_{self.row_id}.trader' не найден")
+            return ""
 
     def load_from_file(self, game_id):
         # Прочитаем из pickle весь файл
-        with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
-            data = pickle.load(f)
+        try:
+            with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
+                data = pickle.load(f)
+        except FileNotFoundError:
+            print(f"Файл 'games/{game_id}/gameID_{game_id}.trader' не найден")
+            return ""
         # Присвоим параметры
         self.row_id = data["row_id"]
         self.year = data["year"]
@@ -74,9 +82,13 @@ class FirstWorld:
         # !!!!!!!!!! Еще нужно запустить у Династии функцию сохранения ее данных в файл
         # Создадим файл с записью хода игрока. Он должен быть пустым при каждом создании игры
         acts = []
-        with open(f"games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
-            pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
-        return self.dynasty[name]
+        try:
+            with open(f"games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
+                pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
+            return self.dynasty[name]
+        except FileNotFoundError:
+            print(f"Файл 'games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader' не найден")
+            return ""
 
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
     def restore_dynasty(self, game_id, player_id):

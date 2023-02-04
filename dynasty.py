@@ -72,9 +72,14 @@ class Dynasty:
         print(data)
 
     def load_from_file(self, game_id, player_id):
-        with open(f"games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
-            data = pickle.load(f)
-            print(f"Восстанавливаем династию: {data}")
+        # Тут нужно отловить ошибку отсутствия файла
+        try:
+            with open(f"games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
+                data = pickle.load(f)
+                print(f"Восстанавливаем династию: {data}")
+        except FileNotFoundError:
+            print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader' не найден")
+            return ""
         self.row_id = data["row_id"]
         self.game_id = data["game_id"]
         self.player_id = data["player_id"]
