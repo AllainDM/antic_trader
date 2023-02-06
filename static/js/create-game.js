@@ -132,7 +132,7 @@ document.getElementById("add-dynasty").addEventListener("click", () => {
         return
     }
     let newDynasty = [
-        Number(document.getElementById('choose-players').value),
+        Number(document.getElementById('choose-players').value) + 1,
         document.getElementById('name-eng').value,
         document.getElementById('name-rus').value,
         Number(document.getElementById('start-gold').value),
