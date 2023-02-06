@@ -393,6 +393,7 @@ document.getElementById('menu-diplomaty').addEventListener('click', () => {
     req_status_all_player();
 });
 
+// Отображение всех игроков с основными параметрами(золото, имя, готовность хода)
 function req_status_all_player() {
     console.log(statusGame.game_id)
     const request = new XMLHttpRequest();

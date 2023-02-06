@@ -11,12 +11,17 @@
 
 	</div>
 
+	<hr>
+
 	<div class="container">
 		<p id="status-new-game">Расширенная настройка новой игры</p>
 	
 		<!-- Открыть модальное окно -->
 		<button id="add-new-dynasty">Добавить игрока</button>
 
+		<button id="create-new-set-game">
+			Создать новую игру
+		</button>
 	</div>
 
 	<!-- <div class="modal-choose" id="modal-set-dynasty">
@@ -31,46 +36,44 @@
 	</div> -->
 
 
-	<!-- Модальный -->
+	<!-- Модалка -->
 	<div id="my-modal" class="modal">
-
-	<!-- Модальное содержание -->
-	<div class="modal-content">
-		<span class="close">&times;</span>
-		<div class="set-dynasty">
-			<b>Добавление нового игрока</b> 
-			<div>
-				Выберите игрока:
-				<select class="add-players" id="choose-players">
-					<!-- <option value="001"></option>		 -->
-				</select>
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<div class="set-dynasty">
+				<b>Добавление нового игрока</b> 
+				<div>
+					Выберите игрока:
+					<select class="add-players" id="choose-players">
+						<!-- <option value="001"></option>		 -->
+					</select>
+				</div>
 			</div>
-		</div>
-		<div class="set-dynasty">
-			<div>
-				Название династии(eng):
-				<input type="text" id="name-eng" size="10px" value="">
+			<div class="set-dynasty">
+				<div>
+					Название династии(eng):
+					<input type="text" id="name-eng" size="10px" value="">
+				</div>
 			</div>
-		</div>
-		<div class="set-dynasty">
-			<div>
-				Название династии(rus):
-				<input type="text" id="name-rus" size="10px" value="">
+			<div class="set-dynasty">
+				<div>
+					Название династии(rus):
+					<input type="text" id="name-rus" size="10px" value="">
+				</div>
 			</div>
-		</div>
-		<div class="set-dynasty">
-			<div>
-				Стартовое золото(не обязательно):
-				<input type="text" id="start-gold" size="10px" value="">
+			<div class="set-dynasty">
+				<div>
+					Стартовое золото(не обязательно):
+					<input type="text" id="start-gold" size="10px" value="">
+				</div>
 			</div>
-		</div>
-		<div class="set-dynasty" id="add-dynasty">
-			<div>
-				<button>Добавить</button>
+			<div class="set-dynasty" id="add-dynasty">
+				<div>
+					<button>Добавить</button>
+				</div>
 			</div>
+			
 		</div>
-		
-	</div>
 	</div> 
 
 	<div class="container">
@@ -80,9 +83,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="menu-btn" id="create-new-set-game">
-		Создать
-	</div>
+
+	
 
 		<script src="{{ url_for('static', filename='js/create-game.js') }}"></script>
 

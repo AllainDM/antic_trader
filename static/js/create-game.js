@@ -88,6 +88,7 @@ btnAddNewDynasty.onclick = function() {
     newPlayers = document.getElementById('choose-players');
     newPlayers.innerHTML = "<option value='000'></option>" // Почистим от предыдущей загрузки
     listPlayers.forEach((item, id) => {
+        // console.log(item)
         newPlayers.innerHTML +=        
         `<option value="${id}">${item[1]}</option>`; 
     });
@@ -131,11 +132,15 @@ document.getElementById("add-dynasty").addEventListener("click", () => {
         return
     }
     let newDynasty = [
-        Number(document.getElementById('choose-players').value) + 1,
+        Number(document.getElementById('choose-players').value),
         document.getElementById('name-eng').value,
         document.getElementById('name-rus').value,
-        Number(document.getElementById('start-gold').value)
+        Number(document.getElementById('start-gold').value),
+        listPlayers[Number(document.getElementById('choose-players').value)][1]  // Имя игрока
     ];
+    console.log(document.getElementById('choose-players').value);
+    console.log(Number(document.getElementById('choose-players').value));
+    console.log(listPlayers[Number(document.getElementById('choose-players').value)][1]);
     newGame.push(newDynasty)
     console.log(newDynasty);
     modal.style.display = "none";
@@ -178,14 +183,14 @@ function showPlayers(players) {
         // chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose"><a href="{{url_for('game')}}">Игра номер: ${item}</a></div>`;
         list.innerHTML +=         
         `<div class="show-list">
-            ${item[1]}
+            ${item[1]} ${item[2]} ${item[4]}
         </div>`;  //   ид: ${id}
     });
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".show-list").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            console.log(`Вы выбрали игрока: ${players[i][1]}`);  // -1
+            console.log(`Вы выбрали игрока: ${players[i][4]}`);  // -1
 
         });
     });

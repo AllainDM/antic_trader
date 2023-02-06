@@ -129,7 +129,7 @@ def admin_create_new_game():
     return render_template('index.html',  title="Main", menu=menu_auth)
 
 
-@app.route("/game")
+@app.route("/game")  # Функиця перенаправляет игрока на страницу смой игры, откуда уже происходит запрос параметров
 @login_required
 def play():
     user_admin = current_user.get_admin()
@@ -140,7 +140,7 @@ def play():
         return render_template("game-admin.html", title=user_name, menu=menu_admin)
     else:
         # Извлекаем активную игру из Редиски
-        active_game = rediska.get(f'playerID_{player}_active_gameID')
+        # active_game = rediska.get(f'playerID_{player}_active_gameID')
         my_game_arr = dbase.get_all_games()
         if len(my_game_arr) == 0:
             return render_template("choose-game.html", title=user_name, menu=menu_auth)
@@ -150,7 +150,7 @@ def play():
             return render_template("game.html", title=user_name, menu=menu_auth)
 
 
-@app.route("/choose-game")
+@app.route("/choose-game")  # Перенаправление на страничку выбора "активно" игры
 @login_required
 def choose_game_html():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     user_admin = current_user.get_admin()
@@ -161,7 +161,7 @@ def choose_game_html():  # Делаю подпись html, чтоб раздел
         return render_template("choose-game.html", title=user_name, menu=menu_auth)
 
 
-@app.route("/games")
+@app.route("/games")  # Перенаправление на страничку со списком всех игр. ТОЛЬКО ДЛЯ АДМИНА
 @login_required
 def all_games_html():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     user_admin = current_user.get_admin()
@@ -172,7 +172,7 @@ def all_games_html():  # Делаю подпись html, чтоб раздели
         return render_template("game.html", title=user_name, menu=menu_auth)
 
 
-@app.route("/load_all_games")
+@app.route("/load_all_games")  # Посмотреть список все игр с возможностью их удаления. ТОЛЬКО ДЛЯ АДМИНА
 @login_required
 def load_all_games():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game_arr
@@ -184,7 +184,7 @@ def load_all_games():  # Делаю подпись html, чтоб раздели
     return jsonify(games_list)
 
 
-@app.route("/delete_game")  # Удалить игру
+@app.route("/delete_game")  # Удалить игру (сделать неактивной)
 @login_required
 def delete_game():
     user_admin = current_user.get_admin()
@@ -198,7 +198,7 @@ def delete_game():
     return ""
 
 
-@app.route("/load_all_my_game")
+@app.route("/load_all_my_game")  # Посмотреть список всех игр для игрока
 @login_required
 def load_all_my_game():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     global game_arr
@@ -214,7 +214,7 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     return jsonify(games_list)
 
 
-@app.route("/set_active_game")
+@app.route("/set_active_game")  # Выбор "активной" игры для пользователя, параметры которой будут загружаться
 @login_required
 def set_active_games():
     game_id = request.args.get('id')
@@ -227,7 +227,7 @@ def set_active_games():
     return ""
 
 
-@app.route("/players")
+@app.route("/players")  # Отображение странички со всеми зарегистрированными игроками
 @login_required
 def players_html():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
     user_admin = current_user.get_admin()
@@ -238,7 +238,7 @@ def players_html():  # Делаю подпись html, чтоб разделит
         return render_template("players.html", title=user_name, menu=menu_auth)
 
 
-@app.route("/req_list_players")
+@app.route("/req_list_players")  # Отображение всех зарегистрированных игроков
 @login_required
 def req_list_players():
     # Поиск игрока по участию в игре. В БД у пользователей планируется запись со списком игр с участием этого игрока
@@ -257,7 +257,7 @@ def req_list_players():
     return jsonify(list_users_to_front)
 
 
-@app.route("/create_test_new_game")
+@app.route("/create_test_new_game")  # Создать "бысструю" новую игру по прописаным в коде стартовым параметрам
 @login_required
 def create_test_new_game():
     user_admin = current_user.get_admin()
@@ -271,7 +271,7 @@ def create_test_new_game():
         return ""
 
 
-@app.route("/create_new_game", methods=["POST"])
+@app.route("/create_new_game", methods=["POST"])  # Создать настроенную игру получив параметры с фронта
 @login_required
 def create_new_game():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
@@ -326,7 +326,7 @@ def create_game(players_dynasty):  # Получаем только список 
 
 
 # !!!!!!!!!! Отменять надо у Активной игры. Или нет?
-@app.route("/cancel_act")
+@app.route("/cancel_act")  # Отменить акт(действие). Все или последний. !!! Доработать возможность выбора любого
 def cancel_act():
     what = request.args.get('what')
     # response = dbase.read_router_comment(id_router)
@@ -348,6 +348,7 @@ def cancel_act():
         return ""
 
 
+# Отображение в меню дипломатии всех игроков с основными параметрами(золото, имя, готовность хода)
 @app.route("/req_status_all_player", methods=["GET"])
 @login_required
 def req_status_all_player():
@@ -375,7 +376,7 @@ def req_status_all_player():
     return jsonify(return_data)
 
 
-@app.route("/req_status_game_player", methods=["GET"])
+@app.route("/req_status_game_player", methods=["GET"])  # Запрос параметров страны игрока
 @login_required
 def req_status_game_player():
     player = int(current_user.get_id())
@@ -390,7 +391,7 @@ def req_status_game_player():
     return jsonify(data)
 
 
-@app.route("/req_status_game", methods=["GET"])
+@app.route("/req_status_game", methods=["GET"])  # Запрос общих параметров партии
 @login_required
 def req_status_game():
     player = int(current_user.get_id())
@@ -417,7 +418,7 @@ def req_status_game():
 
 
 # !!!!!!!!!!!!! Запустить функцию подсчета хода
-@app.route("/post_turn", methods=["POST"])
+@app.route("/post_turn", methods=["POST"])  # Подтверждение готовности хода
 @login_required
 def post_turn():
     if request.method == "POST":
@@ -445,7 +446,7 @@ def post_turn():
     return ""
 
 
-@app.route("/post_act", methods=["POST"])
+@app.route("/post_act", methods=["POST"])  # Отправка одного акта(действия) игрока
 @login_required
 def post_act():
     """
@@ -479,7 +480,7 @@ def post_act():
     return ""
 
 
-@app.route("/contact", methods=["POST", "GET"])
+@app.route("/contact", methods=["POST", "GET"])  # Обратная связь
 @login_required
 def contact():
     if request.method == "POST":
@@ -499,7 +500,7 @@ def contact():
     return render_template('contact.html',  title="Feedback", menu=menu_auth)
 
 
-@app.route("/login", methods=["POST", "GET"])
+@app.route("/login", methods=["POST", "GET"])  # Авторизация
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('profile'))
@@ -516,7 +517,7 @@ def login():
     return render_template('login.html',  title="Авторизация", menu=menu)
 
 
-@app.route('/logout')
+@app.route('/logout')  # Выход из профиля
 @login_required
 def logout():
     logout_user()
@@ -524,7 +525,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/profile')
+@app.route('/profile')  # Отображение странички профиля
 @login_required
 def profile():
     user_admin = current_user.get_admin()
