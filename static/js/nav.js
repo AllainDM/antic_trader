@@ -28,7 +28,7 @@ function exitToMainMenuButtons() {  // Выйти в главное меню
 };
 
 
-// Тут видимо навешиваем обытие выхода в главное меню для всех кнопок "выход"
+// Тут навешиваем обытие выхода в главное меню для всех кнопок "выход"
 const exitButtons = document.querySelectorAll('.menu-exit');
 
 exitButtons.forEach((i) => {
@@ -44,11 +44,11 @@ document.getElementById('menu-colony').addEventListener('click', () => {
     document.getElementById("menu-buttons-colony").setAttribute('style','visibility:visible');
 });
 
-document.getElementById('menu-trade').addEventListener('click', () => {
-    hiddenAllMenu();
-    document.getElementById("main-menu-buttons").setAttribute('style','display:none');
-    document.getElementById("menu-buttons-trade").setAttribute('style','visibility:visible');
-});
+// document.getElementById('menu-trade').addEventListener('click', () => {
+//     hiddenAllMenu();
+//     document.getElementById("main-menu-buttons").setAttribute('style','display:none');
+//     document.getElementById("menu-buttons-trade").setAttribute('style','visibility:visible');
+// });
 
 // document.getElementById('menu-diplomaty').addEventListener('click', () => {
 //     hiddenAllMenu();

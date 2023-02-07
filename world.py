@@ -5,6 +5,7 @@ from datetime import datetime
 from dynasty import Dynasty
 from colony_buildings import buildings
 from resources import goods
+from cities import cities
 
 
 class FirstWorld:
@@ -22,6 +23,7 @@ class FirstWorld:
         # А зачем нам это надо?
         self.goods = goods
         self.buildings = buildings
+        self.cities = cities
 
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
@@ -38,6 +40,7 @@ class FirstWorld:
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
             "goods": self.goods,
+            "cities": self.cities,
             "buildings": self.buildings,
             "all_logs": self.all_logs,
             "date_create": self.date_create,
@@ -66,6 +69,7 @@ class FirstWorld:
         self.dynasty_list = data["dynasty_list"]  # И тут переменная в виде названия Династии на английском.....
         self.player_list = data["player_list"]
         self.goods = data["goods"]
+        self.cities = data["cities"]
         self.buildings = data["buildings"]
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]

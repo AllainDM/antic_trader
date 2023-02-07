@@ -28,6 +28,7 @@ let statusGame = {
     user_name: "",
     game_id: "",        // ИД партии. Будем передавать вместе с ходом.
     date_create: "",
+    cities: [], // Массив с городами, пока просто названия
 };
 
 
@@ -203,6 +204,8 @@ function actualVar(res) {
     statusGame.game_id = res.game_id;
     statusGame.date_create = res.date_create;
 
+    statusGame.cities = res.cities
+
 
     updateVar();
     logAllResultStart();
@@ -355,6 +358,8 @@ function logAllResultStart() {       //Функция запуска лога и
 
 
 // Запись действий игрока
+
+// Строительство 
 document.getElementById('menu-new-colony').addEventListener('click', () => {
     hiddenAllMenu();  // Скроем все меню
     chooseList.innerHTML = `<span>Выберите постройку:</span>`;  // Добавим подсказку
@@ -384,6 +389,70 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     });
 
 }) 
+
+// Торговля
+document.getElementById('menu-trade').addEventListener('click', () => {
+    hiddenAllMenu();
+    console.log("Запуск торговли")
+    document.getElementById("main-menu-buttons").setAttribute('style','display:none');
+    document.getElementById("menu-buttons-trade").setAttribute('style','visibility:visible');
+    tradeChooseCity();
+});
+
+function tradeChooseCity() { // Выбрать город для торговли
+    statusGame.cities.forEach((item, id) => {
+        chooseList.innerHTML += 
+        `<div class="menu-btn menu-buttons-show-trade">
+            ${item}
+        </div>`;
+        // ${statusGame.cities[id]}
+    });
+    
+    // Нарисуем кнопку отмены(выхода)
+    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
+    document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
+        chooseList.innerHTML = ''; 
+        exitToMainMenuButtons(); 
+    });
+
+    // Определяем позицию кнопки и "создаем" соответсвующий приказ
+    document.querySelectorAll(".menu-buttons-show-trade").forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+            console.log(`Вы выбрали город номер: ${btn}, ${i}`);
+            console.log(`Вы выбрали город: ${statusGame.cities[i]}`);
+            tradeChooseAction(i); // Запустим дальнейшую функицю, передав ид (!не)города(ИД по списку предложенных к выбору)
+        });
+    });
+};
+// После выбора города определим дальнейшие дествия
+function tradeChooseAction(city) {
+    chooseList.innerHTML = "Продаем товар:";
+    goodsList.forEach((item, id) => {
+        chooseList.innerHTML += 
+        `<div class="menu-btn menu-buttons-show-trade">
+            ${item}
+        </div>`;
+    });      
+
+    // Нарисуем кнопку отмены(выхода)
+    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
+    document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
+        chooseList.innerHTML = ''; 
+        exitToMainMenuButtons(); 
+    });
+
+    // Определяем позицию кнопки и "создаем" соответсвующий приказ
+    document.querySelectorAll(".menu-buttons-show-trade").forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+            console.log([`Продаем: ${goodsList[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
+            statusGame.acts.push([`Продаем: ${goodsList[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
+            postAct(statusGame.game_id);
+            logStart();
+            chooseList.innerHTML = ''; 
+            exitToMainMenuButtons(); 
+        });
+    });
+}
 
 // Просмотр "Дипломатии"
 document.getElementById('menu-diplomaty').addEventListener('click', () => {

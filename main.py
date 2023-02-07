@@ -14,6 +14,7 @@ import world
 from FDataBase import FDataBase
 from world import FirstWorld
 from UserLogin import UserLogin
+from cities import Cities
 from dynasty import Dynasty
 # import postgreTables
 
@@ -257,6 +258,12 @@ def req_list_players():
     return jsonify(list_users_to_front)
 
 
+@app.route("/req_cities_for_trade")  # Запрос списка городов для торговли
+@login_required
+def req_cities_for_trade():
+    pass
+
+
 @app.route("/create_test_new_game")  # Создать "бысструю" новую игру по прописаным в коде стартовым параметрам
 @login_required
 def create_test_new_game():
@@ -406,6 +413,9 @@ def req_status_game():
         print(f"Файл 'games/{game_id}/gameID_{game_id}.trader' не найден")
         return ""
     print(f"my_world: {my_world}")
+    # Так же загрузим список городов для торговли
+    cities = Cities()
+    list_cities = cities.cities_available()
     data = {
             "year": my_world["year"],
             "turn": my_world["turn"],
@@ -413,6 +423,7 @@ def req_status_game():
             "game_id": my_world["row_id"],
             "date_create": my_world["date_create"],
             "user_name": user_name,
+            "cities": list_cities
         }
     return jsonify(data)
 

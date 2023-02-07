@@ -95,7 +95,6 @@ class Dynasty:
         self.end_turn_know = data["end_turn_know"]
         print(f"Данные династии {self.name_rus} восстановились")
 
-
     def calc_act(self):  # Подсчет одного действия для династии
         # if len(self.acts) > 0:
         print(f"Считаем ход для династии: {self.name}")
@@ -108,11 +107,9 @@ class Dynasty:
                 print(f"""Выполнено действие {self.acts[0]}""")
                 self.acts.pop(0)
             elif self.acts[0][1] == 201:
-                self.act_sell_goods()  # А тут не будем передавать аргумент
+                self.act_sell_goods(self.acts[0][2], self.acts[0][3])  # И тут передадим аргумент
                 print(f"""Выполнено действие {self.acts[0]}""")
-                # print(f"""до: {self.acts}""")
                 self.acts.pop(0)
-                # print(f"""после: {self.acts}""")
             else:
                 print('Записей в акте нет')
 
@@ -143,8 +140,13 @@ class Dynasty:
             self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
             print(self.game.buildings.buildings[buildings_index])
 
-    def act_sell_goods(self):     # 201 id
-        pass
+    def act_sell_goods(self, city, goods):     # 201 id
+        # Преобразуем строку с золотом в число
+        # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
+        self.gold = int(self.gold)
+        print(f"city {city} {self.game.cities.cities[city]}")
+        print(f"goods {goods} {self.game.goods.resources}")  # Переработать класс
+        print(f"gold {self.gold }")
 
     def prod_goods(self):
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек
