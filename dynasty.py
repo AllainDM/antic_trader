@@ -30,6 +30,7 @@ class Dynasty:
         # Пока в колонии может производиться только один вид товара
         # self.goods = goods.resources_list
         self.goods = goods.resources_list
+        self.goods_name = goods.resources_name_list
         # self.goods = [0, 0, 0, 0, 0]
         self.colony_buildings = [0, 0, 0, 0, 0]
 
@@ -58,6 +59,7 @@ class Dynasty:
             "gold": self.gold,
             "win_points": self.win_points,
             "goods": self.goods,
+            "goods_name": self.goods_name,
             "colony_buildings": self.colony_buildings,
             "acts": self.acts,
             "result_logs_text": self.result_logs_text,
@@ -93,6 +95,7 @@ class Dynasty:
         self.gold = data["gold"]
         self.win_points = data["win_points"]
         self.goods = data["goods"]
+        self.goods_name = data["goods_name"]
         self.colony_buildings = data["colony_buildings"]
         self.acts = data["acts"]
         self.result_logs_text = data["result_logs_text"]

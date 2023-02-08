@@ -22,6 +22,7 @@ class FirstWorld:
         # Товары и производство
         # А зачем нам это надо?
         self.goods = goods
+        self.goods_name = goods.resources_name_list
         self.buildings = buildings
         self.cities = cities
 
@@ -40,6 +41,7 @@ class FirstWorld:
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
             "goods": self.goods,
+            "goods_name": self.goods_name,
             "cities": self.cities.cities_name_list,
             "buildings": self.buildings,
             "all_logs": self.all_logs,
@@ -69,6 +71,7 @@ class FirstWorld:
         self.dynasty_list = data["dynasty_list"]  # И тут переменная в виде названия Династии на английском.....
         self.player_list = data["player_list"]
         self.goods = data["goods"]
+        self.goods_name = data["goods_name"]
         self.cities = data["cities"]
         self.buildings = data["buildings"]
         self.all_logs = data["all_logs"]

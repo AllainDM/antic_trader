@@ -15,6 +15,7 @@ from FDataBase import FDataBase
 from world import FirstWorld
 from UserLogin import UserLogin
 from cities import Cities
+from resources import Goods
 from dynasty import Dynasty
 # import postgreTables
 
@@ -416,6 +417,9 @@ def req_status_game():
     # Так же загрузим список городов для торговли
     cities = Cities()
     list_cities = cities.cities_available()
+    goods = Goods()
+    goods_name = goods.resources_available()
+    print(f"goods_name: {goods_name}")
     data = {
             "year": my_world["year"],
             "turn": my_world["turn"],
@@ -423,7 +427,8 @@ def req_status_game():
             "game_id": my_world["row_id"],
             "date_create": my_world["date_create"],
             "user_name": user_name,
-            "cities": list_cities
+            "cities": list_cities,
+            "goods_name": goods_name
         }
     return jsonify(data)
 

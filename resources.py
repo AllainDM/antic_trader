@@ -32,5 +32,8 @@ class Goods:
     def price(self, resources):
         return self.resources_price[resources]
 
+    def resources_available(self):
+        return self.resources_name_list
+
 
 goods = Goods()

@@ -15,11 +15,13 @@ let statusGame = {
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
     allLogs: [],        // Все логи итогов хода всех стран
     gold: 0,
-    goods1: 0,
-    goods2: 0,
-    goods3: 0,
-    goods4: 0,
-    goods5: 0,
+    goods: [],
+    goodsName: [],
+    // goods1: 0,
+    // goods2: 0,
+    // goods3: 0,
+    // goods4: 0,
+    // goods5: 0,
     colony_goods1: 0,
     colony_goods2: 0,
     colony_goods3: 0,
@@ -81,11 +83,11 @@ function updateVar() {
     document.getElementById('game-date').innerText = 'Дата создания: ' + statusGame.date_create;
 
 
-    document.getElementById('goods1').innerText = `${goodsList[0]}: ` + statusGame.goods1;
-    document.getElementById('goods2').innerText = `${goodsList[1]}: ` + statusGame.goods2;
-    document.getElementById('goods3').innerText = `${goodsList[2]}: ` + statusGame.goods3;
-    document.getElementById('goods4').innerText = `${goodsList[3]}: ` + statusGame.goods4;
-    document.getElementById('goods5').innerText = `${goodsList[4]}: ` + statusGame.goods5;
+    // document.getElementById('goods1').innerText = `${goodsList[0]}: ` + statusGame.goods1;
+    // document.getElementById('goods2').innerText = `${goodsList[1]}: ` + statusGame.goods2;
+    // document.getElementById('goods3').innerText = `${goodsList[2]}: ` + statusGame.goods3;
+    // document.getElementById('goods4').innerText = `${goodsList[3]}: ` + statusGame.goods4;
+    // document.getElementById('goods5').innerText = `${goodsList[4]}: ` + statusGame.goods5;
     document.getElementById('colony_goods1').innerText = `${colonyList[0]}: ` + statusGame.colony_goods1;
     document.getElementById('colony_goods2').innerText = `${colonyList[1]}: ` + statusGame.colony_goods2;
     document.getElementById('colony_goods3').innerText = `${colonyList[2]}: ` + statusGame.colony_goods3;
@@ -209,6 +211,11 @@ function actualVar(res) {
     logAllResultStart();
 };
 
+
+
+const goodsNameHtml = document.querySelector(".stats1");
+// const goodsNameHtml = document.querySelector('.choose-list');
+
 // Обновим параметры управляемой "страной"
 function actualVarPlayer(res) {
     statusGame.dynastyName = res.name_rus
@@ -224,11 +231,31 @@ function actualVarPlayer(res) {
     // console.log(res.goods)
     // console.log(res.goods["Медь"])
     // console.log(res.goods[1])
-    statusGame.goods1 = res.goods[0][1]
-    statusGame.goods2 = res.goods[1][1]
-    statusGame.goods3 = res.goods[2][1]
-    statusGame.goods4 = res.goods[3][1]
-    statusGame.goods5 = res.goods[4][1]
+    // statusGame.goods1 = res.goods[0][1]
+    // statusGame.goods2 = res.goods[1][1]
+    // statusGame.goods3 = res.goods[2][1]
+    // statusGame.goods4 = res.goods[3][1]
+    // statusGame.goods5 = res.goods[4][1]
+    console.log("тут");
+    console.log(res.goods);
+    console.log(res.goods_name);
+
+    // res.goods_name.forEach((btn, i) => {
+
+    //     console.log("forEach");
+    //     goodsNameHtml.innerHTML +=         
+    //     `<div>
+    //         Игра номер: ${i}
+    //     </div>`;  //   ид: ${id}
+    // })
+    res.goods_name.forEach((item, id) => {
+        console.log("forEach 2");
+        goodsNameHtml.innerHTML +=   
+        `<div>
+            ${item}: 
+        </div>`;  //   ид: ${id}
+    });
+    console.log("тут");
     statusGame.colony_goods1 = res.colony_buildings[0]
     statusGame.colony_goods2 = res.colony_buildings[1]
     statusGame.colony_goods3 = res.colony_buildings[2]
