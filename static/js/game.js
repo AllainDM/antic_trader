@@ -108,7 +108,6 @@ function requestStatus() {
                 
             } else {
                 const response = JSON.parse(request.response);
-                console.log(response);
                 // После обсчета хода игрок один раз получает сообщение, что пришел новый ход
                 // Баг!!! При сообщении о новом ходе все параметры висят по нулям
                 // По скольку это временный вариант, чинить не буду
@@ -141,7 +140,6 @@ function requestStatusPlayer() {
                 
             } else {
                 const response = JSON.parse(request.response);
-                console.log(response)
                 actualVarPlayer(response);
                 console.log("Ответ от сервера. Статус хода: " + response.end_turn)
             };
@@ -222,11 +220,15 @@ function actualVarPlayer(res) {
     // statusGame.actsText = res.acts_text
     statusGame.logsText = res.result_logs_text
 
-    statusGame.goods1 = res.goods[0]
-    statusGame.goods2 = res.goods[1]
-    statusGame.goods3 = res.goods[2]
-    statusGame.goods4 = res.goods[3]
-    statusGame.goods5 = res.goods[4]
+    // console.log("тут")
+    // console.log(res.goods)
+    // console.log(res.goods["Медь"])
+    // console.log(res.goods[1])
+    statusGame.goods1 = res.goods[0][1]
+    statusGame.goods2 = res.goods[1][1]
+    statusGame.goods3 = res.goods[2][1]
+    statusGame.goods4 = res.goods[3][1]
+    statusGame.goods5 = res.goods[4][1]
     statusGame.colony_goods1 = res.colony_buildings[0]
     statusGame.colony_goods2 = res.colony_buildings[1]
     statusGame.colony_goods3 = res.colony_buildings[2]
@@ -445,7 +447,7 @@ function tradeChooseAction(city) {
     document.querySelectorAll(".menu-buttons-show-trade").forEach((btn, i) => {
         btn.addEventListener('click', () => {
             console.log([`Продаем: ${goodsList[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
-            statusGame.acts.push([`Продаем: ${goodsList[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
+            statusGame.acts.push([`Продаем: ${goodsList[i]} в ${statusGame.cities[i]}`, 201, statusGame.cities[i], goodsList[i]]); 
             postAct(statusGame.game_id);
             logStart();
             chooseList.innerHTML = ''; 

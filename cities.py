@@ -1,6 +1,6 @@
 class Cities:
     def __init__(self):
-        # self.cities = {
+        # self.cities_dict = {
         #     'Карфаген': 'Карфаген',
         #     'Сиракузы': 'Сиракузы',
         #     'Афины': 'Афины',
@@ -8,12 +8,20 @@ class Cities:
         #     'Александрия': 'Александрия',
         #     'Тир': 'Тир',
         # }
-        self.cities = [
-            "Карфаген", "Сиракузы", "Афины", "Родос", "Александрия", "Тир"
+        self.cities_name_list = [
+            "Карфаген 1",
+            "Сиракузы 1",
+            "Афины 1",
+            "Родос 1",
+            "Александрия 1",
+            "Тир 1"
         ]
+        # self.cities_list = {
+        #     "Карфаген": "Карфаген, "Сиракузы": "Сиракузы", "Афины", "Родос", "Александрия", "Тир"
+        # }
 
     def cities_available(self):
-        return self.cities
+        return self.cities_name_list
 
 
 cities = Cities()

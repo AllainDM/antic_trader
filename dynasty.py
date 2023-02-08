@@ -3,6 +3,8 @@ import os
 import pickle
 import redis
 
+from resources import goods  # Импортируем уже созданный экземпляр класса
+
 
 # Настройка Redis для хранения данных игроков
 rediska = redis.StrictRedis(
@@ -26,7 +28,9 @@ class Dynasty:
         self.win_points = 0
         # Возможно вместо объектов использовать массив, для упрощенного поиска...
         # Пока в колонии может производиться только один вид товара
-        self.goods = [0, 0, 0, 0, 0]
+        # self.goods = goods.resources_list
+        self.goods = goods.resources_list
+        # self.goods = [0, 0, 0, 0, 0]
         self.colony_buildings = [0, 0, 0, 0, 0]
 
         self.acts = []  # Список действий
@@ -60,6 +64,7 @@ class Dynasty:
             "end_turn": self.end_turn,
             "end_turn_know": self.end_turn_know,
         }
+        # print(f"self.goods: {self.goods}")
         # Пишем в pickle.
         # Тут нужно отловить ошибку отсутствия файла
         try:
@@ -68,15 +73,15 @@ class Dynasty:
         except FileNotFoundError:
             print(f"Файл 'games/{self.game_id}/gameID_{self.game_id}_playerID_{self.player_id}.trader' не найден")
             return ""
-        print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
-        print(data)
+        # print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
+        # print(data)
 
     def load_from_file(self, game_id, player_id):
         # Тут нужно отловить ошибку отсутствия файла
         try:
             with open(f"games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader", 'rb') as f:
                 data = pickle.load(f)
-                print(f"Восстанавливаем династию: {data}")
+                # print(f"Восстанавливаем династию: {data}")
         except FileNotFoundError:
             print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player_id}.trader' не найден")
             return ""
@@ -93,11 +98,12 @@ class Dynasty:
         self.result_logs_text = data["result_logs_text"]
         self.end_turn = data["end_turn"]
         self.end_turn_know = data["end_turn_know"]
-        print(f"Данные династии {self.name_rus} восстановились")
+        # print(f"Данные династии {self.name_rus} восстановились")
+        # print(f"self.colony_buildings: {self.colony_buildings}")
 
     def calc_act(self):  # Подсчет одного действия для династии
         # if len(self.acts) > 0:
-        print(f"Считаем ход для династии: {self.name}")
+        # print(f"Считаем ход для династии: {self.name}")
         if self.acts:
             # 1 индекс это первое по списку действие, первый элемент в списке, оно выполняется и удаляется
             # 2 индекс это индекс с ИД действия, он под индексом 1, под 0 текстовое описание. Начиная с 2 аргументы
@@ -138,21 +144,30 @@ class Dynasty:
 
             self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
             self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
-            print(self.game.buildings.buildings[buildings_index])
+            # print(self.game.buildings.buildings[buildings_index])
 
-    def act_sell_goods(self, city, goods):     # 201 id
+    def act_sell_goods(self, city, trade_goods):     # 201 id
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
-        print(f"city {city} {self.game.cities.cities[city]}")
-        print(f"goods {goods} {self.game.goods.resources}")  # Переработать класс
-        print(f"gold {self.gold }")
+        print(self.goods)
+        # print(f"city {city} {self.game.cities.cities[city]}")
+        # print(f"trade_goods {trade_goods} {self.game.goods.price(trade_goods)}")
+        # print(f"gold {self.gold }")
+
+        self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
+        # print(f"Вы продали {trade_goods} в {city}")
+        self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+        # print(f"{self.name_rus} продали {trade_goods} в {city}")
 
     def prod_goods(self):
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек
         # Сама функция запускается в конце обработки хода игрока
+        # print(f"self.self.goods {self.goods}")
         for i in range(len(self.colony_buildings)):
-            self.goods[i] += self.colony_buildings[i]
+            # print(f"goods[i] {self.goods[i]}")
+            # print(f"colony_buildings[i] {self.colony_buildings}")
+            self.goods[i][1] += self.colony_buildings[i]
 
     # Отмена действий. Вторым аргументом количество, все, последний или номер индекса(еще не реализованно)
     def cancel_act(self, what):

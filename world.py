@@ -40,7 +40,7 @@ class FirstWorld:
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
             "goods": self.goods,
-            "cities": self.cities,
+            "cities": self.cities.cities_name_list,
             "buildings": self.buildings,
             "all_logs": self.all_logs,
             "date_create": self.date_create,
@@ -96,9 +96,9 @@ class FirstWorld:
 
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
     def restore_dynasty(self, game_id, player_id):
-        print(f"Восстанавливаем династию: {player_id}")
+        # print(f"Восстанавливаем династию: {player_id}")
         self.dynasty[player_id] = Dynasty(self)
-        print(self.dynasty[player_id])
+        # print(self.dynasty[player_id])
         self.dynasty[player_id].load_from_file(game_id, player_id)
 
 
@@ -125,7 +125,7 @@ def calculate_turn(game_id):
         # !!!!!!!!!!! Мы тут получаем ИД игрока, а надо бы ИД династии.
         # !!!!!!!!!!! Можно было бы это совместить, но что будет, если меняется игрок на династии(стране)....
         # !!!!!!!!!!! Хотя вроде все верно, мы же забираем из подписанного файла ИДшником игрока
-        print(f"Пред восстанавливаем династию: {player_id}")
+        # print(f"Пред восстанавливаем династию: {player_id}")
         game.restore_dynasty(game_id, player_id)
     # Теперь нужно запустить собственно саму обработку действий
     # В случае начала обсчета хода, необходимо почистить лог прошлого хода у стран.
@@ -139,11 +139,13 @@ def calculate_turn(game_id):
     # Пока по 5 действий
     for cont in range(5):
         for dynasty_name in game.dynasty:
-            print(f"Проверка ссылки: {dynasty_name}")
-            print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
+            # print(f"Проверка ссылки: {dynasty_name}")
+            # print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
             game.dynasty[dynasty_name].calc_act()
     # Пост обсчет хода
+    # !!!!!!!!!!!!!!!! Было просто game.dynasty. Но считалось 2 раза. А с dynasty_list другой баг
     for dynasty_name in game.dynasty:
+        print(f"Почему запускается два раза? dynasty_name {dynasty_name}")
         game.dynasty[dynasty_name].calc_end_turn()
     # Сохраним данные для стран
     for dynasty_name in game.dynasty:
