@@ -16,6 +16,7 @@ from world import FirstWorld
 from UserLogin import UserLogin
 from cities import Cities
 from resources import Goods
+from colony_buildings import ColonyBuildings
 from dynasty import Dynasty
 # import postgreTables
 
@@ -418,8 +419,11 @@ def req_status_game():
     cities = Cities()
     list_cities = cities.cities_available()
     goods = Goods()
-    goods_name = goods.resources_available()
-    print(f"goods_name: {goods_name}")
+    buildings = ColonyBuildings()
+    goods_name_list = goods.resources_available()
+    # goods_name_list = goods.resources_name_list
+    buildings_name_list = buildings.buildings_name_list
+    # print(f"goods_name: {goods_name}")
     data = {
             "year": my_world["year"],
             "turn": my_world["turn"],
@@ -428,7 +432,8 @@ def req_status_game():
             "date_create": my_world["date_create"],
             "user_name": user_name,
             "cities": list_cities,
-            "goods_name": goods_name
+            "goods_name_list": goods_name_list,
+            "buildings_name_list": buildings_name_list
         }
     return jsonify(data)
 

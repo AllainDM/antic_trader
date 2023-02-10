@@ -20,11 +20,15 @@ class FirstWorld:
         self.player_list = []
 
         # Товары и производство
-        # А зачем нам это надо?
-        self.goods = goods
-        self.goods_name = goods.resources_name_list
         self.buildings = buildings
+        self.buildings_name = buildings.buildings_name_list  # Список названий построек
         self.cities = cities
+        self.cities_name = cities.cities_name_list  # Список названий городов
+
+        # Товары
+        self.goods = goods  # Ссылка на класс
+        # Список имен ресурсов для отображения на фронте сразу возьмем из класса
+        self.goods_name = goods.resources_name_list
 
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
@@ -40,8 +44,9 @@ class FirstWorld:
             "dynasty": self.dynasty,
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
-            "goods": self.goods,
-            "goods_name": self.goods_name,
+            # Список названий и ссылку на класс нет необходимости сохранять
+            # "goods": self.goods,  # Тут ссылка на экземпляр класса, это не нужно сохранять
+            # "goods_name": self.goods_name,  # Список имен ресурсов для отображения на фронте
             "cities": self.cities.cities_name_list,
             "buildings": self.buildings,
             "all_logs": self.all_logs,
@@ -70,13 +75,13 @@ class FirstWorld:
         self.dynasty = data["dynasty"]  # Тут переменная в виде названия Династии на английском
         self.dynasty_list = data["dynasty_list"]  # И тут переменная в виде названия Династии на английском.....
         self.player_list = data["player_list"]
-        self.goods = data["goods"]
-        self.goods_name = data["goods_name"]
+        # self.goods = data["goods"]
+        # self.goods_name = data["goods_name"]  # Список имен ресурсов для отображения на фронте
         self.cities = data["cities"]
         self.buildings = data["buildings"]
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]
-        # Проверим на ошибку чтение только что записанных данных
+        # Проверим на ошибку чтение только что записанных данных?????????
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
         # , win_points, colony, goods

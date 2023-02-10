@@ -4,6 +4,7 @@ import pickle
 import redis
 
 from resources import goods  # Импортируем уже созданный экземпляр класса
+from colony_buildings import buildings  # Импортируем уже созданный экземпляр класса
 
 
 # Настройка Redis для хранения данных игроков
@@ -26,13 +27,16 @@ class Dynasty:
 
         # Общие стартовые условия
         self.win_points = 0
-        # Возможно вместо объектов использовать массив, для упрощенного поиска...
-        # Пока в колонии может производиться только один вид товара
-        # self.goods = goods.resources_list
-        self.goods = goods.resources_list
-        self.goods_name = goods.resources_name_list
-        # self.goods = [0, 0, 0, 0, 0]
-        self.colony_buildings = [0, 0, 0, 0, 0]
+
+        # Ресурсы(товары)
+        # self.goods = goods
+        self.goods_list = goods.resources_list  # Тут загрузим словарь с ресурсами, на старте все значения == 0
+        # Список с именами ресурсов
+        self.goods_name_list = goods.resources_name_list  # Вроде не нужно, загружается из класса World
+
+        self.buildings_list = buildings.buildings_list  # Тут загрузим словарь с ресурсами, на старте все значения == 0
+        # Список с именами ресурсов
+        self.buildings_name_list = buildings.buildings_name_list  # Вроде не нужно, загружается из класса World
 
         self.acts = []  # Список действий
         # self.logs = []
@@ -58,9 +62,14 @@ class Dynasty:
             "name_rus": self.name_rus,
             "gold": self.gold,
             "win_points": self.win_points,
-            "goods": self.goods,
-            "goods_name": self.goods_name,
-            "colony_buildings": self.colony_buildings,
+
+            # Ссылку на класс нет необходимости сохранять
+            # "goods": self.goods,
+            "goods_list": self.goods_list,  # Список(словарь) ресурсов
+            "goods_name_list": self.goods_name_list,  # Все таки сохраняем названия, для вывода их на фронт
+            "buildings_list": self.buildings_list,
+            "buildings_name_list": self.buildings_name_list,
+
             "acts": self.acts,
             "result_logs_text": self.result_logs_text,
             "end_turn": self.end_turn,
@@ -94,9 +103,13 @@ class Dynasty:
         self.name_rus = data["name_rus"]
         self.gold = data["gold"]
         self.win_points = data["win_points"]
-        self.goods = data["goods"]
-        self.goods_name = data["goods_name"]
-        self.colony_buildings = data["colony_buildings"]
+
+        # self.goods = data["goods"]
+        self.goods_list = data["goods_list"]  # Список(словарь) ресурсов и их количество
+        self.goods_name_list = data["goods_name_list"]
+        self.buildings_list = data["buildings_list"]
+        self.buildings_name_list = data["buildings_name_list"]
+
         self.acts = data["acts"]
         self.result_logs_text = data["result_logs_text"]
         self.end_turn = data["end_turn"]

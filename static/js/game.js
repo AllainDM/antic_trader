@@ -15,18 +15,18 @@ let statusGame = {
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
     allLogs: [],        // Все логи итогов хода всех стран
     gold: 0,
-    goods: [],
+    goodsListАForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
     // goods1: 0,
     // goods2: 0,
     // goods3: 0,
     // goods4: 0,
     // goods5: 0,
-    colony_goods1: 0,
-    colony_goods2: 0,
-    colony_goods3: 0,
-    colony_goods4: 0,
-    colony_goods5: 0,
+    // colony_goods1: 0,
+    // colony_goods2: 0,
+    // colony_goods3: 0,
+    // colony_goods4: 0,
+    // colony_goods5: 0,
     user_name: "",
     game_id: "",        // ИД партии. Будем передавать вместе с ходом.
     date_create: "",
@@ -88,11 +88,11 @@ function updateVar() {
     // document.getElementById('goods3').innerText = `${goodsList[2]}: ` + statusGame.goods3;
     // document.getElementById('goods4').innerText = `${goodsList[3]}: ` + statusGame.goods4;
     // document.getElementById('goods5').innerText = `${goodsList[4]}: ` + statusGame.goods5;
-    document.getElementById('colony_goods1').innerText = `${colonyList[0]}: ` + statusGame.colony_goods1;
-    document.getElementById('colony_goods2').innerText = `${colonyList[1]}: ` + statusGame.colony_goods2;
-    document.getElementById('colony_goods3').innerText = `${colonyList[2]}: ` + statusGame.colony_goods3;
-    document.getElementById('colony_goods4').innerText = `${colonyList[3]}: ` + statusGame.colony_goods4;
-    document.getElementById('colony_goods5').innerText = `${colonyList[4]}: ` + statusGame.colony_goods5;
+    // document.getElementById('colony_goods1').innerText = `${colonyList[0]}: ` + statusGame.colony_goods1;
+    // document.getElementById('colony_goods2').innerText = `${colonyList[1]}: ` + statusGame.colony_goods2;
+    // document.getElementById('colony_goods3').innerText = `${colonyList[2]}: ` + statusGame.colony_goods3;
+    // document.getElementById('colony_goods4').innerText = `${colonyList[3]}: ` + statusGame.colony_goods4;
+    // document.getElementById('colony_goods5').innerText = `${colonyList[4]}: ` + statusGame.colony_goods5;
 }
 
 updateVar();
@@ -214,6 +214,7 @@ function actualVar(res) {
 
 
 const goodsNameHtml = document.querySelector(".stats1");
+const buildingsNameHtml = document.querySelector(".stats3");
 // const goodsNameHtml = document.querySelector('.choose-list');
 
 // Обновим параметры управляемой "страной"
@@ -227,40 +228,39 @@ function actualVarPlayer(res) {
     // statusGame.actsText = res.acts_text
     statusGame.logsText = res.result_logs_text
 
-    // console.log("тут")
-    // console.log(res.goods)
-    // console.log(res.goods["Медь"])
-    // console.log(res.goods[1])
-    // statusGame.goods1 = res.goods[0][1]
-    // statusGame.goods2 = res.goods[1][1]
-    // statusGame.goods3 = res.goods[2][1]
-    // statusGame.goods4 = res.goods[3][1]
-    // statusGame.goods5 = res.goods[4][1]
     console.log("тут");
-    console.log(res.goods);
-    console.log(res.goods_name);
+    console.log(res.goods_list);
+    console.log(res.goods_name_list);
 
-    // res.goods_name.forEach((btn, i) => {
+    goodsNameHtml.innerHTML += `<div>Ресурсы: </div>`;
 
-    //     console.log("forEach");
-    //     goodsNameHtml.innerHTML +=         
-    //     `<div>
-    //         Игра номер: ${i}
-    //     </div>`;  //   ид: ${id}
-    // })
-    res.goods_name.forEach((item, id) => {
-        console.log("forEach 2");
-        goodsNameHtml.innerHTML +=   
-        `<div>
-            ${item}: 
-        </div>`;  //   ид: ${id}
+    res.goods_name_list.forEach((item, id) => {        
+        console.log("forEach 2 Тут выводим список ресурсов");
+        if (res.goods_list[item] > 0) {
+            goodsNameHtml.innerHTML +=   
+            `<div>
+                ${item}: ${res.goods_list[item]}
+            </div>`;
+        };        
+    });
+
+    buildingsNameHtml.innerHTML += `<div>Постройки: </div>`;
+
+    res.buildings_name_list.forEach((item, id) => {
+        console.log("forEach 3 Тут выводим список ресурсов");
+        if (res.buildings_list[item] > 0) {
+            buildingsNameHtml.innerHTML +=   
+            `<div>
+                ${item}: ${res.buildings_list[item]}
+            </div>`;
+        };        
     });
     console.log("тут");
-    statusGame.colony_goods1 = res.colony_buildings[0]
-    statusGame.colony_goods2 = res.colony_buildings[1]
-    statusGame.colony_goods3 = res.colony_buildings[2]
-    statusGame.colony_goods4 = res.colony_buildings[3]
-    statusGame.colony_goods5 = res.colony_buildings[4]
+    // statusGame.colony_goods1 = res.colony_buildings[0]
+    // statusGame.colony_goods2 = res.colony_buildings[1]
+    // statusGame.colony_goods3 = res.colony_buildings[2]
+    // statusGame.colony_goods4 = res.colony_buildings[3]
+    // statusGame.colony_goods5 = res.colony_buildings[4]
 
 
     // end_turn = res.end_turn;
