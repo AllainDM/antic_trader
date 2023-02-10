@@ -37,5 +37,15 @@ class ColonyBuildings:
     def cost(self, build):
         return self.buildings_cost[build]
 
+    # Получить список доступных построек. По каким либо определенным параметрам отдельного игрока(страны)
+    # Пока передается весь список
+    def buildings_available(self, dynasty):
+        available_list = []
+        for i in self.buildings_name_list:
+            if dynasty == 'Barkid' and i == 'Поля(Зерно)':
+                continue
+            available_list.append(i)
+        return available_list
+
 
 buildings = ColonyBuildings()

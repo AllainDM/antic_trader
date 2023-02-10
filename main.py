@@ -132,7 +132,7 @@ def admin_create_new_game():
     return render_template('index.html',  title="Main", menu=menu_auth)
 
 
-@app.route("/game")  # Функиця перенаправляет игрока на страницу смой игры, откуда уже происходит запрос параметров
+@app.route("/game")  # Функция перенаправляет игрока на страницу смой игры, откуда уже происходит запрос параметров
 @login_required
 def play():
     user_admin = current_user.get_admin()
@@ -266,7 +266,7 @@ def req_cities_for_trade():
     pass
 
 
-@app.route("/create_test_new_game")  # Создать "бысструю" новую игру по прописаным в коде стартовым параметрам
+@app.route("/create_test_new_game")  # Создать "быструю" новую игру по прописаным в коде стартовым параметрам
 @login_required
 def create_test_new_game():
     user_admin = current_user.get_admin()
@@ -558,4 +558,3 @@ def profile():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

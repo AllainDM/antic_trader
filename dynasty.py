@@ -37,6 +37,7 @@ class Dynasty:
         self.buildings_list = buildings.buildings_list  # Тут загрузим словарь с ресурсами, на старте все значения == 0
         # Список с именами ресурсов
         self.buildings_name_list = buildings.buildings_name_list  # Вроде не нужно, загружается из класса World
+        self.buildings_available_list = buildings.buildings_available(self.name)
 
         self.acts = []  # Список действий
         # self.logs = []
@@ -69,6 +70,9 @@ class Dynasty:
             "goods_name_list": self.goods_name_list,  # Все таки сохраняем названия, для вывода их на фронт
             "buildings_list": self.buildings_list,
             "buildings_name_list": self.buildings_name_list,
+            # Список доступных для строительства построек
+            # !!!!!!! Это нужно не сохранять, а каждый раз обновлять из класса, мало ли что изменилось
+            "buildings_available_list": self.buildings_available_list,
 
             "acts": self.acts,
             "result_logs_text": self.result_logs_text,
@@ -109,6 +113,9 @@ class Dynasty:
         self.goods_name_list = data["goods_name_list"]
         self.buildings_list = data["buildings_list"]
         self.buildings_name_list = data["buildings_name_list"]
+        # Список доступных для строительства построек
+        # !!!!!!! Это нужно не сохранять, а каждый раз обновлять из класса, мало ли что изменилось
+        self.buildings_available_list = data["buildings_available_list"]
 
         self.acts = data["acts"]
         self.result_logs_text = data["result_logs_text"]

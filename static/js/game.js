@@ -15,8 +15,9 @@ let statusGame = {
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
     allLogs: [],        // Все логи итогов хода всех стран
     gold: 0,
-    goodsListАForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
+    goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
+    colonyListForBuild: [],  // Список доступных для строительства построек
     // goods1: 0,
     // goods2: 0,
     // goods3: 0,
@@ -228,6 +229,9 @@ function actualVarPlayer(res) {
     // statusGame.actsText = res.acts_text
     statusGame.logsText = res.result_logs_text
 
+    // Обновим список доступных для игрока(страны) построек
+    statusGame.colonyListForBuild = res.buildings_available_list
+
     console.log("тут");
     console.log(res.goods_list);
     console.log(res.goods_name_list);
@@ -237,12 +241,15 @@ function actualVarPlayer(res) {
     res.goods_name_list.forEach((item, id) => {        
         console.log("forEach 2 Тут выводим список ресурсов");
         if (res.goods_list[item] > 0) {
+            // Добавим товар в массив который выводится при выборе товара для продажи
+            statusGame.goodsListForSell.push(item);
             goodsNameHtml.innerHTML +=   
             `<div>
                 ${item}: ${res.goods_list[item]}
             </div>`;
         };        
     });
+    console.log(statusGame.goodsListForSell);
 
     buildingsNameHtml.innerHTML += `<div>Постройки: </div>`;
 
@@ -392,7 +399,7 @@ function logAllResultStart() {       //Функция запуска лога и
 document.getElementById('menu-new-colony').addEventListener('click', () => {
     hiddenAllMenu();  // Скроем все меню
     chooseList.innerHTML = `<span>Выберите постройку:</span>`;  // Добавим подсказку
-    colonyList.forEach((item, id) => {
+    statusGame.colonyListForBuild.forEach((item, id) => {
         // if (id > 0) {
             chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${colonyList[id]}</div>`;
             console.log(colonyList[id]);
@@ -456,7 +463,8 @@ function tradeChooseCity() { // Выбрать город для торговл�
 // После выбора города определим дальнейшие дествия
 function tradeChooseAction(city) {
     chooseList.innerHTML = "Продаем товар:";
-    goodsList.forEach((item, id) => {
+    // Выведем список только тех товаров, которые есть в наличии
+    statusGame.goodsListForSell.forEach((item, id) => {
         chooseList.innerHTML += 
         `<div class="menu-btn menu-buttons-show-trade">
             ${item}
