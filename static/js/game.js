@@ -51,21 +51,21 @@ let statusGame = {
 // Список возможных построек. Пока в базовом варианте. В виде массива, для перебора при отображении в виде пунктов меню
 // На будущее так же сможет скачиваться с бека
 
-let colonyList = [
-    "Плантация(Оливки)",
-    "Рудник(Медь)",
-    "Невол.рынок(Рабы)",
-    "Угодье(Шкуры)",
-    "Поля(Зерно)",
-];
+// let colonyList = [
+//     "Плантация(Оливки)",
+//     "Рудник(Медь)",
+//     "Невол.рынок(Рабы)",
+//     "Угодье(Шкуры)",
+//     "Поля(Зерно)",
+// ];
 
-let goodsList = [
-    "Оливки",
-    "Медь",
-    "Рабы",
-    "Шкуры",
-    "Зерно",
-];
+// let goodsList = [
+//     "Оливки",
+//     "Медь",
+//     "Рабы",
+//     "Шкуры",
+//     "Зерно",
+// ];
 
 // Обычная функция обновления параметров на страничке
 // Неплохо бы делать вывод только тех товаров, что есть в наличии через создание верстки перебором массива с ресурсами forEach
@@ -82,18 +82,6 @@ function updateVar() {
     document.getElementById('player').innerText = 'Игрок: ' + statusGame.user_name;
     document.getElementById('game-id').innerText = 'Игра: ' + statusGame.game_id;
     document.getElementById('game-date').innerText = 'Дата создания: ' + statusGame.date_create;
-
-
-    // document.getElementById('goods1').innerText = `${goodsList[0]}: ` + statusGame.goods1;
-    // document.getElementById('goods2').innerText = `${goodsList[1]}: ` + statusGame.goods2;
-    // document.getElementById('goods3').innerText = `${goodsList[2]}: ` + statusGame.goods3;
-    // document.getElementById('goods4').innerText = `${goodsList[3]}: ` + statusGame.goods4;
-    // document.getElementById('goods5').innerText = `${goodsList[4]}: ` + statusGame.goods5;
-    // document.getElementById('colony_goods1').innerText = `${colonyList[0]}: ` + statusGame.colony_goods1;
-    // document.getElementById('colony_goods2').innerText = `${colonyList[1]}: ` + statusGame.colony_goods2;
-    // document.getElementById('colony_goods3').innerText = `${colonyList[2]}: ` + statusGame.colony_goods3;
-    // document.getElementById('colony_goods4').innerText = `${colonyList[3]}: ` + statusGame.colony_goods4;
-    // document.getElementById('colony_goods5').innerText = `${colonyList[4]}: ` + statusGame.colony_goods5;
 }
 
 updateVar();
@@ -236,8 +224,10 @@ function actualVarPlayer(res) {
     console.log(res.goods_list);
     console.log(res.goods_name_list);
 
-    goodsNameHtml.innerHTML += `<div>Ресурсы: </div>`;
-
+    // Вывод на экран количества ресурсов и построек
+    // goodsNameHtml.innerHTML += `<div>Ресурсы: </div>`;
+    goodsNameHtml.innerHTML = `<div>Ресурсы: </div>`;
+    statusGame.goodsListForSell = []
     res.goods_name_list.forEach((item, id) => {        
         console.log("forEach 2 Тут выводим список ресурсов");
         if (res.goods_list[item] > 0) {
@@ -251,7 +241,7 @@ function actualVarPlayer(res) {
     });
     console.log(statusGame.goodsListForSell);
 
-    buildingsNameHtml.innerHTML += `<div>Постройки: </div>`;
+    buildingsNameHtml.innerHTML = `<div>Постройки: </div>`;
 
     res.buildings_name_list.forEach((item, id) => {
         console.log("forEach 3 Тут выводим список ресурсов");
@@ -262,15 +252,7 @@ function actualVarPlayer(res) {
             </div>`;
         };        
     });
-    console.log("тут");
-    // statusGame.colony_goods1 = res.colony_buildings[0]
-    // statusGame.colony_goods2 = res.colony_buildings[1]
-    // statusGame.colony_goods3 = res.colony_buildings[2]
-    // statusGame.colony_goods4 = res.colony_buildings[3]
-    // statusGame.colony_goods5 = res.colony_buildings[4]
 
-
-    // end_turn = res.end_turn;
     updateVar();
     logStart();
     logResultStart();
@@ -401,8 +383,8 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     chooseList.innerHTML = `<span>Выберите постройку:</span>`;  // Добавим подсказку
     statusGame.colonyListForBuild.forEach((item, id) => {
         // if (id > 0) {
-            chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${colonyList[id]}</div>`;
-            console.log(colonyList[id]);
+            chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${item}</div>`;
+            console.log(item);
         // };        
     });
 
@@ -413,9 +395,10 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".menu-buttons-choose").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            statusGame.acts.push([`Строим: ${colonyList[i]}`, 101, i]);         
+            statusGame.acts.push([
+                `Строим: ${statusGame.colonyListForBuild[i-1]}`, 101, statusGame.colonyListForBuild[i-1]
+            ]);         
             // 101 это главный ид действия. i индекс постройки в списке построек в беке. Ну и текст описание действия
-            // statusGame.actsText.push(`Построим постройку`);
             postAct(statusGame.game_id);
             logStart();
             console.log(statusGame.acts);
@@ -460,6 +443,7 @@ function tradeChooseCity() { // Выбрать город для торговл�
         });
     });
 };
+
 // После выбора города определим дальнейшие дествия
 function tradeChooseAction(city) {
     chooseList.innerHTML = "Продаем товар:";

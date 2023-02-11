@@ -154,29 +154,29 @@ class Dynasty:
         print(f"Функция обработки конца хода")
 
     # Неактуальный метод. Теперь запускается как функция получая аргументами ИД партии и страны.
-    def act_build_colony(self, buildings_index):     # 101 id
-        print(self.game.buildings.buildings)
+    def act_build_colony(self, buildings_name):     # 101 id
+        # !!!!!!! На будущее нужно сделать сверку, доступна ли это постройка для игрока
+        # print(f"self.game.buildings.buildings_cost: {self.game.buildings.buildings_cost}")
         # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
+        # print(f"buildings_name: {buildings_name}")
         self.gold = int(self.gold)
-        if self.gold >= self.game.buildings.buildings[buildings_index][1]:  # Индекс 1 это цена у постройки
+        # print(f"self.game.buildings.buildings_cost[buildings_name]:
+        # {self.game.buildings.buildings_cost[buildings_name]}")
+        if self.gold >= self.game.buildings.buildings_cost[buildings_name]:
             # print(buildings[buildings_index])
-            self.colony_buildings[buildings_index] += 1
-            self.gold -= self.game.buildings.buildings[buildings_index][1]
+            self.buildings_list[buildings_name] += 1
+            self.gold -= self.game.buildings.buildings_cost[buildings_name]
 
-            self.result_logs_text.append(f"Вы построили {self.game.buildings.buildings[buildings_index][0]}")
-            self.game.all_logs.append(f"{self.name_rus} построили  {self.game.buildings.buildings[buildings_index][0]}")
+            self.result_logs_text.append(f"Вы построили {buildings_name}")
+            self.game.all_logs.append(f"{self.name_rus} построили  {buildings_name}")
             # print(self.game.buildings.buildings[buildings_index])
 
     def act_sell_goods(self, city, trade_goods):     # 201 id
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
-        print(self.goods)
-        # print(f"city {city} {self.game.cities.cities[city]}")
-        # print(f"trade_goods {trade_goods} {self.game.goods.price(trade_goods)}")
-        # print(f"gold {self.gold }")
 
         self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
         # print(f"Вы продали {trade_goods} в {city}")
@@ -187,10 +187,14 @@ class Dynasty:
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек
         # Сама функция запускается в конце обработки хода игрока
         # print(f"self.self.goods {self.goods}")
-        for i in range(len(self.colony_buildings)):
+        for i in range(len(self.buildings_name_list)):
             # print(f"goods[i] {self.goods[i]}")
-            # print(f"colony_buildings[i] {self.colony_buildings}")
-            self.goods[i][1] += self.colony_buildings[i]
+            goods_name = self.buildings_name_list[i]
+            # print(f"[goods_name] {goods_name}")
+            # print(f"self.buildings_list[i] {self.buildings_list[goods_name]}")
+            # print(f"self.goods_list[buildings.buildings_output_goods[i]] "
+            #       f"{self.goods_list[buildings.buildings_output_goods[goods_name]]}")
+            self.goods_list[buildings.buildings_output_goods[goods_name]] += self.buildings_list[goods_name]
 
     # Отмена действий. Вторым аргументом количество, все, последний или номер индекса(еще не реализованно)
     def cancel_act(self, what):

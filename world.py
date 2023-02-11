@@ -47,8 +47,8 @@ class FirstWorld:
             # Список названий и ссылку на класс нет необходимости сохранять
             # "goods": self.goods,  # Тут ссылка на экземпляр класса, это не нужно сохранять
             # "goods_name": self.goods_name,  # Список имен ресурсов для отображения на фронте
-            "cities": self.cities.cities_name_list,
-            "buildings": self.buildings,
+            # "cities": self.cities.cities_name_list,
+            # "buildings": self.buildings,  # Зачем это сохранять в файл?????
             "all_logs": self.all_logs,
             "date_create": self.date_create,
         }
@@ -77,8 +77,8 @@ class FirstWorld:
         self.player_list = data["player_list"]
         # self.goods = data["goods"]
         # self.goods_name = data["goods_name"]  # Список имен ресурсов для отображения на фронте
-        self.cities = data["cities"]
-        self.buildings = data["buildings"]
+        # self.cities = data["cities"]
+        # self.buildings = data["buildings"]
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]
         # Проверим на ошибку чтение только что записанных данных?????????
