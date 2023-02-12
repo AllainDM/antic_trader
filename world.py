@@ -6,6 +6,7 @@ from dynasty import Dynasty
 from colony_buildings import buildings
 from resources import goods
 from cities import cities
+from events import events
 
 
 class FirstWorld:
@@ -143,8 +144,12 @@ def calculate_turn(game_id):
         game.dynasty[dyns].result_logs_text = []
     # Так же почистим общий лог
     game.all_logs = []
-    # Проверю вообще считается ли действия через ссылку
-    # Пока по 5 действий
+    # Запустим глобальные/локальные евенты
+    global_event = events.global_event()
+    if global_event:
+        game.all_logs.append(global_event)
+    print(f"Глобальный евент {global_event}")
+    # Пока по 5 действий. Нужно разделить по фазам, и что-то сделать в неограниченном количестве.
     for cont in range(5):
         for dynasty_name in game.dynasty:
             # print(f"Проверка ссылки: {dynasty_name}")
