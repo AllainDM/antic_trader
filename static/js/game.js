@@ -418,7 +418,8 @@ document.getElementById('menu-trade').addEventListener('click', () => {
     tradeChooseCity();
 });
 
-function tradeChooseCity() { // Выбрать город для торговли
+// Выбрать город для торговли
+function tradeChooseCity() { 
     statusGame.cities.forEach((item, id) => {
         chooseList.innerHTML += 
         `<div class="menu-btn menu-buttons-show-trade">
@@ -439,7 +440,7 @@ function tradeChooseCity() { // Выбрать город для торговл�
         btn.addEventListener('click', () => {
             console.log(`Вы выбрали город номер: ${btn}, ${i}`);
             console.log(`Вы выбрали город: ${statusGame.cities[i]}`);
-            tradeChooseAction(i); // Запустим дальнейшую функицю, передав ид (!не)города(ИД по списку предложенных к выбору)
+            tradeChooseAction(statusGame.cities[i]); // Запустим дальнейшую функицю, передав ид (!не)города(ИД по списку предложенных к выбору)
         });
     });
 };
@@ -447,6 +448,7 @@ function tradeChooseCity() { // Выбрать город для торговл�
 // После выбора города определим дальнейшие дествия
 function tradeChooseAction(city) {
     chooseList.innerHTML = "Продаем товар:";
+    console.log(`Продаем товар в город ${city}`)
     // Выведем список только тех товаров, которые есть в наличии
     statusGame.goodsListForSell.forEach((item, id) => {
         chooseList.innerHTML += 
@@ -465,8 +467,10 @@ function tradeChooseAction(city) {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".menu-buttons-show-trade").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            console.log([`Продаем: ${goodsList[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
-            statusGame.acts.push([`Продаем: ${goodsList[i]} в ${statusGame.cities[i]}`, 201, statusGame.cities[i], goodsList[i]]); 
+            console.log([`Продаем: ${statusGame.goodsListForSell[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
+            statusGame.acts.push([`Продаем: ${statusGame.goodsListForSell[i]} в ${city}`, 
+                201, city, statusGame.goodsListForSell[i]
+            ]); 
             postAct(statusGame.game_id);
             logStart();
             chooseList.innerHTML = ''; 

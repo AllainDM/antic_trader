@@ -29,7 +29,7 @@ class Dynasty:
         self.win_points = 0
 
         # Ресурсы(товары)
-        # self.goods = goods
+        self.goods = goods  # Ссылка нужна для получения цены товара. Ссылку не сохраняем с прочими данными
         self.goods_list = goods.resources_list  # Тут загрузим словарь с ресурсами, на старте все значения == 0
         # Список с именами ресурсов
         self.goods_name_list = goods.resources_name_list  # Вроде не нужно, загружается из класса World
@@ -177,10 +177,16 @@ class Dynasty:
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
-
-        self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
-        # print(f"Вы продали {trade_goods} в {city}")
-        self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+        if self.goods_list[trade_goods]:
+            print(f"Товар {trade_goods} есть в наличии")
+            # Получим золото взяв цену из класса товара
+            self.gold += goods.resources_price[trade_goods]
+            self.goods_list[trade_goods] -= 1
+            self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
+            # print(f"Вы продали {trade_goods} в {city}")
+            self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+        else:
+            self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
         # print(f"{self.name_rus} продали {trade_goods} в {city}")
 
     def prod_goods(self):
