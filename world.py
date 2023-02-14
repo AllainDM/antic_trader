@@ -1,6 +1,4 @@
 import pickle
-import json
-from datetime import datetime
 
 from dynasty import Dynasty
 from colony_buildings import buildings
@@ -45,11 +43,7 @@ class FirstWorld:
             "dynasty": self.dynasty,
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
-            # Список названий и ссылку на класс нет необходимости сохранять
-            # "goods": self.goods,  # Тут ссылка на экземпляр класса, это не нужно сохранять
-            # "goods_name": self.goods_name,  # Список имен ресурсов для отображения на фронте
-            # "cities": self.cities.cities_name_list,
-            # "buildings": self.buildings,  # Зачем это сохранять в файл?????
+            
             "all_logs": self.all_logs,
             "date_create": self.date_create,
         }
@@ -76,16 +70,11 @@ class FirstWorld:
         self.dynasty = data["dynasty"]  # Тут переменная в виде названия Династии на английском
         self.dynasty_list = data["dynasty_list"]  # И тут переменная в виде названия Династии на английском.....
         self.player_list = data["player_list"]
-        # self.goods = data["goods"]
-        # self.goods_name = data["goods_name"]  # Список имен ресурсов для отображения на фронте
-        # self.cities = data["cities"]
-        # self.buildings = data["buildings"]
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]
         # Проверим на ошибку чтение только что записанных данных?????????
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
-        # , win_points, colony, goods
         # При создании династии передаем название, но можно передавать ид
         # Нужно ли передавать ссылку self при создании Dynasty ?
         self.dynasty[name] = Dynasty(self, row_id=row_id, player_id=player_id, name=name, name_rus=name_rus, gold=gold)

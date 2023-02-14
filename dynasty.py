@@ -125,7 +125,6 @@ class Dynasty:
         # print(f"self.colony_buildings: {self.colony_buildings}")
 
     def calc_act(self):  # Подсчет одного действия для династии
-        # if len(self.acts) > 0:
         # print(f"Считаем ход для династии: {self.name}")
         if self.acts:
             # 1 индекс это первое по списку действие, первый элемент в списке, оно выполняется и удаляется
@@ -183,23 +182,15 @@ class Dynasty:
             self.gold += goods.resources_price[trade_goods]
             self.goods_list[trade_goods] -= 1
             self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
-            # print(f"Вы продали {trade_goods} в {city}")
             self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
         else:
             self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
-        # print(f"{self.name_rus} продали {trade_goods} в {city}")
 
     def prod_goods(self):
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек
         # Сама функция запускается в конце обработки хода игрока
-        # print(f"self.self.goods {self.goods}")
         for i in range(len(self.buildings_name_list)):
-            # print(f"goods[i] {self.goods[i]}")
             goods_name = self.buildings_name_list[i]
-            # print(f"[goods_name] {goods_name}")
-            # print(f"self.buildings_list[i] {self.buildings_list[goods_name]}")
-            # print(f"self.goods_list[buildings.buildings_output_goods[i]] "
-            #       f"{self.goods_list[buildings.buildings_output_goods[goods_name]]}")
             self.goods_list[buildings.buildings_output_goods[goods_name]] += self.buildings_list[goods_name]
 
     # Отмена действий. Вторым аргументом количество, все, последний или номер индекса(еще не реализованно)

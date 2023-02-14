@@ -520,16 +520,13 @@ function displayStatisticsOfAllPlayers(playersList) {
             status_end_turn = "Готов"
         } else {
             status_end_turn = "НЕ готов"
-        }
-        console.log(status_end_turn)    
+        }  
         chooseList.innerHTML += 
         `<div class="menu-btn menu-buttons-show-diplomaty">
         ${playersList[id]["name_rus"]}.
         Золото: ${playersList[id]["gold"]}.
         Статус: ${status_end_turn}
-        </div>`;
-        console.log(playersList[id]["name_rus"])
-        console.log(playersList[item])    
+        </div>`; 
     });
     // Нарисуем кнопку отмены(выхода)    
     chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-diplomaty-exit">Выход</div>`;

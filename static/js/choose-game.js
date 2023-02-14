@@ -14,17 +14,6 @@ function requestStatus() {
                 
             } else {
                 const response = JSON.parse(request.response);
-                        // После обсчета хода игрок один раз получает сообщение, что пришел новый ход
-                        // Баг!!! При сообщении о новом ходе все параметры висят по нулям
-                        // По скольку это временный вариант, чинить не буду
-                        // if (statusGame.year < response.year) {
-                        //     // Обновим параметры на странице
-                        //     actualVar(response);
-                        //     alert(`Новый ход обработан. Текущий год: ${response.year}`);
-                        // } else {
-                        //     // Обновим параметры на странице
-                        //     actualVar(response);
-                        // }
                 console.log(response);
                 console.log("Ответ от сервера");
                 chooseGame(response);
@@ -50,7 +39,6 @@ function chooseGame(gamesList) {
         chooseList.innerHTML = `<span>Нет доступных игр</span>`;  
     };
     gamesList.forEach((item, id) => {
-        // chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose"><a href="{{url_for('game')}}">Игра номер: ${item}</a></div>`;
         chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}
         `<div class="menu-btn menu-buttons-choose">
             Игра номер: ${item}

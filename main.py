@@ -421,7 +421,6 @@ def req_status_game():
     goods = Goods()
     buildings = ColonyBuildings()
     goods_name_list = goods.resources_available()
-    # goods_name_list = goods.resources_name_list
     buildings_name_list = buildings.buildings_name_list
     # print(f"goods_name: {goods_name}")
     data = {
