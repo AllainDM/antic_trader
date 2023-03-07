@@ -39,6 +39,7 @@ class ColonyBuildings:
 
     # Получить список доступных построек. По каким либо определенным параметрам отдельного игрока(страны)
     # Пока передается весь список
+    # И чисто экспериментом у Баркидов не доступно поле
     def buildings_available(self, dynasty):
         available_list = []
         for i in self.buildings_name_list:

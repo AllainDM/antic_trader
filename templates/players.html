@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+<div class="container">
+    <div class="list"> 
+        <div class="show-list" id="menu-buttons-choose">
+           <!-- Для отображения кнопок выбора -->
+        </div>
+    </div>
+</div>
+
+    <script src="{{ url_for('static', filename='js/players.js') }}"></script>
+
+{% endblock %}

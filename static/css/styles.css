@@ -29,7 +29,7 @@ ul.mainmenu {
 }
 ul.mainmenu li {
 	float: left;
-	margin: 18px 40px 0 50px;
+	margin: 18px 30px 0 30px;
 }
 ul.mainmenu li.last {float: right;}
 
@@ -147,7 +147,7 @@ div.content {
     flex-wrap: nowrap;
 } */
 .map-block {
-    width: 50%;
+    width: 65%;
     height: 280px;
     float: left;
 }
@@ -164,7 +164,7 @@ div.content {
     flex-wrap: nowrap;
 }
 .menu-block {
-    width: 50%;
+    width: 35%;
     height: 280px;
     float: left;
 }
