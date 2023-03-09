@@ -172,6 +172,11 @@ class Dynasty:
             self.game.all_logs.append(f"{self.name_rus} построили  {buildings_name}")
             # print(self.game.buildings.buildings[buildings_index])
 
+    def calc_win_points(self):
+        self.win_points = round(self.gold / 1000)
+        print(f"Победные очки {self.name_rus}: {self.win_points}")
+        # return self.win_points
+
     def act_sell_goods(self, city, trade_goods):     # 201 id
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать

@@ -79,28 +79,34 @@ class FirstWorld:
         # Нужно ли передавать ссылку self при создании Dynasty ?
         self.dynasty[name] = Dynasty(self, row_id=row_id, player_id=player_id, name=name, name_rus=name_rus, gold=gold)
         self.dynasty_list.append(name)
+        print(f"Создание династии {self.dynasty_list[-1]}")
+        print(f"Создание династии {self.dynasty[name]}")
+        # print(f"Общее количество династий: {len(self.dynasty_list)}")
+        # print(f"Общее количество династий: {len(self.dynasty)}")
         self.player_list.append(player_id)
         self.dynasty[name].save_to_file()
         # !!!!!!!!!! Еще нужно запустить у Династии функцию сохранения ее данных в файл
         # Создадим файл с записью хода игрока. Он должен быть пустым при каждом создании игры
         acts = []
-        try:
-            with open(f"games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
-                pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
-            return self.dynasty[name]
-        except FileNotFoundError:
-            print(f"Файл 'games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader' не найден")
-            return ""
+        # !!!!!!!! Возможно тут повторная запись в файл, то же самое выполняем выше "self.dynasty[name].save_to_file()"
+        # try:
+        #     with open(f"games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader", 'wb') as f:
+        #         pickle.dump(acts, f, pickle.HIGHEST_PROTOCOL)
+        #     return self.dynasty[name]
+        # except FileNotFoundError:
+        #     print(f"Файл 'games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader' не найден")
+        #     return ""
 
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
-    def restore_dynasty(self, game_id, player_id):
+    def restore_dynasty(self, game_id, player_id, dynasty_name):
         # print(f"Восстанавливаем династию: {player_id}")
-        self.dynasty[player_id] = Dynasty(self)
+        self.dynasty[dynasty_name] = Dynasty(self)
         # print(self.dynasty[player_id])
-        self.dynasty[player_id].load_from_file(game_id, player_id)
+        self.dynasty[dynasty_name].load_from_file(game_id, player_id)
 
 
 def check_readiness(game_id):  # Проверить все ли страны отправили ход
+    # Прочитаем общий файл с партией, нам понадобится список стран
     with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
         data_main = pickle.load(f)
     for i in data_main["player_list"]:
@@ -114,17 +120,39 @@ def check_readiness(game_id):  # Проверить все ли страны о�
     calculate_turn(game_id)
 
 
+# Функция должна запускаться при обсчете хода при восстановленных классах
+# Функция определения победителя, проверяется в конце каждого хода
+# def check_winner(game_id):
+#     # Функция должна работать в рамках восстановленных классов стран???
+#     # Прочитаем общий файл с партией, нам понадобится список стран
+#     with open(f"games/{game_id}/gameID_{game_id}.trader", 'rb') as f:
+#         data_main = pickle.load(f)
+#     for i in data_main["player_list"]:
+#         pass
+
+
 def calculate_turn(game_id):
     # Изначально запускается отдельная функция определяющая готовность хода игроков
     # Теперь восстановим все классы игры взяв параметры из pickle
     game = FirstWorld(game_id)  # Восстановим саму игру.
     game.load_from_file(game_id)  # Запустим метод считающий данные из файла.
-    for player_id in game.player_list:
+    print(f"Создание династии {game.dynasty_list[-1]}")
+    # print(f"Создание династии {game.dynasty[name]}")
+    print(f"Общее количество династий: {len(game.dynasty_list)}")
+    print(f"Общее количество династий: {len(game.dynasty)}")
+    # Функция восстанавливая династию по списку игроков, присваивает экземпляр класса не к имени страны,
+    # а к ИД игрока, от этого получается баг с клоном династии
+    # for player_id in game.player_list:
+    # !!!!!! Временно введем счетчик для соотношение ИД игрока от индекса страны с списке стран
+    # !!!!!! По хорошему сделать что-то типо словаря, название строна: Ид игрока
+    dynasty_playerID = 0
+    for dynasty_name in game.dynasty_list:
         # !!!!!!!!!!! Мы тут получаем ИД игрока, а надо бы ИД династии.
         # !!!!!!!!!!! Можно было бы это совместить, но что будет, если меняется игрок на династии(стране)....
         # !!!!!!!!!!! Хотя вроде все верно, мы же забираем из подписанного файла ИДшником игрока
         # print(f"Пред восстанавливаем династию: {player_id}")
-        game.restore_dynasty(game_id, player_id)
+        game.restore_dynasty(game_id, game.player_list[dynasty_playerID], dynasty_name)
+        dynasty_playerID += 1
     # Теперь нужно запустить собственно саму обработку действий
     # В случае начала обсчета хода, необходимо почистить лог прошлого хода у стран.
     # Или еще лучше, сделать массив вообще со всеми логами.
@@ -146,12 +174,18 @@ def calculate_turn(game_id):
             game.dynasty[dynasty_name].calc_act()
     # Пост обсчет хода
     # !!!!!!!!!!!!!!!! Было просто game.dynasty. Но считалось 2 раза. А с dynasty_list другой баг
+    print(f"game.dynasty: {game.dynasty}")
     for dynasty_name in game.dynasty:
         print(f"Почему запускается два раза? dynasty_name {dynasty_name}")
         game.dynasty[dynasty_name].calc_end_turn()
     # Сохраним данные для стран
     for dynasty_name in game.dynasty:
         game.dynasty[dynasty_name].save_to_file()
+    # Запустим определение победителя
+    # Сначала посчитаем победные очки для всех стран
+    for dynasty_name in game.dynasty:
+        print(f"dynasty[dynasty_name]: {game.dynasty[dynasty_name]}")
+        game.dynasty[dynasty_name].calc_win_points()
     # Добавим 1 к номеру хода и года
     game.year += 1
     game.turn += 1
