@@ -35,7 +35,7 @@ function showPlayers(players) {
         // chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose"><a href="{{url_for('game')}}">Игра номер: ${item}</a></div>`;
         list.innerHTML +=         
         `<div class="show-list">
-            ${item[1]}
+            ${item[1]}. Победы: ${item[2]}
         </div>`;  //   ид: ${id}
     });
 

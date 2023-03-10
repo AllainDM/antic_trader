@@ -111,3 +111,31 @@ class FDataBase:
             print("Ошибка поиска пользователя в БД", _ex)
 
         return False
+
+    # Обновить счетчик побед у игрока
+    def update_wins(self, user_id):
+        try:
+            self.__cur.execute(f"UPDATE users set wins = wins + 1 WHERE row_id = {user_id}")
+            self.__db.commit()
+            print(f"Победа засчиталась?")
+        except Exception as _ex:
+            print("Ошибка обновления данных в БД", _ex)
+            return False
+
+        return True
+
+    # Получить количество побед у игрока
+    # Есть общая функция получения инфы про игроков get_all_users, оттуда возьмем количество побед
+    # def get_wins(self, user_id):
+    #     try:
+    #         self.__cur.execute(f"SELECT wins FROM users WHERE row_id = {user_id} LIMIT 1")
+    #         res = self.__cur.fetchone()
+    #         if not res:
+    #             print("User not found")
+    #             return False
+    #
+    #         return res
+    #     except Exception as _ex:
+    #         print("Ошибка поиска пользователя в БД", _ex)
+    #
+    #     return False

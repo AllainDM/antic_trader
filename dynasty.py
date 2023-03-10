@@ -175,7 +175,7 @@ class Dynasty:
     def calc_win_points(self):
         self.win_points = round(self.gold / 1000)
         print(f"Победные очки {self.name_rus}: {self.win_points}")
-        # return self.win_points
+        return self.win_points
 
     def act_sell_goods(self, city, trade_goods):     # 201 id
         # Преобразуем строку с золотом в число
@@ -196,6 +196,10 @@ class Dynasty:
         # Сама функция запускается в конце обработки хода игрока
         for i in range(len(self.buildings_name_list)):
             goods_name = self.buildings_name_list[i]
+            # !!!!!!!!! Добавить в лог факт получения ресурса
+            if self.buildings_list[goods_name] > 0:
+                self.result_logs_text.append(
+                    f"Вы произвели {self.buildings_list[goods_name]} {buildings.buildings_output_goods[goods_name]}.")
             self.goods_list[buildings.buildings_output_goods[goods_name]] += self.buildings_list[goods_name]
 
     # Отмена действий. Вторым аргументом количество, все, последний или номер индекса(еще не реализованно)

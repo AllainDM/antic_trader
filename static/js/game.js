@@ -18,16 +18,7 @@ let statusGame = {
     goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
     colonyListForBuild: [],  // Список доступных для строительства построек
-    // goods1: 0,
-    // goods2: 0,
-    // goods3: 0,
-    // goods4: 0,
-    // goods5: 0,
-    // colony_goods1: 0,
-    // colony_goods2: 0,
-    // colony_goods3: 0,
-    // colony_goods4: 0,
-    // colony_goods5: 0,
+    winPoints: "?",
     user_name: "",
     game_id: "",        // ИД партии. Будем передавать вместе с ходом.
     date_create: "",
@@ -70,6 +61,7 @@ let statusGame = {
 // Обычная функция обновления параметров на страничке
 // Неплохо бы делать вывод только тех товаров, что есть в наличии через создание верстки перебором массива с ресурсами forEach
 function updateVar() {
+    document.getElementById('win-points').innerText = 'Победные очки: ' + statusGame.winPoints;
     document.getElementById('gold').innerText = 'Золото: ' + statusGame.gold;
     document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
     document.getElementById('province-name').innerText = statusGame.dynastyName;
@@ -208,6 +200,7 @@ const buildingsNameHtml = document.querySelector(".stats3");
 
 // Обновим параметры управляемой "страной"
 function actualVarPlayer(res) {
+    statusGame.winPoints = res.win_points
     statusGame.dynastyName = res.name_rus
     statusGame.gold = res.gold
     statusGame.end_turn = res.end_turn

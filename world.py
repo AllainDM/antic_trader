@@ -6,6 +6,10 @@ from resources import goods
 from cities import cities
 from events import events
 
+# Попробуем импортировать main для доступа к БД
+# Нельзя, получается цикл
+# import main
+
 
 class FirstWorld:
     def __init__(self, row_id, date_create="0:0:0", is_active=1):
@@ -13,6 +17,9 @@ class FirstWorld:
         self.is_active = 1  # Не активная игра считается как завершенная
         self.year = -300
         self.turn = 1
+
+        self.need_win_points_for_win = 10
+        self.winners = []
 
         self.dynasty = {}  # Основной объект с династиями
         self.dynasty_list = []  # Массив стран, для перебора при обсчете хода
@@ -178,14 +185,24 @@ def calculate_turn(game_id):
     for dynasty_name in game.dynasty:
         print(f"Почему запускается два раза? dynasty_name {dynasty_name}")
         game.dynasty[dynasty_name].calc_end_turn()
-    # Сохраним данные для стран
-    for dynasty_name in game.dynasty:
-        game.dynasty[dynasty_name].save_to_file()
     # Запустим определение победителя
     # Сначала посчитаем победные очки для всех стран
+    # game.winners = []  # Список победителей, добавляются страны получившее необходимое количество очков
     for dynasty_name in game.dynasty:
         print(f"dynasty[dynasty_name]: {game.dynasty[dynasty_name]}")
-        game.dynasty[dynasty_name].calc_win_points()
+        # Посчитаем победные очки
+        wp = game.dynasty[dynasty_name].calc_win_points()
+        # Если их больше указанного количества записываем страну в список победителей
+        if wp >= game.need_win_points_for_win:
+            game.winners.append(game.dynasty[dynasty_name].name_rus)
+    print(f"winners: {game.winners}")
+    # Сохраним данные для стран
+    # Данные сохраняем после всех изменений касающих игрока, фронт потом запрашивает данные уже из файла
+    for dynasty_name in game.dynasty:
+        game.dynasty[dynasty_name].save_to_file()
+    # Проверить список победителей
+    # Необходимо определить страны победительницы, определить ИД игрока, и добавить в БД запись
+    main.dbase.update_wins(1)
     # Добавим 1 к номеру хода и года
     game.year += 1
     game.turn += 1
