@@ -182,9 +182,20 @@ def load_all_games():  # Делаю подпись html, чтоб раздели
     global game_arr
     # Прочитаем файл со списком игр
     game_arr = dbase.get_all_games()
+    # Выше мы получили кортеж с данными страны, под 5 индексом список ИД игроков
+    # Нужно перебрать список ИД игроков и вынести имена игроков
+    print(f"game_arr: {game_arr}")
     games_list = []  # Это список игр для отправки админу
+    # players_list = []  # Это список игр для отправки админу
     for game in game_arr:
         games_list.append(game[0])
+        # for us_name in game[5]:
+        #     one_user = dbase.get_user(us_name)
+        #     players_list.append(one_user[3])
+        #     players_list.append(one_user[3])
+    # for game in game_arr:
+    #     one_user = dbase.get_user(game[5][0])
+    # print(f"players_list {players_list}")
     return jsonify(games_list)
 
 
@@ -293,8 +304,10 @@ def create_new_game():
             print("this is admin")
             post = request.get_json()
             print(f"post: {post}")
-            create_game(post)
-            return jsonify("Ответ от Python: Игра создалась")
+            info_to_front = create_game(post)
+            print(f"Ответ от Python: Игра создалась")
+            # return jsonify("Ответ от Python: Игра создалась")
+            return jsonify(info_to_front)
     else:
         return ""
 
@@ -325,15 +338,18 @@ def create_game(players_dynasty):  # Получаем только список 
 
     # Создадим династии
     id_players_for_add_db = []  # Массив и ИД игроков, передается в БД, для записи партии
+    print(f"players_dynasty {players_dynasty}")
     for player in players_dynasty:
-        this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
-        id_players_for_add_db.append(player[0])
+        # this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
+        this_game.create_dynasty(1, player["playerId"], player["nameEng"], player["nameRus"], 10000)  # Золото пока не передается
+        id_players_for_add_db.append(player["playerId"])
 
     this_game.save_to_file()
     dbase.add_game(1, -300, id_players_for_add_db)
 
-    print("Игра на двоих создана")
+    print("Игра создана")
     print(this_game.dynasty_list)
+    return f"Game create {players_dynasty}"
 
 
 # !!!!!!!!!! Отменять надо у Активной игры. Или нет?

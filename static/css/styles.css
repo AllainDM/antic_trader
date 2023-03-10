@@ -299,3 +299,40 @@ div.content {
     text-decoration: none;
     cursor: pointer;
   } 
+
+  /* Таблицы добавления новых игроков(стран) */
+
+.table-main {
+    margin-top: 20px;
+    margin-left: 40px;
+}
+
+.table-th {
+    background: #ddd8d2;
+    /* color: rgb(24, 21, 21); */
+    /* padding: 0px 0px 0px 0px; */
+    border-width: 1px;
+    border-color: white;
+    text-align: center;
+    font-size: 14px;
+}
+
+#th-player {
+    width: 180px;
+    text-align: center;
+}
+
+#th-name {
+    width: 180px;
+    text-align: center;
+}
+
+#th-name-rus {
+    width: 180px;
+    text-align: center;
+}
+
+#th-gold {
+    width: 100px;
+    text-align: center;
+}
