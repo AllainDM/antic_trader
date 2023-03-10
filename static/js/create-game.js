@@ -77,20 +77,22 @@ const modal = document.getElementById("my-modal");
 // Получить кнопку, которая открывает модальное окно
 const btnAddNewDynasty = document.getElementById("add-new-dynasty");
 
-// Получить элемент <span>, который закрывает модальнок окно
+// Получить элемент <span>, который закрывает модальное окно
 const span = document.getElementsByClassName("close")[0];
 
 
-// Когда пользователь нажимает на кнопку, откройте модальнок окно
+// Открыть модальное окно по нажатию
 btnAddNewDynasty.onclick = function() {
     modal.style.display = "block";
     // Отобразим список доступных(пока что вообще всех) игроков
     newPlayers = document.getElementById('choose-players');
     newPlayers.innerHTML = "<option value='000'></option>" // Почистим от предыдущей загрузки
     listPlayers.forEach((item, id) => {
-        // console.log(item)
+        console.log("Тут:")
+        console.log(item)
+        console.log(id)
         newPlayers.innerHTML +=        
-        `<option value="${id}">${item[1]}</option>`; 
+        `<option value="${item[0]-1}">${item[1]}</option>`; 
     });
 }
 

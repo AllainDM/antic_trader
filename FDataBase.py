@@ -78,7 +78,18 @@ class FDataBase:
             self.__db.commit()
             print(f"Игра сделалась НЕ активной?")
         except Exception as _ex:
-            print("Ошибка обновления данных из БД", _ex)
+            print("Ошибка обновления данных в БД", _ex)
+            return False
+
+        return True
+
+    def end_game(self, game_id):  # Окончание игры, можно продолжать играть, победитель определен
+        try:
+            self.__cur.execute(f"UPDATE games set the_end = 1 WHERE row_id = {game_id}")
+            self.__db.commit()
+            print(f"Игра окончена")
+        except Exception as _ex:
+            print("Ошибка обновления данных в БД", _ex)
             return False
 
         return True
@@ -114,10 +125,25 @@ class FDataBase:
 
     # Обновить счетчик побед у игрока
     def update_wins(self, user_id):
+        print("Функция обновления считчика побед попыталась запуститься")
         try:
+            # self.__cur.execute(f"UPDATE games set is_active = 0 WHERE row_id = {game_id}")
+            # self.__cur.execute(f"UPDATE users set wins = 1 WHERE row_id = {user_id}")
             self.__cur.execute(f"UPDATE users set wins = wins + 1 WHERE row_id = {user_id}")
             self.__db.commit()
             print(f"Победа засчиталась?")
+        except Exception as _ex:
+            print("Ошибка обновления данных в БД", _ex)
+            return False
+
+        return True
+
+    def update_win_game(self, game_id):
+        print("Функция обновления считчика побед попыталась запуститься")
+        try:
+            self.__cur.execute(f"UPDATE games set the_end = 1 WHERE row_id = {game_id}")
+            self.__db.commit()
+            print(f"Партия окончена?")
         except Exception as _ex:
             print("Ошибка обновления данных в БД", _ex)
             return False

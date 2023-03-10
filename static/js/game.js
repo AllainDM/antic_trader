@@ -19,6 +19,7 @@ let statusGame = {
     goodsName: [],
     colonyListForBuild: [],  // Список доступных для строительства построек
     winPoints: "?",
+    winners: [],
     user_name: "",
     game_id: "",        // ИД партии. Будем передавать вместе с ходом.
     date_create: "",
@@ -62,6 +63,8 @@ let statusGame = {
 // Неплохо бы делать вывод только тех товаров, что есть в наличии через создание верстки перебором массива с ресурсами forEach
 function updateVar() {
     document.getElementById('win-points').innerText = 'Победные очки: ' + statusGame.winPoints;
+    document.getElementById('winners').innerText = 'Победители: ' + statusGame.winners;
+
     document.getElementById('gold').innerText = 'Золото: ' + statusGame.gold;
     document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
     document.getElementById('province-name').innerText = statusGame.dynastyName;
@@ -177,6 +180,8 @@ function autoUpdateTimer() {
 
 // Обновим общие параметры
 function actualVar(res) {
+    statusGame.winners = res.winners;
+
     statusGame.year = res.year;
     statusGame.turn = res.turn;
     statusGame.allLogs = res.all_logs;

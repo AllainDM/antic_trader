@@ -5,14 +5,15 @@ from colony_buildings import buildings
 from resources import goods
 from cities import cities
 from events import events
+from FDataBase import FDataBase
 
 # Попробуем импортировать main для доступа к БД
 # Нельзя, получается цикл
-# import main
+import maindb
 
 
 class FirstWorld:
-    def __init__(self, row_id, date_create="0:0:0", is_active=1):
+    def __init__(self, row_id, date_create="0:0:0", is_active=1, the_end=0):
         self.row_id = row_id  # Номер игры
         self.is_active = 1  # Не активная игра считается как завершенная
         self.year = -300
@@ -20,6 +21,8 @@ class FirstWorld:
 
         self.need_win_points_for_win = 10
         self.winners = []
+        self.winners_ID = []
+        self.game_the_end = False
 
         self.dynasty = {}  # Основной объект с династиями
         self.dynasty_list = []  # Массив стран, для перебора при обсчете хода
@@ -50,9 +53,11 @@ class FirstWorld:
             "dynasty": self.dynasty,
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
-            
             "all_logs": self.all_logs,
             "date_create": self.date_create,
+
+            "winners": self.winners,
+            "game_the_end": self.game_the_end,
         }
         # Пишем в pickle.
         try:
@@ -79,6 +84,10 @@ class FirstWorld:
         self.player_list = data["player_list"]
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]
+
+        # Список победителей и статус игры, при окончании победитель повторно не определяется
+        self.winners = data["winners"]
+        self.game_the_end = data["game_the_end"]
         # Проверим на ошибку чтение только что записанных данных?????????
 
     def create_dynasty(self, row_id, player_id, name, name_rus, gold):
@@ -174,7 +183,8 @@ def calculate_turn(game_id):
         game.all_logs.append(global_event)
     print(f"Глобальный евент {global_event}")
     # Пока по 5 действий. Нужно разделить по фазам, и что-то сделать в неограниченном количестве.
-    for cont in range(5):
+    # 20 для первого теста
+    for cont in range(20):
         for dynasty_name in game.dynasty:
             # print(f"Проверка ссылки: {dynasty_name}")
             # print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
@@ -186,8 +196,22 @@ def calculate_turn(game_id):
         print(f"Почему запускается два раза? dynasty_name {dynasty_name}")
         game.dynasty[dynasty_name].calc_end_turn()
     # Запустим определение победителя
+    if not game.game_the_end:
+        check_winners(game)
+    # Сохраним данные для стран
+    # Данные сохраняем после всех изменений касающихся игрока, фронт потом запрашивает данные уже из файла
+    for dynasty_name in game.dynasty:
+        game.dynasty[dynasty_name].save_to_file()
+    # Проверить список победителей
+    # Добавим 1 к номеру хода и года
+    game.year += 1
+    game.turn += 1
+    game.save_to_file()
+
+
+# Напишем отдельно функцию определяющую победителя и оканчивающую игру
+def check_winners(game):
     # Сначала посчитаем победные очки для всех стран
-    # game.winners = []  # Список победителей, добавляются страны получившее необходимое количество очков
     for dynasty_name in game.dynasty:
         print(f"dynasty[dynasty_name]: {game.dynasty[dynasty_name]}")
         # Посчитаем победные очки
@@ -195,15 +219,17 @@ def calculate_turn(game_id):
         # Если их больше указанного количества записываем страну в список победителей
         if wp >= game.need_win_points_for_win:
             game.winners.append(game.dynasty[dynasty_name].name_rus)
+            print(f"Ид победителя: {game.dynasty[dynasty_name].player_id}")
+            game.winners_ID.append(game.dynasty[dynasty_name].player_id)
     print(f"winners: {game.winners}")
-    # Сохраним данные для стран
-    # Данные сохраняем после всех изменений касающих игрока, фронт потом запрашивает данные уже из файла
-    for dynasty_name in game.dynasty:
-        game.dynasty[dynasty_name].save_to_file()
-    # Проверить список победителей
+    # Если есть победители, надо их записать в БД
     # Необходимо определить страны победительницы, определить ИД игрока, и добавить в БД запись
-    main.dbase.update_wins(1)
-    # Добавим 1 к номеру хода и года
-    game.year += 1
-    game.turn += 1
-    game.save_to_file()
+    # Нужен цикл по массиву с победителями
+    db = maindb.get_db()
+    dbase = FDataBase(db)
+    if len(game.winners_ID) > 0:
+        for i in game.winners_ID:
+            dbase.update_wins(i)
+        # Сменим статус игры, заодно сохраним данные
+        game.game_the_end = True
+        game.save_to_file()

@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_required, current_user, login_user, LoginManager, logout_user
 import redis
 
+import maindb
 import config
 import world
 from FDataBase import FDataBase
@@ -90,7 +91,7 @@ game_arr = []
 def before_request():
     # Database connection, before query
     global dbase
-    db = get_db()
+    db = maindb.get_db()
     dbase = FDataBase(db)
 
 
@@ -425,6 +426,8 @@ def req_status_game():
     buildings_name_list = buildings.buildings_name_list
     # print(f"goods_name: {goods_name}")
     data = {
+            "winners": my_world["winners"],
+
             "year": my_world["year"],
             "turn": my_world["turn"],
             "all_logs": my_world["all_logs"],
