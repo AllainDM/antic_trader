@@ -53,13 +53,13 @@ class FDataBase:
 
         return True
 
-    def add_game(self, turn, year, players, is_active=1):
+    def add_game(self, turn, year, players, is_active=1, the_end=0):
         try:
             # Пока без даты, надо модифицировать таблицу
             date_create = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-            self.__cur.execute("INSERT INTO games (is_active, turn, year, players, date_create) "
-                               "VALUES(%s, %s, %s, %s, %s)",
-                               (is_active, turn, year, players, date_create))
+            self.__cur.execute("INSERT INTO games (is_active, the_end, turn, year, players, date_create) "
+                               "VALUES(%s, %s, %s, %s, %s, %s)",
+                               (is_active, the_end, turn, year, players, date_create))
             self.__db.commit()
             print(f"Добавилось? turn:{turn} year: {year} players: {players} "
                   f"date_create: {date_create}")

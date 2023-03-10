@@ -19,7 +19,7 @@ class FirstWorld:
         self.year = -300
         self.turn = 1
 
-        self.need_win_points_for_win = 10
+        self.need_win_points_for_win = 11
         self.winners = []
         self.winners_ID = []
         self.game_the_end = False

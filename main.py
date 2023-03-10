@@ -212,7 +212,7 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     games_list = []  # Это список игр для отправки игроку для выбора
     print(f"game_arr1: {game_arr}")
     for my_g in game_arr:
-        if player in my_g[4]:
+        if player in my_g[5]:
             print(f"Игрок есть в игре номер: {my_g[0]}")
             games_list.append(my_g[0])
     return jsonify(games_list)
