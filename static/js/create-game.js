@@ -16,8 +16,8 @@ document.getElementById('add-new-dynasty').addEventListener('click', () => {
 let setGames = {
     listPlayers: [],
     numPlayers: 1,
-    namesEng: ['Magonid', 'Barkid', 'Ganonid', 'Bomgid', 'Hvarid', 'Umrid', 'Bolid', 'Tankid'],
-    namesRus: ['Магониды', 'Баркиды', 'Ганониды', 'Бомгиды', 'Хвариды', 'Умриды', 'Болиды', 'Танкиды'],
+    namesEng: ['Magonid', 'Barkid', 'Ganonid', 'Bomgid', 'Hvarid', 'Umrid', 'Bolid', 'Tankid', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    namesRus: ['Магониды', 'Баркиды', 'Ганониды', 'Бомгиды', 'Хвариды', 'Умриды', 'Болиды', 'Танкиды', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
 
 }
 

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+
+<div class="container">
+
+    <div class="menu-btn" id="create-new-game">Создать быструю тестовую новую игру</div>
+
+</div>
+
+<hr>
+
+<div class="container">
+    <p id="status-new-game">Расширенная настройка новой игры</p>
+
+    <!-- Открыть модальное окно -->
+    <button id="add-new-dynasty">Добавить игрока</button>
+
+    <button id="create-new-set-game">
+        Создать новую игру
+    </button>
+</div>
+
+<!-- Модалка -->
+<div id="my-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="set-dynasty">
+            <b>Добавление нового игрока</b> 
+            <div>
+                Выберите игрока:
+                <select class="add-players" id="choose-players">
+                </select>
+            </div>
+        </div>
+        <div class="set-dynasty">
+            <div>
+                Название династии(eng):
+                <input type="text" id="name-eng" size="10px" value="Magonid">
+            </div>
+        </div>
+        <div class="set-dynasty">
+            <div>
+                Название династии(rus):
+                <input type="text" id="name-rus" size="10px" value="Магониды">
+            </div>
+        </div>
+        <div class="set-dynasty">
+            <div>
+                Стартовое золото(не обязательно и пока не работает):
+                <input type="text" id="start-gold" size="10px" value="">
+            </div>
+        </div>
+        <div class="set-dynasty" id="add-dynasty">
+            <div>
+                <button>Добавить</button>
+            </div>
+        </div>
+        
+    </div>
+</div> 
+
+<div class="container">
+    <div class="list"> 
+        <div class="show-list" id="menu-buttons-choose">
+           <!-- Для отображения списка игроков -->
+        </div>
+    </div>
+</div>
+
+
+
+    <script src="{{ url_for('static', filename='js/create-game.js') }}"></script>
+
+{% endblock %}
