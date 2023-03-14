@@ -224,8 +224,11 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
     print(f"game_arr1: {game_arr}")
     for my_g in game_arr:
         if player in my_g[5]:
+            pl_in_game = []
+            for pl in my_g[5]:
+                pl_in_game.append(dbase.get_user(pl)[3])
             print(f"Игрок есть в игре номер: {my_g[0]}")
-            games_list.append(my_g[0])
+            games_list.append(f"{my_g[0]} Игроки: {pl_in_game}")
     return jsonify(games_list)
 
 
