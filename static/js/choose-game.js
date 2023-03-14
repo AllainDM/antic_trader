@@ -41,7 +41,7 @@ function chooseGame(gamesList) {
     gamesList.forEach((item, id) => {
         chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}
         `<div class="menu-btn menu-buttons-choose">
-            Игра: ${item}
+            Игра: ${item} 
         </div>`;  //   ид: ${id}
     });
 
