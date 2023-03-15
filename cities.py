@@ -13,5 +13,8 @@ class Cities:
     def cities_available(self):
         return self.cities_name_list
 
+    def build_cities(self):
+        pass
+
 
 cities = Cities()
