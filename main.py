@@ -548,7 +548,8 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('profile'))
     if request.method == "POST":
-        user = dbase.get_user_by_login(request.form['login'])
+        user = dbase.get_user_by_login(request.form['login'].lower())
+        # user = user
         if user and check_password_hash(user[2], request.form['psw']):
             user_login = UserLogin().create(user)
             login_user(user_login)
