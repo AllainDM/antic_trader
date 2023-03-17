@@ -446,12 +446,16 @@ function tradeChooseCity() {
 // После выбора города определим дальнейшие дествия
 function tradeChooseAction(city) {
     chooseList.innerHTML = "Продаем товар:";
-    console.log(`Продаем товар в город ${city}`)
+    chooseList.innerHTML += 
+    `<div class="menu-btn menu-buttons-show-trade">
+        Продать весь товар
+    </div>`;
+    console.log(`Продаем товар в город ${city}`);
     // Выведем список только тех товаров, которые есть в наличии
     statusGame.goodsListForSell.forEach((item, id) => {
         chooseList.innerHTML += 
         `<div class="menu-btn menu-buttons-show-trade">
-            ${item}
+            Продать ${item}
         </div>`;
     });      
 
@@ -465,6 +469,8 @@ function tradeChooseAction(city) {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".menu-buttons-show-trade").forEach((btn, i) => {
         btn.addEventListener('click', () => {
+            console.log(btn)
+            console.log(statusGame.goodsListForSell[i])
             console.log([`Продаем: ${statusGame.goodsListForSell[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
             statusGame.acts.push([`Продаем: ${statusGame.goodsListForSell[i]} в ${city}`, 
                 201, city, statusGame.goodsListForSell[i]
