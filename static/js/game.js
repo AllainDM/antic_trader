@@ -446,28 +446,25 @@ function tradeChooseCity() {
 // После выбора города определим дальнейшие дествия
 function tradeChooseAction(city) {
     chooseList.innerHTML = "Продаем товар:";
-    chooseList.innerHTML += 
-    `<div class="menu-btn menu-buttons-show-trade">
-        Продать весь товар
-    </div>`;
     console.log(`Продаем товар в город ${city}`);
     // Выведем список только тех товаров, которые есть в наличии
     statusGame.goodsListForSell.forEach((item, id) => {
         chooseList.innerHTML += 
-        `<div class="menu-btn menu-buttons-show-trade">
+        `<div class="menu-btn menu-buttons-show-trade trade-goods">
             Продать ${item}
         </div>`;
-    });      
+    });     
+
+    chooseList.innerHTML += 
+    `<div class="menu-btn menu-buttons-show-trade" id="sell-all-goods">
+        Продать весь товар
+    </div>`;
 
     // Нарисуем кнопку отмены(выхода)
     chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
-    document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
-        chooseList.innerHTML = ''; 
-        exitToMainMenuButtons(); 
-    });
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
-    document.querySelectorAll(".menu-buttons-show-trade").forEach((btn, i) => {
+    document.querySelectorAll(".trade-goods").forEach((btn, i) => {
         btn.addEventListener('click', () => {
             console.log(btn)
             console.log(statusGame.goodsListForSell[i])
@@ -480,6 +477,21 @@ function tradeChooseAction(city) {
             chooseList.innerHTML = ''; 
             exitToMainMenuButtons(); 
         });
+    });
+
+    // Определяем еще одну кнопку
+    document.getElementById("sell-all-goods").addEventListener('click', () => {
+        console.log("А попробем-ка продать весь товар");
+        statusGame.acts.push([`Продаем весь товар в ${city}`, 202, city]); 
+        postAct(statusGame.game_id);
+        logStart();
+        chooseList.innerHTML = ''; 
+        exitToMainMenuButtons(); 
+    });     
+
+    document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
+        chooseList.innerHTML = ''; 
+        exitToMainMenuButtons(); 
     });
 }
 
