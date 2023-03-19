@@ -466,16 +466,17 @@ function tradeChooseAction(city) {
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".trade-goods").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            console.log(btn)
-            console.log(statusGame.goodsListForSell[i])
-            console.log([`Продаем: ${statusGame.goodsListForSell[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
-            statusGame.acts.push([`Продаем: ${statusGame.goodsListForSell[i]} в ${city}`, 
-                201, city, statusGame.goodsListForSell[i]
-            ]); 
-            postAct(statusGame.game_id);
-            logStart();
-            chooseList.innerHTML = ''; 
-            exitToMainMenuButtons(); 
+            console.log(btn);
+            console.log(statusGame.goodsListForSell[i]);
+            // console.log([`Продаем: ${statusGame.goodsListForSell[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
+            // statusGame.acts.push([`Продаем: ${statusGame.goodsListForSell[i]} в ${city}`, 
+            //     201, city, statusGame.goodsListForSell[i]
+            // ]); 
+            // postAct(statusGame.game_id);
+            // logStart();
+            // chooseList.innerHTML = ''; 
+            // exitToMainMenuButtons(); 
+            tradeChooseNumGoodsTrade(statusGame.goodsListForSell[i]);
         });
     });
 
@@ -488,6 +489,31 @@ function tradeChooseAction(city) {
         chooseList.innerHTML = ''; 
         exitToMainMenuButtons(); 
     });     
+
+    document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
+        chooseList.innerHTML = ''; 
+        exitToMainMenuButtons(); 
+    });
+}
+
+// После выбора города определим дальнейшие дествия
+function tradeChooseNumGoodsTrade(goods) {
+    chooseList.innerHTML = "Продаем товар:";
+
+    chooseList.innerHTML += 
+    `<div class="menu-btn menu-buttons-show-trade" id="sell-all-goods">
+        Продать все количество
+    </div>`;
+
+    chooseList.innerHTML += 
+    `<div class="menu-btn menu-buttons-show-trade" id="sell-one-goods">
+        Продать 1 штуку
+    </div>`;
+
+    // Нарисуем кнопку отмены(выхода)
+    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
+
+    // Определяем позицию кнопки и "создаем" соответсвующий приказ
 
     document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
         chooseList.innerHTML = ''; 
