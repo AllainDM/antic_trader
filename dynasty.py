@@ -135,7 +135,7 @@ class Dynasty:
                 print(f"""Выполнено действие {self.acts[0]}""")
                 self.acts.pop(0)
             elif self.acts[0][1] == 201:
-                self.act_sell_goods(self.acts[0][2], self.acts[0][3])  # И тут передадим аргумент
+                self.act_sell_goods(self.acts[0][2], self.acts[0][3], self.acts[0][4])  # И тут передадим аргумент
                 print(f"""Выполнено действие {self.acts[0]}""")
                 self.acts.pop(0)
             elif self.acts[0][1] == 202:  # Продать вообще весь товар, аргументов только город
@@ -181,19 +181,33 @@ class Dynasty:
         print(f"Победные очки {self.name_rus}: {self.win_points}")
         return self.win_points
 
-    def act_sell_goods(self, city, trade_goods):     # 201 id
+    def act_sell_goods(self, city, trade_goods, num):     # 201 id
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
-        if self.goods_list[trade_goods]:
-            print(f"Товар {trade_goods} есть в наличии")
-            # Получим золото взяв цену из класса товара
-            self.gold += goods.resources_price[trade_goods]
-            self.goods_list[trade_goods] -= 1
-            self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
-            self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
-        else:
-            self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
+        # Прогоним цикл от количества продаваемого товара
+        if num == -1:
+            print("Продаем весь выбранный товар")
+            if self.goods_list[trade_goods]:
+                # for i in self.goods_list[trade_goods]:
+                for i in range(self.goods_list[trade_goods]):
+                    self.gold += goods.resources_price[trade_goods]
+                    self.goods_list[trade_goods] -= 1
+                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
+                    self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+            else:
+                self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
+
+        # for i in num:
+        #     if self.goods_list[trade_goods]:
+        #         print(f"Товар {trade_goods} есть в наличии")
+        #         # Получим золото взяв цену из класса товара
+        #         self.gold += goods.resources_price[trade_goods]
+        #         self.goods_list[trade_goods] -= 1
+        #         self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
+        #         self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+        #     else:
+        #         self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
 
     def act_sell_all_goods(self, city):     # 202 id
         # Преобразуем строку с золотом в число

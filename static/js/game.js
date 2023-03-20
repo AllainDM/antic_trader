@@ -476,10 +476,9 @@ function tradeChooseAction(city) {
             // logStart();
             // chooseList.innerHTML = ''; 
             // exitToMainMenuButtons(); 
-            tradeChooseNumGoodsTrade(statusGame.goodsListForSell[i]);
+            tradeChooseNumGoodsTrade(statusGame.goodsListForSell[i], city);
         });
     });
-
     // Определяем еще одну кнопку
     document.getElementById("sell-all-goods").addEventListener('click', () => {
         console.log("А попробем-ка продать весь товар");
@@ -488,16 +487,16 @@ function tradeChooseAction(city) {
         logStart();
         chooseList.innerHTML = ''; 
         exitToMainMenuButtons(); 
-    });     
-
+    });    
+    // Событие выхода на соответствующую кнопку
     document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
         chooseList.innerHTML = ''; 
         exitToMainMenuButtons(); 
     });
 }
 
-// После выбора города определим дальнейшие дествия
-function tradeChooseNumGoodsTrade(goods) {
+// После выбора города и выбора товара уточняем количество
+function tradeChooseNumGoodsTrade(goods, city) {
     chooseList.innerHTML = "Продаем товар:";
 
     chooseList.innerHTML += 
@@ -511,7 +510,17 @@ function tradeChooseNumGoodsTrade(goods) {
     </div>`;
 
     // Нарисуем кнопку отмены(выхода)
-    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
+    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;  
+
+    // Событие выхода на соответствующую кнопку
+    document.getElementById('sell-all-goods').addEventListener('click', () => { 
+        console.log("А попробем-ка продать веь выбранный товар");
+        statusGame.acts.push([`Продаем товар ????? в ${city}`, 201, city, goods, -1]); 
+        postAct(statusGame.game_id);
+        logStart();
+        chooseList.innerHTML = ''; 
+        exitToMainMenuButtons(); 
+    });
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
 
@@ -521,6 +530,7 @@ function tradeChooseNumGoodsTrade(goods) {
     });
 }
 
+//
 // Просмотр "Дипломатии"
 document.getElementById('menu-diplomaty').addEventListener('click', () => {
     hiddenAllMenu();
