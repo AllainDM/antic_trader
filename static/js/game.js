@@ -17,6 +17,7 @@ let statusGame = {
     gold: 0,
     goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
+    goods_list: {},  // Словарь(обьект) с количеством ресурсов, для торговли
     colonyListForBuild: [],  // Список доступных для строительства построек
     winPoints: "?",
     winners: [],
@@ -218,6 +219,8 @@ function actualVarPlayer(res) {
     // Обновим список доступных для игрока(страны) построек
     statusGame.colonyListForBuild = res.buildings_available_list
 
+    // Запишем список ресурсов. Для торговли
+    statusGame.goods_list = res.goods_list
     console.log("тут");
     console.log(res.goods_list);
     console.log(res.goods_name_list);
@@ -501,27 +504,54 @@ function tradeChooseNumGoodsTrade(goods, city) {
 
     chooseList.innerHTML += 
     `<div class="menu-btn menu-buttons-show-trade" id="sell-all-goods">
-        Продать все количество
+        Продать все
     </div>`;
 
+    // chooseList.innerHTML += 
+    // `<div class="menu-btn menu-buttons-show-trade" id="sell-one-goods">
+    //     Продать 1 штуку
+    // </div>`;
+
+    // chooseList.innerHTML += 
+    // `<input type="range" min="0" max="${statusGame.goods_list[goods]}">`;
+
+
     chooseList.innerHTML += 
-    `<div class="menu-btn menu-buttons-show-trade" id="sell-one-goods">
-        Продать 1 штуку
-    </div>`;
+    `<fieldset> 
+        <legend>Выберете количество</legend>
+        <p>
+            <input id="goods-value" type="range" min="0" max="${statusGame.goods_list[goods]}" 
+            onchange="document.getElementById('rangeValue').innerHTML = this.value;" 
+            list="rangeList"> 
+            <span id="rangeValue">0</span>
+        </p>
+        <div class="menu-btn menu-buttons-show-trade" id="sell-num-goods">
+            Продать
+        </div>
+    </fieldset>`;
 
     // Нарисуем кнопку отмены(выхода)
     chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;  
 
-    // Событие выхода на соответствующую кнопку
+    // Продать весь выбранный товар. Аргумент -1 для бекенда
     document.getElementById('sell-all-goods').addEventListener('click', () => { 
         console.log("А попробем-ка продать веь выбранный товар");
-        statusGame.acts.push([`Продаем товар ????? в ${city}`, 201, city, goods, -1]); 
+        statusGame.acts.push([`Продаем весь товар ${goods} в ${city}`, 201, city, goods, -1]); 
         postAct(statusGame.game_id);
         logStart();
         chooseList.innerHTML = ''; 
         exitToMainMenuButtons(); 
     });
-
+    // Продать выбранное число товара
+    document.getElementById('sell-num-goods').addEventListener('click', () => { 
+        num = document.getElementById('goods-value').value
+        statusGame.acts.push([`Продаем ${num} товар ${goods} в ${city}`, 201, city, goods, num]); 
+        console.log(`Продадим ${num} товар ${goods} в ${city}`);
+        postAct(statusGame.game_id);
+        logStart();
+        chooseList.innerHTML = ''; 
+        exitToMainMenuButtons(); 
+    });
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
 
     document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
