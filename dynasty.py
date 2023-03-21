@@ -186,11 +186,21 @@ class Dynasty:
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
         # Прогоним цикл от количества продаваемого товара
+        num = int(num)
         if num == -1:
             print("Продаем весь выбранный товар")
             if self.goods_list[trade_goods]:
                 # for i in self.goods_list[trade_goods]:
                 for i in range(self.goods_list[trade_goods]):
+                    self.gold += goods.resources_price[trade_goods]
+                    self.goods_list[trade_goods] -= 1
+                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
+                    self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+            else:
+                self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
+        elif num > 0:
+            if self.goods_list[trade_goods]:
+                for i in range(num):
                     self.gold += goods.resources_price[trade_goods]
                     self.goods_list[trade_goods] -= 1
                     self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")

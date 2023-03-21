@@ -336,3 +336,14 @@ div.content {
     width: 100px;
     text-align: center;
 }
+
+legend {
+    /* background-color: #000; */
+    /* color: #fff; */
+    padding: 3px 6px;
+    font-size: 16px;
+}
+
+input {
+    margin: 0.4rem;
+}
