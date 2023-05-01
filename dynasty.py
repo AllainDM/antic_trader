@@ -228,6 +228,7 @@ class Dynasty:
             self.gold += self.goods_list[goods1] * self.goods.resources_price[goods1]
             self.goods_list[goods1] = 0
             print(self.goods_list[goods1] * self.goods.resources_price[goods1])
+            self.result_logs_text.append(f"Вы продали {goods1} в {city}")
         # if self.goods_list[trade_goods]:
         #     print(f"Товар {trade_goods} есть в наличии")
         #     # Получим золото взяв цену из класса товара
