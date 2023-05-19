@@ -5,51 +5,44 @@
 
 <header>
     <div class="container">
-        <div class="dashboard-turn">
-            <div class="gold">
-                <p id="player">Имя игрока</p>
-            </div>
-            <div class="year-turn">
-                <p id="game-id">Номер игры</p>
-            </div>
-            <div class="end-turn-bool">
-                <p id="game-date">Время создания игры</p>
-            </div>
+        <div class="dashboard-dev">
+            <p style="text-align: center;">Разработка</p>
+            <p id="player">Имя игрока</p>
+            <p id="game-id">Номер игры</p>
+            <p id="game-date">Время создания</p>
+            <!-- <div class="gold"></div>
+            <div class="year-turn"></div>
+            <div class="end-turn-bool"></div> -->
+        </div>
+        <div class="dashboard-stat">
+            <!-- <p id="gold">Золото: нету</p> -->
+            <p id="year-turn">Год: -300(!) Ход: 1</p>
+            <p id="end-turn-bool">Завершен ли ход</p>
+            <p id="win-points">Победные очки:</p>
+            <p id="winners">Победитель(и): не определен</p>
+            <!-- <div class="gold"></div> -->
+            <!-- <div class="year-turn"></div> -->
+            <!-- <div class="end-turn-bool"></div> -->
+        </div>
+        <div class="dashboard-stat">
+            <p id="gold">Золото</p>
         </div>
         <div class="dashboard-turn">
-            <div class="gold">
-                <p id="gold">Золото: нету</p>
-            </div>
-            <div class="year-turn">
-                <p id="year-turn">Год: -300(!) Ход: 1</p>
-            </div>
-            <div class="end-turn-bool">
-                <p id="end-turn-bool">Завершен ли ход</p>
-            </div>
-            <div class="end-turn">                
-                <div id="end-turn-btn" class="end-turn-btn">Отправить ход</div>
-            </div>
-            
-        </div>
-        <div class="dashboard-turn">
-            <div class="gold">
-                <p id="win-points">Победные очки:</p>
-            </div>
-            <div class="gold">
-                <p id="winners">Победитель(и): не определен</p>
-            </div>
             <div class="stats header-buttons">
-                <input type="button" value="Отменить последний приказ" id="cancel-act">
-                <input type="button" value="Отменить все приказы" id="cancel-all-acts">
+                <div class="end-turn">                
+                    <div id="end-turn-btn" class="end-turn-btn" style="margin-top: 5px;">Отправить ход</div>
+                </div>        
+                <input type="button" value="Отменить последний приказ" id="cancel-act" style="float: right; margin-top: 15px;">
+                <input type="button" value="Отменить все приказы" id="cancel-all-acts" style="float: right;">
                 <!-- <input type="button" value="Вывести логи" id="act-logs"> -->
             </div>
         </div>
     </div>
 </header>
-<div class="container">
+<div class="container" style="margin-top: 50px;">
     <div class="dashboard">
         <div class="map-block">
-            <img src="static/image/map/test1.png" alt="map">
+            <img src="static/image/map/map3.jpg" alt="map">
         </div>
         <div class="menu-block">
             <!-- Главное меню -->

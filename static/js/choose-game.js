@@ -39,14 +39,15 @@ function chooseGame(gamesList) {
         chooseList.innerHTML = `<span>Нет доступных игр</span>`;  
     };
     gamesList.forEach((item, id) => {
-        chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}
-        `<div class="menu-btn menu-buttons-choose">
-            Игра: ${item} 
+        chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}   class="menu-btn menu-buttons-choose"
+        `<div >
+            <button class="btn btn-choose-game">Войти</button>
+            Игра № ${item}
         </div>`;  //   ид: ${id}
     });
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
-    document.querySelectorAll(".menu-buttons-choose").forEach((btn, i) => {
+    document.querySelectorAll(".btn-choose-game").forEach((btn, i) => {
         btn.addEventListener('click', () => {
             console.log(`Вы выбрали игру номер: ${gamesList[i]}`);
             setActiveGame(gamesList[i]); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 

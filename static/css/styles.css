@@ -1,10 +1,11 @@
 body {
     font-size: 24px;
-    background: #E4E8EF;
+    /* background: #E4E8EF; */
+    background: #bbbfc7;
     font-family: Verdana, Arial;
-    margin:0px; 
     padding: 0px;
-    width: 100%;
+    width: 75%;
+    margin: 0 auto;
 }
 
 header {
@@ -23,7 +24,7 @@ header {
 
 ul.mainmenu {
 	list-style: none;
-	background: #7fa4ce;
+	background: #4b4b4b;
 	height: 60px;
 	margin: 0;
 	padding: 0;
@@ -68,7 +69,7 @@ div.content {
 	width: 1024px;
 	/* min-width: 1024px; */
 	/* width: auto; */
-	margin-left: 100px;
+	/* margin-left: 100px; */
 }
 
 /* .container-logs{
@@ -126,7 +127,7 @@ div.content {
 
     font-size: 15pt;
 }
-.gold {
+/* .gold {
     width: 20%;
     display: table-cell;
 }
@@ -138,18 +139,11 @@ div.content {
 .end-turn-bool {
     width: 33%;
     display: table-cell;
-}
+} */
 .end-turn {
     display: table-cell;
     width: 20%;
-    /* margin-top: 0px;
-    margin-left: 700px; */
 }
-/* .dashboard-turn{
-    width: 100%;
-    height: 150px;
-    flex-wrap: nowrap;
-} */
 .map-block {
     width: 65%;
     height: 280px;
@@ -164,10 +158,51 @@ div.content {
     margin-top: 0px;
     height: 280px;
 }
+.dashboard-stat{
+    /* flex-wrap: nowrap; */
+    font-size: 16px;
+    width: 200px;
+    height: 160px;
+    display: inline-block;
+    margin-top: 10px;
+    vertical-align:top;  
+    
+    background: rgb(187, 183, 172); /* Цвет фона */
+    outline: 2px solid #000; /* Чёрная рамка */
+    border: 3px solid #fff; /* Белая рамка */
+    border-radius: 10px; /* Радиус скругления */
+}
 .dashboard-turn{
-    width: 100%;
-    height: 36px;
-    flex-wrap: nowrap;
+    /* flex-wrap: nowrap; */
+    font-size: 16px;
+    width: 260px;
+    height: 160px;
+    display: inline-block;
+    margin-top: 10px;
+    vertical-align:top;
+    
+    background: rgb(187, 183, 172); /* Цвет фона */
+    outline: 2px solid #000; /* Чёрная рамка */
+    border: 3px solid #fff; /* Белая рамка */
+    border-radius: 10px; /* Радиус скругления */
+}
+.dashboard-dev{
+    /* display: inline-block; */
+    margin-top: 10px;
+    border-radius: 5px;
+    outline: 2px solid #000; /* Чёрная рамка */
+    border: 3px solid #fff; /* Белая рамка */
+    color: white;
+    font-size: 16px;
+    width: 250px;
+    /* height: 150px; */
+    height: 160px;
+    /* flex-wrap: nowrap; */
+    background-color: #8f8888;
+    /* margin-top: 1em ;
+    margin-bottom: 1em ; */
+    float: right;
+
 }
 .menu-block {
     width: 35%;
@@ -200,7 +235,8 @@ div.content {
     line-height: 2;
     margin-top: 2px;
     margin-left: 2px;
-    background-color: rgb(218, 211, 197);
+    background-color: rgb(187, 183, 176);
+    /* background-color: rgb(218, 211, 197); */
     border: solid black 1px;
     border-radius: 8px;
     font-size: 12pt;
@@ -346,4 +382,12 @@ legend {
 
 input {
     margin: 0.4rem;
+}
+
+.btn {
+    margin-top: 10px;
+    background-color: rgb(212, 210, 221);
+    width: 200px;
+    height: 30px;
+    border-radius: 5px;font-size: 20px;
 }

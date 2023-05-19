@@ -135,9 +135,6 @@ function requestStatusPlayer() {
         }
     });
     request.send();
-
-    // console.log("Ответ от сервера. Статус хода: " + response.end_turn)
-    // autoUpdate(); // Автообновление в случае "отправленного хода"
 }
 
 requestStatus();
