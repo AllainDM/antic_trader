@@ -25,6 +25,7 @@ let statusGame = {
     game_id: "",        // ИД партии. Будем передавать вместе с ходом.
     date_create: "",
     cities: [], // Массив с городами, пока просто названия
+    autoUpdate: true,  // Таймер автообновления странички
 };
 
 
@@ -145,12 +146,12 @@ requestStatusPlayer();
 // Запускать проверку с каждым запросом на сервер. 
 // Типо: 1 = Запрос на сервер
 //       2 = Если переменная "ход отправлен" остается в true, то повторный запрос через интервал
-function autoUpdate() {
-    if (statusGame.end_turn) {
-        requestStatus();
-        requestStatusPlayer();
-    } 
-};
+// function autoUpdate() {
+//     if (statusGame.end_turn) {
+//         requestStatus();
+//         requestStatusPlayer();
+//     } 
+// };
 
 // function autoUpdate2() {
 //     requestStatus();
@@ -158,22 +159,57 @@ function autoUpdate() {
 // };
 
 // Вообщем пока игра всегда каждые 20 секунд проверяет параметр "отправлен ли ход", и если отправлен делает запрос на сервер статуса игры
-function autoUpdateTimer() {
-    // console.log("Статус хода: " + statusGame.end_turn)
-    // console.log(statusGame.end_turn)
-    // while (statusGame.end_turn) {
-    //     setTimeout(autoUpdate, 3000)
-    //     console.log("Таймер работает")
-    //     // requestStatus();
-    //     // requestStatusPlayer();
-    // }
-    // if (statusGame.end_turn) {
-    //     requestStatus();
-    //     requestStatusPlayer();
-    // }
-    let timerId = setInterval(() => autoUpdate(), 20000);
+// function autoUpdateTimer() {
+//     // console.log("Статус хода: " + statusGame.end_turn)
+//     // console.log(statusGame.end_turn)
+//     // while (statusGame.end_turn) {
+//     //     setTimeout(autoUpdate, 3000)
+//     //     console.log("Таймер работает")
+//     //     // requestStatus();
+//     //     // requestStatusPlayer();
+//     // }
+//     // if (statusGame.end_turn) {
+//     //     requestStatus();
+//     //     requestStatusPlayer();
+//     // }
+//     let timerId = setInterval(() => autoUpdate(), 20000);
 
+// };
+// autoUpdateTimer();
+
+// Делаем новый таймер, он работает от включенной переменной autoUpdate
+function autoUpdate() {
+    const tm = document.getElementById("timer");
+    if (statusGame.autoUpdate) {
+        console.log("Таймер работает")
+        // let timer = setInterval(tm.innerHTML = `<p>10</p>`, 1000)
+        // for (i = 10; i >= 0; i--) {
+        // }
+        // clearInterval(timerId2)
+        requestStatus();
+        requestStatusPlayer();
+        
+    }
 };
+function showTimer() {
+
+}
+let timerId = setInterval(() => autoUpdate(), 10000);
+
+// // autoUpdate();
+// function autoUpdateTimer() {
+//     // while (statusGame.end_turn) {
+//     //     setTimeout(autoUpdate, 3000)
+//     //     console.log("Таймер работает")
+//     //     // requestStatus();
+//     //     // requestStatusPlayer();
+//     // }
+//     // if (statusGame.end_turn) {
+//     //     requestStatus();
+//     //     requestStatusPlayer();
+//     // }
+//     let timerId = setInterval(() => autoUpdate(), 5000);
+// };
 // autoUpdateTimer();
 
 // Обновим общие параметры
@@ -193,12 +229,14 @@ function actualVar(res) {
 
     updateVar();
     logAllResultStart();
+    // При загрузке запустим запрос статистики игроков для отображения в отдельном окошке
+    req_status_all_player();
 };
 
 
 
-const goodsNameHtml = document.querySelector(".stats1");
-const buildingsNameHtml = document.querySelector(".stats3");
+const goodsNameHtml = document.querySelector(".stats-resources");
+const buildingsNameHtml = document.querySelector(".stats-buildings");
 // const goodsNameHtml = document.querySelector('.choose-list');
 
 // Обновим параметры управляемой "страной"
@@ -224,32 +262,41 @@ function actualVarPlayer(res) {
 
     // Вывод на экран количества ресурсов и построек
     // goodsNameHtml.innerHTML += `<div>Ресурсы: </div>`;
-    goodsNameHtml.innerHTML = `<div>Ресурсы: </div>`;
+    goodsNameHtml.innerHTML = `<div style="margin-top: 2px; text-align: center;">Ресурсы</div>`;
     statusGame.goodsListForSell = []
-    res.goods_name_list.forEach((item, id) => {        
-        console.log("forEach 2 Тут выводим список ресурсов");
-        if (res.goods_list[item] > 0) {
-            // Добавим товар в массив который выводится при выборе товара для продажи
-            statusGame.goodsListForSell.push(item);
-            goodsNameHtml.innerHTML +=   
-            `<div>
-                ${item}: ${res.goods_list[item]}
-            </div>`;
-        };        
-    });
+    // if (res.goods_list.length > 0) {
+        res.goods_name_list.forEach((item, id) => {        
+            console.log("forEach 2 Тут выводим список ресурсов");
+            if (res.goods_list[item] > 0) {
+                // Добавим товар в массив который выводится при выборе товара для продажи
+                statusGame.goodsListForSell.push(item);
+                goodsNameHtml.innerHTML +=   
+                `<div>
+                    ${item}: ${res.goods_list[item]}
+                </div>`;
+            };        
+        });
+    // } else {
+    //     goodsNameHtml.innerHTML += `<div>Ничего нет</div>`;
+    // }
+    
     console.log(statusGame.goodsListForSell);
 
-    buildingsNameHtml.innerHTML = `<div>Постройки: </div>`;
+    buildingsNameHtml.innerHTML = `<div style="margin-top: 2px; text-align: center;">Постройки</div>`;
 
-    res.buildings_name_list.forEach((item, id) => {
-        console.log("forEach 3 Тут выводим список ресурсов");
-        if (res.buildings_list[item] > 0) {
-            buildingsNameHtml.innerHTML +=   
-            `<div>
-                ${item}: ${res.buildings_list[item]}
-            </div>`;
-        };        
-    });
+    // if (res.buildings_list.length > 0) {
+        res.buildings_name_list.forEach((item, id) => {
+            console.log("forEach 3 Тут выводим список ресурсов");
+            if (res.buildings_list[item] > 0) {
+                buildingsNameHtml.innerHTML +=   
+                `<div>
+                    ${item}: ${res.buildings_list[item]}
+                </div>`;
+            };        
+        });
+    // } else {
+    //     buildingsNameHtml.innerHTML += `<div>Ничего нет</div>`;
+    // }
 
     updateVar();
     logStart();
@@ -569,6 +616,7 @@ document.getElementById('menu-diplomaty').addEventListener('click', () => {
 // Отображение всех игроков с основными параметрами(золото, имя, готовность хода)
 function req_status_all_player() {
     console.log(statusGame.game_id)
+    console.log("Запрос статистики игроков")
     const request = new XMLHttpRequest();
     request.open("GET", `/req_status_all_player?gameId=${statusGame.game_id}`);
     request.addEventListener('load', () => {
@@ -581,6 +629,34 @@ function req_status_all_player() {
                 const response = JSON.parse(request.response);
                 console.log(response)
                 displayStatisticsOfAllPlayers(response);
+                displayStatisticsOfAllPlayersOnBoard(response);
+            };
+        } else {
+            console.log("Ответ от сервера не получен");
+        }
+    });
+    request.addEventListener('error', () => {
+        console.log('error')
+    });
+    request.send();
+};
+
+// И такая же функция для отображения в шапке
+function req_status_all_player() {
+    console.log(statusGame.game_id)
+    console.log("Запрос статистики игроков")
+    const request = new XMLHttpRequest();
+    request.open("GET", `/req_status_all_player?gameId=${statusGame.game_id}`);
+    request.addEventListener('load', () => {
+        console.log("Xmmm")
+        if (request.status === 200) {
+            if (request.response == "") {
+                console.log("К нам пришла пустая строка");
+                
+            } else {
+                const response = JSON.parse(request.response);
+                console.log(response)
+                displayStatisticsOfAllPlayersOnBoard(response);
             };
         } else {
             console.log("Ответ от сервера не получен");
@@ -613,4 +689,21 @@ function displayStatisticsOfAllPlayers(playersList) {
             chooseList.innerHTML = ''; 
             exitToMainMenuButtons(); 
         });
+}
+function displayStatisticsOfAllPlayersOnBoard(playersList) {
+    const playersStatusList = document.querySelector(".players-stat");
+    playersStatusList.innerHTML = `<div style="margin-top: 2px; text-align: center;">Игроки</div>`
+    console.log("Запуск функции отображения статистики игроков в шапке")
+    playersList.forEach((item, id) => {
+        status_end_turn = ""
+        if (playersList[id]["end_turn"] == true) {
+            status_end_turn = "Готов"
+        } else {
+            status_end_turn = "НЕ готов"
+        }  
+        playersStatusList.innerHTML += 
+        `<div>
+        ${playersList[id]["name_rus"]}: ${status_end_turn}
+        </div>`; 
+    });
 }

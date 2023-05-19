@@ -6,10 +6,10 @@
 <header>
     <div class="container">
         <div class="dashboard-dev">
-            <p style="text-align: center;">Разработка</p>
-            <p id="player">Имя игрока</p>
-            <p id="game-id">Номер игры</p>
-            <p id="game-date">Время создания</p>
+            <div style="text-align: center;">Разработка</div>
+            <div id="player">Имя игрока</div>
+            <div id="game-id">Номер игры</div>
+            <div id="game-date">Время создания</div>
             <!-- <div class="gold"></div>
             <div class="year-turn"></div>
             <div class="end-turn-bool"></div> -->
@@ -18,22 +18,27 @@
             <!-- <p id="gold">Золото: нету</p> -->
             <p id="year-turn">Год: -300(!) Ход: 1</p>
             <p id="end-turn-bool">Завершен ли ход</p>
-            <p id="win-points">Победные очки:</p>
             <p id="winners">Победитель(и): не определен</p>
             <!-- <div class="gold"></div> -->
             <!-- <div class="year-turn"></div> -->
             <!-- <div class="end-turn-bool"></div> -->
         </div>
         <div class="dashboard-stat">
-            <p id="gold">Золото</p>
+            <div id="province-name" style="text-align: center;">Игра не загрузилась</div>
+            <div id="gold">Золото</div>
+            <div id="win-points">Победные очки:</div>
+        </div>
+        <div class="dashboard-stat players-stat">
+
         </div>
         <div class="dashboard-turn">
             <div class="stats header-buttons">
-                <div class="end-turn">                
-                    <div id="end-turn-btn" class="end-turn-btn" style="margin-top: 5px;">Отправить ход</div>
-                </div>        
+                <!-- <div class="end-turn">                 -->
+                <div id="end-turn-btn" class="end-turn-btn" style="margin-top: 5px;">Отправить ход</div>
+                <!-- </div>         -->
                 <input type="button" value="Отменить последний приказ" id="cancel-act" style="float: right; margin-top: 15px;">
                 <input type="button" value="Отменить все приказы" id="cancel-all-acts" style="float: right;">
+                <div id="timer">таймер автообновления 10 секунд</div>
                 <!-- <input type="button" value="Вывести логи" id="act-logs"> -->
             </div>
         </div>
@@ -88,10 +93,26 @@
 
 <div class="container">
     <div class="stats">
-        <div class="province-name">
+        <!-- <div class="province-name">
             <div id="province-name">Игра не загрузилась</div>
+        </div> -->
+        <div class="dashboard-resources stats-buildings">
+            <div style="margin-top: 2px; text-align: center;">Постройки</div>
+            <div>Ничего нет</div>
+            <!-- <div class="stats stats1"> -->
+
+            <!-- </div> -->
+            <!-- <p class="stats stats1"></p>
+            <p class="stats stats2"></p> -->
         </div>
-        <div class="all-stats">
+        <div class="dashboard-resources stats-resources">
+            <div style="margin-top: 2px; text-align: center;">Ресурсы</div>
+            <div>Ничего нет</div>
+            <!-- <p class="stats stats3"></p>
+            <p class="stats stats4"></p> -->
+
+        </div>
+        <!-- <div class="all-stats">
             <div class="two-stats">
                 <div class="stats stats1">
                 </div>
@@ -105,7 +126,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> -->
     </div>
 </div>
 <div class="container">

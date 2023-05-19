@@ -2,7 +2,8 @@ body {
     font-size: 24px;
     /* background: #E4E8EF; */
     background: #bbbfc7;
-    font-family: Verdana, Arial;
+    /* font-family: Verdana, Arial; */
+    font-family: 'Times New Roman', Times, serif;
     padding: 0px;
     width: 75%;
     margin: 0 auto;
@@ -114,17 +115,19 @@ div.content {
 }
 .end-turn-btn {
     user-select: none;
-    flex-basis: calc(50% - 4px);
-    flex-shrink: 0;
+    /* flex-basis: calc(50% - 4px); */
+    /* flex-shrink: 0; */
     text-align: center;
     line-height: 2;
     margin-top: 2px;
-    margin-left: 100px;
+    margin-right: auto;
+    margin-left: auto;
+    /* display: block; */
+    /* display: flex; */
     width: 150px;
-    background-color: rgb(194, 187, 173);
+    background-color: rgb(241, 235, 222);
     border: solid black 1px;
     border-radius: 8px;
-
     font-size: 15pt;
 }
 /* .gold {
@@ -144,16 +147,6 @@ div.content {
     display: table-cell;
     width: 20%;
 }
-.map-block {
-    width: 65%;
-    height: 280px;
-    float: left;
-
-}
-.map-block img {
-    width: 100%;
-    height: 100%;
-}
 .dashboard{
     margin-top: 0px;
     height: 280px;
@@ -161,8 +154,8 @@ div.content {
 .dashboard-stat{
     /* flex-wrap: nowrap; */
     font-size: 16px;
-    width: 200px;
-    height: 160px;
+    width: 170px;
+    height: 170px;
     display: inline-block;
     margin-top: 10px;
     vertical-align:top;  
@@ -170,13 +163,28 @@ div.content {
     background: rgb(187, 183, 172); /* Цвет фона */
     outline: 2px solid #000; /* Чёрная рамка */
     border: 3px solid #fff; /* Белая рамка */
-    border-radius: 10px; /* Радиус скругления */
+    border-radius: 5px; /* Радиус скругления */
+}
+.dashboard-resources{
+    /* flex-wrap: nowrap; */
+    font-size: 16px;
+    /* width: 240px; */
+    min-width: 200px;
+    /* min-height: 50px; */
+    display: inline-block;
+    margin-top: 10px;
+    vertical-align:top;  
+    
+    background: rgb(187, 183, 172); /* Цвет фона */
+    outline: 2px solid #000; /* Чёрная рамка */
+    border: 1px solid #fff; /* Белая рамка */
+    border-radius: 5px; /* Радиус скругления */
 }
 .dashboard-turn{
     /* flex-wrap: nowrap; */
     font-size: 16px;
-    width: 260px;
-    height: 160px;
+    width: 210px;
+    height: 170px;
     display: inline-block;
     margin-top: 10px;
     vertical-align:top;
@@ -184,7 +192,7 @@ div.content {
     background: rgb(187, 183, 172); /* Цвет фона */
     outline: 2px solid #000; /* Чёрная рамка */
     border: 3px solid #fff; /* Белая рамка */
-    border-radius: 10px; /* Радиус скругления */
+    border-radius: 5px; /* Радиус скругления */
 }
 .dashboard-dev{
     /* display: inline-block; */
@@ -193,10 +201,10 @@ div.content {
     outline: 2px solid #000; /* Чёрная рамка */
     border: 3px solid #fff; /* Белая рамка */
     color: white;
-    font-size: 16px;
-    width: 250px;
+    font-size: 14px;
+    width: 170px;
     /* height: 150px; */
-    height: 160px;
+    height: 170px;
     /* flex-wrap: nowrap; */
     background-color: #8f8888;
     /* margin-top: 1em ;
@@ -204,10 +212,26 @@ div.content {
     float: right;
 
 }
+.map-block {
+    width: 63%;
+    height: 280px;
+    float: left;
+
+    outline: 1px solid #000; /* Чёрная рамка */
+    border-radius: 3px; /* Радиус скругления */
+
+}
+.map-block img {
+    width: 100%;
+    height: 100%;
+}
 .menu-block {
     width: 35%;
     height: 280px;
     float: left;
+    /* outline: 1px solid #000; Чёрная рамка */
+    /* border-radius: 3px; Радиус скругления */
+
 }
 .menu-buttons {
     display: flex;

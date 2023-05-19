@@ -50,7 +50,8 @@ function chooseGame(gamesList) {
     document.querySelectorAll(".btn-choose-game").forEach((btn, i) => {
         btn.addEventListener('click', () => {
             console.log(`Вы выбрали игру номер: ${gamesList[i]}`);
-            setActiveGame(gamesList[i]); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 
+            console.log(`Вы выбрали игру номер: ${i}`);
+            setActiveGame(i+1); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 
         });
     });
 };
