@@ -6,6 +6,7 @@ from resources import goods
 from cities import cities
 from events import events
 from FDataBase import FDataBase
+from settlement import Settlement
 
 # Попробуем импортировать main для доступа к БД
 # Нельзя, получается цикл
@@ -30,9 +31,17 @@ class FirstWorld:
 
         # Товары и производство
         self.buildings = buildings
+        # Попробуем сохранить тут количество построек и их цену
+        self.buildings_list = buildings.buildings_list
+        # self.buildings_price = buildings.buildings_cost
+        self.buildings_price = self.calc_buildings_cost()
         self.buildings_name = buildings.buildings_name_list  # Список названий построек
         self.cities = cities
         self.cities_name = cities.cities_name_list  # Список названий городов
+
+        # Создаем новый обьект с классом поселения
+        self.settlements = {}
+        self.settlements_list = []
 
         # Товары
         self.goods = goods  # Ссылка на класс
@@ -53,12 +62,17 @@ class FirstWorld:
             "dynasty": self.dynasty,
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
+            "buildings_price": self.calc_buildings_cost(),
+            "buildings_list": self.buildings_list,
+            "settlements": self.settlements,
+            "settlements_list": self.settlements_list,
             "all_logs": self.all_logs,
             "date_create": self.date_create,
 
             "winners": self.winners,
             "game_the_end": self.game_the_end,
         }
+        print(f"save_to_file{data}")
         # Пишем в pickle.
         try:
             with open(f"games/{self.row_id}/gameID_{self.row_id}.trader", 'wb') as f:
@@ -82,6 +96,10 @@ class FirstWorld:
         self.dynasty = data["dynasty"]  # Тут переменная в виде названия Династии на английском
         self.dynasty_list = data["dynasty_list"]  # И тут переменная в виде названия Династии на английском.....
         self.player_list = data["player_list"]
+        self.buildings_price = data["buildings_price"]
+        self.buildings_list = data["buildings_list"]
+        self.settlements = data["settlements"]
+        self.settlements_list = data["settlements_list"]
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]
 
@@ -97,6 +115,7 @@ class FirstWorld:
         self.dynasty_list.append(name)
         print(f"Создание династии {self.dynasty_list[-1]}")
         print(f"Создание династии {self.dynasty[name]}")
+        print(self.dynasty[name])
         # print(f"Общее количество династий: {len(self.dynasty_list)}")
         # print(f"Общее количество династий: {len(self.dynasty)}")
         self.player_list.append(player_id)
@@ -113,12 +132,41 @@ class FirstWorld:
         #     print(f"Файл 'games/{self.row_id}/acts/gameID_{self.row_id}_playerID_{player_id}.trader' не найден")
         #     return ""
 
+    # Создать поселение, тут на данный момент будет храниться проданный товар, излишек которого будет влиять на цену
+    def create_settlement(self, name, name_rus):
+        self.settlements[name] = Settlement(self, name=name, name_rus=name_rus)
+        self.settlements_list.append(name)
+        print(self.settlements[name])
+
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
     def restore_dynasty(self, game_id, player_id, dynasty_name):
         # print(f"Восстанавливаем династию: {player_id}")
         self.dynasty[dynasty_name] = Dynasty(self)
         # print(self.dynasty[player_id])
         self.dynasty[dynasty_name].load_from_file(game_id, player_id)
+
+    # Рассчитаем стоимость построек, будет считаться в конце хода, в зависимости от количества и сохраняться в игру
+    def calc_buildings_cost(self):
+        sum_cost = {}
+        b_list = self.buildings_list  # Возьмем словарь с количеством построек
+        b_base_cost = self.buildings.buildings_cost  # Возьмем базовую цену построек из класса
+        # Переберем словарь. Добавляем по 100 умноженное на количество
+        for b in b_list:
+            price = b_list[b] * 100 + b_base_cost[b]
+            sum_cost[b] = price
+        # print(f"Стоимость построек: {sum_cost}")
+        # print(f"Количество построек: {b_list}")
+        # print(f"Количество построек: {self.buildings_list}")
+        return sum_cost
+
+    # Рассчитаем стоимость товара для выбранного города, считаем отдельно на каждый товар
+    def calc_goods_cost(self, city_gs, goods_to_sell):
+        # goods_sell_price = \
+        #     self.settlements[city_gs].goods_in_city.resources_price[goods_to_sell] * \
+        #     self.settlements[city_gs].goods_in_city.resources_mod_price[goods_to_sell]
+        goods_sell_price = int(self.settlements[city_gs].goods_in_city.price(goods_to_sell))
+        print(f"Тут должна быть цена на {goods_to_sell}: {goods_sell_price}, в {city_gs}")
+        return goods_sell_price
 
 
 def check_readiness(game_id):  # Проверить все ли страны отправили ход
@@ -206,6 +254,7 @@ def calculate_turn(game_id):
     # Добавим 1 к номеру хода и года
     game.year += 1
     game.turn += 1
+    game.calc_buildings_cost()  # Обновим стоимость построек
     game.save_to_file()
 
 

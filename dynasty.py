@@ -72,6 +72,7 @@ class Dynasty:
             "buildings_name_list": self.buildings_name_list,
             # Список доступных для строительства построек
             # !!!!!!! Это нужно не сохранять, а каждый раз обновлять из класса, мало ли что изменилось
+            # !!!!!!! Нет, не из класса, класс не меняется, надо сохранять каждый конец хода в файле
             "buildings_available_list": self.buildings_available_list,
 
             "acts": self.acts,
@@ -167,10 +168,11 @@ class Dynasty:
         self.gold = int(self.gold)
         # print(f"self.game.buildings.buildings_cost[buildings_name]:
         # {self.game.buildings.buildings_cost[buildings_name]}")
-        if self.gold >= self.game.buildings.buildings_cost[buildings_name]:
+        if self.gold >= self.game.buildings_price[buildings_name]:
             # print(buildings[buildings_index])
-            self.buildings_list[buildings_name] += 1
-            self.gold -= self.game.buildings.buildings_cost[buildings_name]
+            self.buildings_list[buildings_name] += 1  # Добавим постройку Династии
+            self.game.buildings_list[buildings_name] += 1  # И добавим к общему количеству в стране
+            self.gold -= self.game.buildings_price[buildings_name]
 
             self.result_logs_text.append(f"Вы построили {buildings_name}")
             self.game.all_logs.append(f"{self.name_rus} построили  {buildings_name}")
@@ -192,18 +194,25 @@ class Dynasty:
             if self.goods_list[trade_goods]:
                 # for i in self.goods_list[trade_goods]:
                 for i in range(self.goods_list[trade_goods]):
-                    self.gold += goods.resources_price[trade_goods]
+                    # self.gold += goods.resources_price[trade_goods]
+                    print("Попытка запустить функцию подсчета стоимости товара")
+                    goods_current_price = self.game.calc_goods_cost(city, trade_goods)
+                    self.gold += goods_current_price
                     self.goods_list[trade_goods] -= 1
-                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
+                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city} по {goods_current_price}")
                     self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+                    # Тестово отправляем запуск подсчета цены
             else:
                 self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
         elif num > 0:
             if self.goods_list[trade_goods]:
                 for i in range(num):
-                    self.gold += goods.resources_price[trade_goods]
+                    # self.gold += goods.resources_price[trade_goods]
+                    print("Попытка запустить функцию подсчета стоимости товара")
+                    goods_current_price = self.game.calc_goods_cost(city, trade_goods)
+                    self.gold += goods_current_price
                     self.goods_list[trade_goods] -= 1
-                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
+                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city} по {goods_current_price}")
                     self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
             else:
                 self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")

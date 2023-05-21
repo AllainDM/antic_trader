@@ -19,6 +19,8 @@ let statusGame = {
     goodsName: [],
     goods_list: {},  // Словарь(обьект) с количеством ресурсов, для торговли
     colonyListForBuild: [],  // Список доступных для строительства построек
+    // Сюда попробуем записать обьект с ценами на постройки
+    colonyPrice: {},
     winPoints: "?",
     winners: [],
     user_name: "",
@@ -181,13 +183,15 @@ requestStatusPlayer();
 function autoUpdate() {
     const tm = document.getElementById("timer");
     if (statusGame.autoUpdate) {
-        console.log("Таймер работает")
+        // console.log("Таймер работает")
         // let timer = setInterval(tm.innerHTML = `<p>10</p>`, 1000)
         // for (i = 10; i >= 0; i--) {
         // }
         // clearInterval(timerId2)
-        requestStatus();
-        requestStatusPlayer();
+        // Отключим таймер для разработки
+        console.log("Внимание, таймер отключен")
+        // requestStatus();
+        // requestStatusPlayer();
         
     }
 };
@@ -226,6 +230,11 @@ function actualVar(res) {
 
     statusGame.cities = res.cities
 
+    // Цены на постройки
+    statusGame.colonyPrice = res.buildings_price
+    console.log("тут");
+    console.log(res.buildings_price);
+
 
     updateVar();
     logAllResultStart();
@@ -253,12 +262,11 @@ function actualVarPlayer(res) {
 
     // Обновим список доступных для игрока(страны) построек
     statusGame.colonyListForBuild = res.buildings_available_list
+    console.log(res.buildings_available_list);
+
 
     // Запишем список ресурсов. Для торговли
     statusGame.goods_list = res.goods_list
-    console.log("тут");
-    console.log(res.goods_list);
-    console.log(res.goods_name_list);
 
     // Вывод на экран количества ресурсов и построек
     // goodsNameHtml.innerHTML += `<div>Ресурсы: </div>`;
@@ -428,7 +436,7 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     chooseList.innerHTML = `<span>Выберите постройку:</span>`;  // Добавим подсказку
     statusGame.colonyListForBuild.forEach((item, id) => {
         // if (id > 0) {
-            chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${item}</div>`;
+            chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${item} Стоимость: ${statusGame.colonyPrice[item]}</div>`;
             console.log(item);
         // };        
     });

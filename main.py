@@ -346,6 +346,32 @@ def create_game(players_dynasty):  # Получаем только список 
         # this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
         this_game.create_dynasty(1, player["playerId"], player["nameEng"], player["nameRus"], 10000)  # Золото пока не передается
         id_players_for_add_db.append(player["playerId"])
+    # Создадим города
+    this_game.create_settlement("Карфаген", "Карфаген")
+    this_game.settlements["Карфаген"].goods_in_city.resources_mod_price["Оливки"] = 1
+
+    this_game.create_settlement("Сиракузы", "Сиракузы")
+    this_game.settlements["Сиракузы"].goods_in_city.resources_mod_price["Оливки"] = 1
+
+    this_game.create_settlement("Афины", "Афины")
+    this_game.settlements["Афины"].goods_in_city.resources_mod_price["Оливки"] = 1.5
+
+    this_game.create_settlement("Родос", "Родос")
+    this_game.settlements["Родос"].goods_in_city.resources_mod_price["Оливки"] = 1.5
+
+    this_game.create_settlement("Александрия", "Александрия")
+    this_game.settlements["Александрия"].goods_in_city.resources_mod_price["Оливки"] = 3
+
+    this_game.create_settlement("Тир", "Тир")
+    this_game.settlements["Тир"].goods_in_city.resources_mod_price["Оливки"] = 4
+    print(this_game.settlements["Карфаген"].goods_in_city)
+    print(this_game.settlements["Сиракузы"].goods_in_city)
+    print(this_game.settlements["Афины"].goods_in_city)
+    print(this_game.settlements["Родос"].goods_in_city)
+    # this_game.create_settlement("Athens", "Афины")
+    # this_game.create_settlement("Alexandria", "Александрия")
+    # this_game.create_settlement("Tyr", "Тир")
+    # this_game.create_settlement("Syracuse", "Сиракузы")
 
     this_game.save_to_file()
     dbase.add_game(1, -300, id_players_for_add_db)
@@ -415,6 +441,7 @@ def req_status_game_player():
     try:
         with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
             data = pickle.load(f)
+            print(data)
     except FileNotFoundError:
         print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player}.trader' не найден")
         return ""
@@ -446,17 +473,18 @@ def req_status_game():
     # print(f"goods_name: {goods_name}")
     data = {
             "winners": my_world["winners"],
-
             "year": my_world["year"],
             "turn": my_world["turn"],
             "all_logs": my_world["all_logs"],
             "game_id": my_world["row_id"],
             "date_create": my_world["date_create"],
+            "buildings_price": my_world["buildings_price"],
             "user_name": user_name,
             "cities": list_cities,
             "goods_name_list": goods_name_list,
-            "buildings_name_list": buildings_name_list
+            "buildings_name_list": buildings_name_list,
         }
+    print(f"data {data}")
     return jsonify(data)
 
 
