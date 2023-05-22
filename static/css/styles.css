@@ -225,6 +225,18 @@ div.content {
     width: 100%;
     height: 100%;
 }
+.icon{
+    vertical-align: top;
+    width: 10%;
+    height: 10%;
+
+}
+/* img{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } */
 .menu-block {
     width: 35%;
     height: 280px;

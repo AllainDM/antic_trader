@@ -69,7 +69,7 @@ function updateVar() {
     document.getElementById('win-points').innerText = 'Победные очки: ' + statusGame.winPoints;
     document.getElementById('winners').innerText = 'Победители: ' + statusGame.winners;
 
-    document.getElementById('gold').innerText = 'Золото: ' + statusGame.gold;
+    document.getElementById('gold').innerHTML = `<img class="icon" src="/static/image/icon/money.png"> ` + statusGame.gold;  // 'Золото: ' + 
     document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
     document.getElementById('province-name').innerText = statusGame.dynastyName;
     if (statusGame.end_turn) {
@@ -703,15 +703,24 @@ function displayStatisticsOfAllPlayersOnBoard(playersList) {
     playersStatusList.innerHTML = `<div style="margin-top: 2px; text-align: center;">Игроки</div>`
     console.log("Запуск функции отображения статистики игроков в шапке")
     playersList.forEach((item, id) => {
-        status_end_turn = ""
         if (playersList[id]["end_turn"] == true) {
-            status_end_turn = "Готов"
+            // status_end_turn = "Готов"
+            playersStatusList.innerHTML += 
+            `<div>
+            ${playersList[id]["name_rus"]}: <span style="background-color: green;"> Готов </span>
+            </div>`; 
+
         } else {
-            status_end_turn = "НЕ готов"
+            // status_end_turn = "НЕ готов"
+            playersStatusList.innerHTML += 
+            `<div>
+            ${playersList[id]["name_rus"]}: <span style="background-color: red;"> НЕ готов </span>
+            </div>`; 
+
         }  
-        playersStatusList.innerHTML += 
-        `<div>
-        ${playersList[id]["name_rus"]}: ${status_end_turn}
-        </div>`; 
+        // playersStatusList.innerHTML += 
+        // `<div>
+        // ${playersList[id]["name_rus"]}: <span style="background-color: red;"> ${status_end_turn} </span>
+        // </div>`; 
     });
 }

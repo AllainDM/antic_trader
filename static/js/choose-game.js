@@ -42,16 +42,18 @@ function chooseGame(gamesList) {
         chooseList.innerHTML +=         // Игра номер: ${gamesList.game_id}   class="menu-btn menu-buttons-choose"
         `<div >
             <button class="btn btn-choose-game">Войти</button>
-            Игра № ${item}
+            Игра № ${item} id: ${id}
         </div>`;  //   ид: ${id}
     });
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".btn-choose-game").forEach((btn, i) => {
         btn.addEventListener('click', () => {
-            console.log(`Вы выбрали игру номер: ${gamesList[i]}`);
-            console.log(`Вы выбрали игру номер: ${i}`);
-            setActiveGame(i+1); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 
+            console.log(`тутутт`);
+            console.log(`Вы выбрали игру номер: ${gamesList[i][0]}`);
+            // console.log(`Вы выбрали игру номер: ${gamesList[i]}`);
+            console.log(`Вы выбрали игру номер: ${i+1}`);
+            setActiveGame(gamesList[i][0]); // Установить активную игру, ее данные будет отправлять бек при обновлении и загрузке новой страницы 
         });
     });
 };
