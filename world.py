@@ -72,7 +72,7 @@ class FirstWorld:
             "winners": self.winners,
             "game_the_end": self.game_the_end,
         }
-        print(f"save_to_file{data}")
+        # print(f"save_to_file{data}")
         # Пишем в pickle.
         try:
             with open(f"games/{self.row_id}/gameID_{self.row_id}.trader", 'wb') as f:
@@ -136,7 +136,7 @@ class FirstWorld:
     def create_settlement(self, name, name_rus):
         self.settlements[name] = Settlement(self, name=name, name_rus=name_rus)
         self.settlements_list.append(name)
-        print(self.settlements[name])
+        # print(self.settlements[name])
 
     # Восстановить династии из файла. Нужно для обсчета хода. Восстанавливаем все классы и считаем ход
     def restore_dynasty(self, game_id, player_id, dynasty_name):
@@ -165,7 +165,7 @@ class FirstWorld:
         #     self.settlements[city_gs].goods_in_city.resources_price[goods_to_sell] * \
         #     self.settlements[city_gs].goods_in_city.resources_mod_price[goods_to_sell]
         goods_sell_price = int(self.settlements[city_gs].goods_in_city.price(goods_to_sell))
-        print(f"Тут должна быть цена на {goods_to_sell}: {goods_sell_price}, в {city_gs}")
+        # print(f"Тут должна быть цена на {goods_to_sell}: {goods_sell_price}, в {city_gs}")
         return goods_sell_price
 
 
@@ -200,10 +200,10 @@ def calculate_turn(game_id):
     # Теперь восстановим все классы игры взяв параметры из pickle
     game = FirstWorld(game_id)  # Восстановим саму игру.
     game.load_from_file(game_id)  # Запустим метод считающий данные из файла.
-    print(f"Создание династии {game.dynasty_list[-1]}")
+    # print(f"Создание династии {game.dynasty_list[-1]}")
     # print(f"Создание династии {game.dynasty[name]}")
-    print(f"Общее количество династий: {len(game.dynasty_list)}")
-    print(f"Общее количество династий: {len(game.dynasty)}")
+    # print(f"Общее количество династий: {len(game.dynasty_list)}")
+    # print(f"Общее количество династий: {len(game.dynasty)}")
     # Функция восстанавливая династию по списку игроков, присваивает экземпляр класса не к имени страны,
     # а к ИД игрока, от этого получается баг с клоном династии
     # for player_id in game.player_list:
@@ -239,7 +239,7 @@ def calculate_turn(game_id):
             game.dynasty[dynasty_name].calc_act()
     # Пост обсчет хода
     # !!!!!!!!!!!!!!!! Было просто game.dynasty. Но считалось 2 раза. А с dynasty_list другой баг
-    print(f"game.dynasty: {game.dynasty}")
+    # print(f"game.dynasty: {game.dynasty}")
     for dynasty_name in game.dynasty:
         print(f"Почему запускается два раза? dynasty_name {dynasty_name}")
         game.dynasty[dynasty_name].calc_end_turn()
@@ -262,7 +262,7 @@ def calculate_turn(game_id):
 def check_winners(game):
     # Сначала посчитаем победные очки для всех стран
     for dynasty_name in game.dynasty:
-        print(f"dynasty[dynasty_name]: {game.dynasty[dynasty_name]}")
+        # print(f"dynasty[dynasty_name]: {game.dynasty[dynasty_name]}")
         # Посчитаем победные очки
         wp = game.dynasty[dynasty_name].calc_win_points()
         # Если их больше указанного количества записываем страну в список победителей

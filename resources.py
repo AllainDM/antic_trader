@@ -35,7 +35,7 @@ class Goods:
 
     # Получить цену ресурса
     def price(self, resources):
-        print("Пробуем подсчитать стоимость в классе")
+        # print("Пробуем подсчитать стоимость в классе")
         return self.resources_price[resources] * self.resources_mod_price[resources]
 
     # Получить список ресурсов

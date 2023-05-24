@@ -227,7 +227,7 @@ def load_all_my_game():  # Делаю подпись html, чтоб раздел
             pl_in_game = []
             for pl in my_g[5]:
                 pl_in_game.append(dbase.get_user(pl)[3])
-            print(f"Игрок есть в игре номер: {my_g[0]}")
+            # print(f"Игрок есть в игре номер: {my_g[0]}")
             # Аналог двух append
             one_game = [my_g[0], pl_in_game]
             # games_list.append(f"{my_g[0]} Игроки: {pl_in_game}")
@@ -269,9 +269,9 @@ def req_list_players():
     # who = request.args.get('who')
     list_users_to_front = []
     users = dbase.get_all_user()
-    print(f"users: {users}")
+    # print(f"users: {users}")
     games = dbase.get_all_games()
-    print(f"games: {games}")
+    # print(f"games: {games}")
     for user in users:
         # Возвращаем имя пользователя(не логин) и ИД пользователя(для админа)
         # Так же добавим количество побед [5]
@@ -285,15 +285,36 @@ def req_cities_for_trade():
     pass
 
 
-@app.route("/create_test_new_game")  # Создать "быструю" новую игру по прописаным в коде стартовым параметрам
+# @app.route("/create_test_new_game")  # Создать "быструю" новую игру по прописаным в коде стартовым параметрам
+# @login_required
+# def create_test_new_game():
+#     user_admin = current_user.get_admin()
+#     if user_admin == 1:
+#         print("this is admin3")
+#         players_dynasty = [[2, "Barkid", "Баркиды"], [3, "Magonid", "Магониды"]]
+#         # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
+#         create_game(players_dynasty)
+#         return jsonify("Ответ от Python: Игра создалась")
+#     else:
+#         return ""
+
+
+# Создать каждому по одиночной игре
+@app.route("/create_new_single_game")
 @login_required
-def create_test_new_game():
+def create_new_single_game():
     user_admin = current_user.get_admin()
     if user_admin == 1:
-        print("this is admin3")
-        players_dynasty = [[2, "Barkid", "Баркиды"], [3, "Magonid", "Магониды"]]
-        # Передаем дату, чтоб она не обновлялась при "восстановлении" класса игры
-        create_game(players_dynasty)
+        print("this is admin4")
+        users = dbase.get_all_user()
+        # print(f"users: {users}")
+        for user in users:
+            # print(f"user {user[0]}")
+            player = int(user[0])
+            # [{'playerId': 3, 'nameEng': 'Magonid', 'nameRus': 'Магониды'}]
+            players_dynasty = [{'playerId': player, 'nameEng': 'Magonid', 'nameRus': 'Магониды'}]
+            # print(players_dynasty)
+            create_game(players_dynasty)
         return jsonify("Ответ от Python: Игра создалась")
     else:
         return ""
@@ -344,7 +365,7 @@ def create_game(players_dynasty):  # Получаем только список 
 
     # Создадим династии
     id_players_for_add_db = []  # Массив и ИД игроков, передается в БД, для записи партии
-    print(f"players_dynasty {players_dynasty}")
+    # print(f"players_dynasty {players_dynasty}")
     for player in players_dynasty:
         # this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
         this_game.create_dynasty(1, player["playerId"], player["nameEng"], player["nameRus"], 10000)  # Золото пока не передается
@@ -367,10 +388,10 @@ def create_game(players_dynasty):  # Получаем только список 
 
     this_game.create_settlement("Тир", "Тир")
     this_game.settlements["Тир"].goods_in_city.resources_mod_price["Оливки"] = 4
-    print(this_game.settlements["Карфаген"].goods_in_city)
-    print(this_game.settlements["Сиракузы"].goods_in_city)
-    print(this_game.settlements["Афины"].goods_in_city)
-    print(this_game.settlements["Родос"].goods_in_city)
+    # print(this_game.settlements["Карфаген"].goods_in_city)
+    # print(this_game.settlements["Сиракузы"].goods_in_city)
+    # print(this_game.settlements["Афины"].goods_in_city)
+    # print(this_game.settlements["Родос"].goods_in_city)
     # this_game.create_settlement("Athens", "Афины")
     # this_game.create_settlement("Alexandria", "Александрия")
     # this_game.create_settlement("Tyr", "Тир")

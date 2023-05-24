@@ -8,7 +8,7 @@ class Settlement:
         self.name_rus = name_rus
         # Создадим экземпляр класса ресурсов.
         self.goods_in_city = resources.Goods()
-        print(f"Экземпляр класса товары: {self.goods_in_city }")
+        # print(f"Экземпляр класса товары: {self.goods_in_city }")
 
     def cities_available(self):
         pass

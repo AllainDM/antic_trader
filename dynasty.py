@@ -80,7 +80,6 @@ class Dynasty:
             "end_turn": self.end_turn,
             "end_turn_know": self.end_turn_know,
         }
-        # print(f"self.goods: {self.goods}")
         # Пишем в pickle.
         # Тут нужно отловить ошибку отсутствия файла
         try:
@@ -89,8 +88,6 @@ class Dynasty:
         except FileNotFoundError:
             print(f"Файл 'games/{self.game_id}/gameID_{self.game_id}_playerID_{self.player_id}.trader' не найден")
             return ""
-        # print(f"Данные игрока: {self.player_id}, игры: {self.game_id} сохранены")
-        # print(data)
 
     def load_from_file(self, game_id, player_id):
         # Тут нужно отловить ошибку отсутствия файла
@@ -122,8 +119,6 @@ class Dynasty:
         self.result_logs_text = data["result_logs_text"]
         self.end_turn = data["end_turn"]
         self.end_turn_know = data["end_turn_know"]
-        # print(f"Данные династии {self.name_rus} восстановились")
-        # print(f"self.colony_buildings: {self.colony_buildings}")
 
     def calc_act(self):  # Подсчет одного действия для династии
         # print(f"Считаем ход для династии: {self.name}")
@@ -160,27 +155,21 @@ class Dynasty:
     # Неактуальный метод. Теперь запускается как функция получая аргументами ИД партии и страны.
     def act_build_colony(self, buildings_name):     # 101 id
         # !!!!!!! На будущее нужно сделать сверку, доступна ли это постройка для игрока
-        # print(f"self.game.buildings.buildings_cost: {self.game.buildings.buildings_cost}")
         # Два раза buildings это: 1 = экземпляр класса с постройками, 2 = список построек уже в классе
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
-        # print(f"buildings_name: {buildings_name}")
         self.gold = int(self.gold)
-        # print(f"self.game.buildings.buildings_cost[buildings_name]:
-        # {self.game.buildings.buildings_cost[buildings_name]}")
         if self.gold >= self.game.buildings_price[buildings_name]:
-            # print(buildings[buildings_index])
             self.buildings_list[buildings_name] += 1  # Добавим постройку Династии
             self.game.buildings_list[buildings_name] += 1  # И добавим к общему количеству в стране
             self.gold -= self.game.buildings_price[buildings_name]
 
             self.result_logs_text.append(f"Вы построили {buildings_name}")
             self.game.all_logs.append(f"{self.name_rus} построили  {buildings_name}")
-            # print(self.game.buildings.buildings[buildings_index])
 
     def calc_win_points(self):
         self.win_points = round(self.gold / 1000)
-        print(f"Победные очки {self.name_rus}: {self.win_points}")
+        # print(f"Победные очки {self.name_rus}: {self.win_points}")
         return self.win_points
 
     def act_sell_goods(self, city, trade_goods, num):     # 201 id
@@ -194,8 +183,7 @@ class Dynasty:
             if self.goods_list[trade_goods]:
                 # for i in self.goods_list[trade_goods]:
                 for i in range(self.goods_list[trade_goods]):
-                    # self.gold += goods.resources_price[trade_goods]
-                    print("Попытка запустить функцию подсчета стоимости товара")
+                    # print("Попытка запустить функцию подсчета стоимости товара")
                     goods_current_price = self.game.calc_goods_cost(city, trade_goods)
                     self.gold += goods_current_price
                     self.goods_list[trade_goods] -= 1
@@ -208,7 +196,7 @@ class Dynasty:
             if self.goods_list[trade_goods]:
                 for i in range(num):
                     # self.gold += goods.resources_price[trade_goods]
-                    print("Попытка запустить функцию подсчета стоимости товара")
+                    # print("Попытка запустить функцию подсчета стоимости товара")
                     goods_current_price = self.game.calc_goods_cost(city, trade_goods)
                     self.gold += goods_current_price
                     self.goods_list[trade_goods] -= 1
@@ -232,11 +220,11 @@ class Dynasty:
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
-        print("Попытка продать весь товар")
+        # print("Попытка продать весь товар")
         for goods1 in self.goods_list:
             self.gold += self.goods_list[goods1] * self.goods.resources_price[goods1]
             self.goods_list[goods1] = 0
-            print(self.goods_list[goods1] * self.goods.resources_price[goods1])
+            # print(self.goods_list[goods1] * self.goods.resources_price[goods1])
             # !!!!!!!!!!!!!!! С логом баг, выдает всего по 1, надо проработать выше по условию
             self.result_logs_text.append(f"Вы продали {goods1} в {city}")
         # if self.goods_list[trade_goods]:

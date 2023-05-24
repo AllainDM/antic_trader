@@ -3,9 +3,13 @@ console.log('Стрипт странички создания игры успе�
 // Список для отображения добавляемых игроков
 const list = document.querySelector('.list');
 
-document.getElementById('create-new-game').addEventListener('click', () => {
+// document.getElementById('create-new-game').addEventListener('click', () => {
+//     console.log("Попытка создания игры засчитана")
+//     createTestNewGame();
+// });
+document.getElementById('create-new-single-game').addEventListener('click', () => {
     console.log("Попытка создания игры засчитана")
-    createTestNewGame();
+    createNewSingleGame();
 });
 document.getElementById('add-new-dynasty').addEventListener('click', () => {
     console.log("Добавить нового игрока");
@@ -16,8 +20,8 @@ document.getElementById('add-new-dynasty').addEventListener('click', () => {
 let setGames = {
     listPlayers: [],
     numPlayers: 1,
-    namesEng: ['Magonid', 'Barkid', 'Ganonid', 'Bomgid', 'Hvarid', 'Umrid', 'Bolid', 'Tankid', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-    namesRus: ['Магониды', 'Баркиды', 'Ганониды', 'Бомгиды', 'Хвариды', 'Умриды', 'Болиды', 'Танкиды', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    namesEng: ['Magonid', 'Barkid', 'Gannonid', 'Boetarch', 'Hvarid', 'Umrid', 'Bolid', 'Tankid', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    namesRus: ['Магониды', 'Баркиды', 'Ганнониды', 'Боэтархи', 'Хвариды', 'Умриды', 'Болиды', 'Танкиды', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
 
 }
 
@@ -52,6 +56,27 @@ document.getElementById("create-new-set-game").addEventListener("click", () => {
 function createTestNewGame() {
     const request = new XMLHttpRequest();
     request.open('GET', '/create_test_new_game');
+    request.addEventListener('load', () => {
+        if (request.status === 200) {
+            if (request.response == "") {
+                console.log("К нам пришла пустая строка");                
+            } else {
+                const response = JSON.parse(request.response);
+                console.log(response);
+                console.log("Ответ от js: Игра создалась");    
+                // actualVar(response);
+            };
+        } else {
+            console.log("Ответ от сервера не получен");
+        }
+    });
+    request.send();
+
+};
+
+function createNewSingleGame() {
+    const request = new XMLHttpRequest();
+    request.open('GET', '/create_new_single_game');
     request.addEventListener('load', () => {
         if (request.status === 200) {
             if (request.response == "") {
