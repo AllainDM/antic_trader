@@ -33,10 +33,28 @@ class Goods:
             'Зерно',
         ]
 
+    # Потребление товаров городом. Влияет на цену.
+    # Каждый ход город по умолчание потребляет 3 товара
+    def consumption_of_goods(self):
+        for res in self.resources_name_list:
+            self.resources_list[res] -= 5
+            if self.resources_list[res] < 0:
+                self.resources_list[res] = 0
+            print(f"Запасов ресурсов в городе: {self.resources_list[res]}")
+
     # Получить цену ресурса
     def price(self, resources):
         # print("Пробуем подсчитать стоимость в классе")
-        return self.resources_price[resources] * self.resources_mod_price[resources]
+        # Расчитаем доп модификатор спроса на товар
+        # Цена падает при наличии 3+ товаров в городе
+        price = self.resources_price[resources] * self.resources_mod_price[resources]
+        if self.resources_list[resources] > 5:
+            # 10% за каждое превышение больше 5, макс штраф 80%
+            penalty = 1 - (self.resources_list[resources] - 5) * 0.1
+            if penalty < 0.2:
+                penalty = 0.2
+            price = price * penalty
+        return price
 
     # Получить список ресурсов
     def resources_available(self):

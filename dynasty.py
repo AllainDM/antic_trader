@@ -187,6 +187,8 @@ class Dynasty:
                     goods_current_price = self.game.calc_goods_cost(city, trade_goods)
                     self.gold += goods_current_price
                     self.goods_list[trade_goods] -= 1
+                    # Увеличим количество товаров в городе на 1
+                    self.game.settlements[city].goods_in_city.resources_list[trade_goods] += 1
                     self.result_logs_text.append(f"Вы продали {trade_goods} в {city} по {goods_current_price}")
                     self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
                     # Тестово отправляем запуск подсчета цены
@@ -200,6 +202,8 @@ class Dynasty:
                     goods_current_price = self.game.calc_goods_cost(city, trade_goods)
                     self.gold += goods_current_price
                     self.goods_list[trade_goods] -= 1
+                    # Увеличим количество товаров в городе на 1
+                    self.game.settlement[city].goods_in_city.resources_list[trade_goods] += 1
                     self.result_logs_text.append(f"Вы продали {trade_goods} в {city} по {goods_current_price}")
                     self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
             else:
@@ -226,7 +230,7 @@ class Dynasty:
             self.goods_list[goods1] = 0
             # print(self.goods_list[goods1] * self.goods.resources_price[goods1])
             # !!!!!!!!!!!!!!! С логом баг, выдает всего по 1, надо проработать выше по условию
-            self.result_logs_text.append(f"Вы продали {goods1} в {city}")
+            self.result_logs_text.append(f"Вы продали все товары, сами вспоминайте, что у вас там было")
         # if self.goods_list[trade_goods]:
         #     print(f"Товар {trade_goods} есть в наличии")
         #     # Получим золото взяв цену из класса товара

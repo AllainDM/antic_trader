@@ -47,17 +47,23 @@ print(rediska)
 menu = [{"name": "Авторизация", "url": "login"},
         {"name": "Feedback", "url": "contact"}]
 
-menu_auth = [{"name": "Профиль", "url": "profile"},
+menu_auth = [
+             {"name": "Профиль", "url": "profile"},
              {"name": "Игра", "url": "game"},
              {"name": "Выбор игры", "url": "choose-game"},
              {"name": "Игроки", "url": "players"},
-             {"name": "Feedback", "url": "contact"}]
+             {"name": "Лог", "url": "log"},
+             # {"name": "Feedback", "url": "contact"}
+]
 
-menu_admin = [{"name": "Профиль", "url": "profile"},
+menu_admin = [
+              {"name": "Профиль", "url": "profile"},
               {"name": "Игры", "url": "games"},
               {"name": "Создать игру", "url": "create-game"},
               {"name": "Игроки", "url": "players"},
-              {"name": "Feedback", "url": "contact"}]
+              {"name": "Лог", "url": "log"},
+              # {"name": "Feedback", "url": "contact"}
+]
 
 
 def get_db():
@@ -174,6 +180,17 @@ def all_games_html():  # Делаю подпись html, чтоб раздели
         return render_template("games.html", title=user_name, menu=menu_admin)
     else:
         return render_template("game.html", title=user_name, menu=menu_auth)
+
+
+# Страничка с логом изменений, а так же планом
+@app.route("/log")
+@login_required
+def log():
+    user_admin = current_user.get_admin()
+    if user_admin == 1:
+        print("this is admin")
+        return render_template("log.html", title="Main", menu=menu_admin)
+    return render_template('log.html',  title="Main", menu=menu_auth)
 
 
 @app.route("/load_all_games")  # Посмотреть список все игр с возможностью их удаления. ТОЛЬКО ДЛЯ АДМИНА
@@ -373,21 +390,45 @@ def create_game(players_dynasty):  # Получаем только список 
     # Создадим города
     this_game.create_settlement("Карфаген", "Карфаген")
     this_game.settlements["Карфаген"].goods_in_city.resources_mod_price["Оливки"] = 1
+    this_game.settlements["Карфаген"].goods_in_city.resources_mod_price["Медь"] = 2
+    this_game.settlements["Карфаген"].goods_in_city.resources_mod_price["Рабы"] = 2
+    this_game.settlements["Карфаген"].goods_in_city.resources_mod_price["Шкуры"] = 3
+    this_game.settlements["Карфаген"].goods_in_city.resources_mod_price["Зерно"] = 3
 
     this_game.create_settlement("Сиракузы", "Сиракузы")
-    this_game.settlements["Сиракузы"].goods_in_city.resources_mod_price["Оливки"] = 1
+    this_game.settlements["Сиракузы"].goods_in_city.resources_mod_price["Оливки"] = 2
+    this_game.settlements["Сиракузы"].goods_in_city.resources_mod_price["Медь"] = 3
+    this_game.settlements["Сиракузы"].goods_in_city.resources_mod_price["Рабы"] = 1
+    this_game.settlements["Сиракузы"].goods_in_city.resources_mod_price["Шкуры"] = 3
+    this_game.settlements["Сиракузы"].goods_in_city.resources_mod_price["Зерно"] = 2
 
     this_game.create_settlement("Афины", "Афины")
-    this_game.settlements["Афины"].goods_in_city.resources_mod_price["Оливки"] = 1.5
+    this_game.settlements["Афины"].goods_in_city.resources_mod_price["Оливки"] = 2
+    this_game.settlements["Афины"].goods_in_city.resources_mod_price["Медь"] = 3
+    this_game.settlements["Афины"].goods_in_city.resources_mod_price["Рабы"] = 2
+    this_game.settlements["Афины"].goods_in_city.resources_mod_price["Шкуры"] = 1
+    this_game.settlements["Афины"].goods_in_city.resources_mod_price["Зерно"] = 3
 
     this_game.create_settlement("Родос", "Родос")
-    this_game.settlements["Родос"].goods_in_city.resources_mod_price["Оливки"] = 1.5
+    this_game.settlements["Родос"].goods_in_city.resources_mod_price["Оливки"] = 3
+    this_game.settlements["Родос"].goods_in_city.resources_mod_price["Медь"] = 1
+    this_game.settlements["Родос"].goods_in_city.resources_mod_price["Рабы"] = 3
+    this_game.settlements["Родос"].goods_in_city.resources_mod_price["Шкуры"] = 2
+    this_game.settlements["Родос"].goods_in_city.resources_mod_price["Зерно"] = 2
 
     this_game.create_settlement("Александрия", "Александрия")
     this_game.settlements["Александрия"].goods_in_city.resources_mod_price["Оливки"] = 3
+    this_game.settlements["Александрия"].goods_in_city.resources_mod_price["Медь"] = 2
+    this_game.settlements["Александрия"].goods_in_city.resources_mod_price["Рабы"] = 3
+    this_game.settlements["Александрия"].goods_in_city.resources_mod_price["Шкуры"] = 2
+    this_game.settlements["Александрия"].goods_in_city.resources_mod_price["Зерно"] = 1
 
     this_game.create_settlement("Тир", "Тир")
-    this_game.settlements["Тир"].goods_in_city.resources_mod_price["Оливки"] = 4
+    this_game.settlements["Тир"].goods_in_city.resources_mod_price["Оливки"] = 2
+    this_game.settlements["Тир"].goods_in_city.resources_mod_price["Медь"] = 2
+    this_game.settlements["Тир"].goods_in_city.resources_mod_price["Рабы"] = 2
+    this_game.settlements["Тир"].goods_in_city.resources_mod_price["Шкуры"] = 2
+    this_game.settlements["Тир"].goods_in_city.resources_mod_price["Зерно"] = 2
     # print(this_game.settlements["Карфаген"].goods_in_city)
     # print(this_game.settlements["Сиракузы"].goods_in_city)
     # print(this_game.settlements["Афины"].goods_in_city)

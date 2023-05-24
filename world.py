@@ -161,9 +161,6 @@ class FirstWorld:
 
     # Рассчитаем стоимость товара для выбранного города, считаем отдельно на каждый товар
     def calc_goods_cost(self, city_gs, goods_to_sell):
-        # goods_sell_price = \
-        #     self.settlements[city_gs].goods_in_city.resources_price[goods_to_sell] * \
-        #     self.settlements[city_gs].goods_in_city.resources_mod_price[goods_to_sell]
         goods_sell_price = int(self.settlements[city_gs].goods_in_city.price(goods_to_sell))
         # print(f"Тут должна быть цена на {goods_to_sell}: {goods_sell_price}, в {city_gs}")
         return goods_sell_price
@@ -246,6 +243,10 @@ def calculate_turn(game_id):
     # Запустим определение победителя
     if not game.game_the_end:
         check_winners(game)
+    # Обновим количество товаров в городе. Спишем за внутреннее потребление
+    print("Обновим количество товаров в городе. Спишем за внутреннее потребление")
+    for settlement in game.settlements_list:
+        game.settlements[settlement].goods_in_city.consumption_of_goods()
     # Сохраним данные для стран
     # Данные сохраняем после всех изменений касающихся игрока, фронт потом запрашивает данные уже из файла
     for dynasty_name in game.dynasty:
