@@ -212,6 +212,12 @@ div.content {
     float: right;
 
 }
+.log-done {
+    background-color: green;
+}
+.log-bug {
+    background-color: rgb(212, 95, 95);
+}
 .map-block {
     width: 63%;
     height: 280px;

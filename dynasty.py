@@ -176,70 +176,67 @@ class Dynasty:
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
-        # Прогоним цикл от количества продаваемого товара
         num = int(num)
+        sum_tg = 0  # Количество проданного, для лога
+        money_sum_tg = 0  # Общая сумма полученной выручки, для лога
+        # Прогоним цикл от количества продаваемого товара
         if num == -1:
             print("Продаем весь выбранный товар")
-            if self.goods_list[trade_goods]:
-                # for i in self.goods_list[trade_goods]:
+            if self.goods_list[trade_goods] > 0:
                 for i in range(self.goods_list[trade_goods]):
-                    # print("Попытка запустить функцию подсчета стоимости товара")
+                    # Рассчитаем стоимость товара перед продажей
                     goods_current_price = self.game.calc_goods_cost(city, trade_goods)
-                    self.gold += goods_current_price
-                    self.goods_list[trade_goods] -= 1
+                    self.gold += goods_current_price  # Добавим золото игроку
+                    money_sum_tg += goods_current_price  # Общая сумма выручки для лога
+                    sum_tg += 1  # Количество проданного, для лога
+                    self.goods_list[trade_goods] -= 1  # Уменьшим количество товара на складе на 1
                     # Увеличим количество товаров в городе на 1
                     self.game.settlements[city].goods_in_city.resources_list[trade_goods] += 1
-                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city} по {goods_current_price}")
-                    self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
-                    # Тестово отправляем запуск подсчета цены
             else:
                 self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
         elif num > 0:
-            if self.goods_list[trade_goods]:
+            if self.goods_list[trade_goods] > 0:  # !!!!!!!!! Возможно можно убрать эту проверку
                 for i in range(num):
-                    # self.gold += goods.resources_price[trade_goods]
-                    # print("Попытка запустить функцию подсчета стоимости товара")
-                    goods_current_price = self.game.calc_goods_cost(city, trade_goods)
-                    self.gold += goods_current_price
-                    self.goods_list[trade_goods] -= 1
-                    # Увеличим количество товаров в городе на 1
-                    self.game.settlement[city].goods_in_city.resources_list[trade_goods] += 1
-                    self.result_logs_text.append(f"Вы продали {trade_goods} в {city} по {goods_current_price}")
-                    self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
+                    # Вторая проверка на случай запроса на продажу товара больше чем есть
+                    # Ибо тут отдельный цикл
+                    if self.goods_list[trade_goods] > 0:
+                        # Рассчитаем стоимость товара перед продажей
+                        goods_current_price = self.game.calc_goods_cost(city, trade_goods)
+                        self.gold += goods_current_price  # Добавим золото игроку
+                        money_sum_tg += goods_current_price  # Общая сумма выручки для лога
+                        sum_tg += 1  # Количество проданного, для лога
+                        self.goods_list[trade_goods] -= 1  # Уменьшим количество товара на складе на 1
+                        # Увеличим количество товаров в городе на 1
+                        self.game.settlements[city].goods_in_city.resources_list[trade_goods] += 1
             else:
                 self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
-
-        # for i in num:
-        #     if self.goods_list[trade_goods]:
-        #         print(f"Товар {trade_goods} есть в наличии")
-        #         # Получим золото взяв цену из класса товара
-        #         self.gold += goods.resources_price[trade_goods]
-        #         self.goods_list[trade_goods] -= 1
-        #         self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
-        #         self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
-        #     else:
-        #         self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
+        if sum_tg > 0:  # Если хоть что-то продали, пишем лог
+            self.result_logs_text.append(f"Вы продали {sum_tg} {trade_goods} в {city} на сумму {money_sum_tg}")
+            self.game.all_logs.append(f"{self.name_rus} продают {trade_goods} в {city}")
 
     def act_sell_all_goods(self, city):     # 202 id
         # Преобразуем строку с золотом в число
         # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
         self.gold = int(self.gold)
-        # print("Попытка продать весь товар")
-        for goods1 in self.goods_list:
-            self.gold += self.goods_list[goods1] * self.goods.resources_price[goods1]
-            self.goods_list[goods1] = 0
-            # print(self.goods_list[goods1] * self.goods.resources_price[goods1])
-            # !!!!!!!!!!!!!!! С логом баг, выдает всего по 1, надо проработать выше по условию
-            self.result_logs_text.append(f"Вы продали все товары, сами вспоминайте, что у вас там было")
-        # if self.goods_list[trade_goods]:
-        #     print(f"Товар {trade_goods} есть в наличии")
-        #     # Получим золото взяв цену из класса товара
-        #     self.gold += goods.resources_price[trade_goods]
-        #     self.goods_list[trade_goods] -= 1
-        #     self.result_logs_text.append(f"Вы продали {trade_goods} в {city}")
-        #     self.game.all_logs.append(f"{self.name_rus} продали {trade_goods} в {city}")
-        # else:
-        #     self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
+        sum_tg = 0  # Количество проданного, для лога
+        money_sum_tg = 0  # Общая сумма полученной выручки, для лога
+        # Собираем цикл по типам товаров
+        for goods_type in self.goods_name_list:
+            # Если этот товар есть
+            if self.goods_list[goods_type] > 0:  # !!!!!!!!! Возможно можно убрать эту проверку
+                for i in range(self.goods_list[goods_type]):
+                    # Рассчитаем стоимость товара перед продажей
+                    goods_current_price = self.game.calc_goods_cost(city, goods_type)
+                    self.gold += goods_current_price  # Добавим золото игроку
+                    money_sum_tg += goods_current_price  # Общая сумма выручки для лога
+                    sum_tg += 1  # Количество проданного, для лога
+                    self.goods_list[goods_type] -= 1  # Уменьшим количество товара на складе на 1
+                    # Увеличим количество товаров в городе на 1
+                    self.game.settlements[city].goods_in_city.resources_list[goods_type] += 1
+        if sum_tg > 0:  # Если хоть что-то продали, пишем лог
+            # !!!!!!!!! Не считаем товар по типам, просто считаем общее количество
+            self.result_logs_text.append(f"Вы продали {sum_tg} товара в {city} на сумму {money_sum_tg}")
+            self.game.all_logs.append(f"{self.name_rus} распродаются в {city}")
 
     def prod_goods(self):
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек
