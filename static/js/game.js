@@ -401,13 +401,13 @@ document.getElementById('menu-new-colony').addEventListener('click', () => {
     chooseList.innerHTML = `<span>Выберите постройку:</span>`;  // Добавим подсказку
     statusGame.colonyListForBuild.forEach((item, id) => {
         // if (id > 0) {
-            chooseList.innerHTML += `<div class="menu-btn menu-buttons-choose">${item} Стоимость: ${statusGame.colonyPrice[item]}</div>`;
+            chooseList.innerHTML += `<button class="menu-buttons-choose custom-btn btn-15">${item} Стоимость: ${statusGame.colonyPrice[item]}</button>`;
             console.log(item);
         // };        
     });
 
     // Нарисуем кнопку отмены(выхода)
-    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-choose-exit">Отмена</div>`;
+    chooseList.innerHTML += `<button class="menu-choose-exit custom-btn btn-15" id="menu-choose-exit">Отмена</button>`;
     document.getElementById('menu-choose-exit').addEventListener('click', () => { chooseList.innerHTML = ''; exitToMainMenuButtons(); });
 
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
@@ -440,14 +440,14 @@ document.getElementById('menu-trade').addEventListener('click', () => {
 function tradeChooseCity() { 
     statusGame.cities.forEach((item, id) => {
         chooseList.innerHTML += 
-        `<div class="menu-btn menu-buttons-show-trade">
+        `<button class="menu-buttons-show-trade custom-btn btn-15">
             ${item}
-        </div>`;
+        </button>`;
         // ${statusGame.cities[id]}
     });
     
     // Нарисуем кнопку отмены(выхода)
-    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
+    chooseList.innerHTML += `<button class="menu-choose-exit custom-btn btn-15" id="menu-show-trade-exit">Выход</button>`;
     document.getElementById('menu-show-trade-exit').addEventListener('click', () => { 
         chooseList.innerHTML = ''; 
         exitToMainMenuButtons(); 
@@ -470,16 +470,16 @@ function tradeChooseAction(city) {
     // Выведем список только тех товаров, которые есть в наличии
     statusGame.goodsListForSell.forEach((item, id) => {
         chooseList.innerHTML += 
-        `<div class="menu-btn menu-buttons-show-trade trade-goods">
+        `<button class="menu-buttons-show-trade trade-goods custom-btn btn-15">
             Продать ${item}. Цена: ${statusGame.allGoodsPrices[city][item]}
-        </div>`;
+        </button>`;
     });     
     chooseList.innerHTML += 
-    `<div class="menu-btn menu-buttons-show-trade" id="sell-all-goods">
+    `<button class="custom-btn btn-15 menu-buttons-show-trade" id="sell-all-goods">
         Продать весь товар
-    </div>`;
+    </button>`;
     // Нарисуем кнопку отмены(выхода)
-    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
+    chooseList.innerHTML += `<button class="custom-btn btn-15 menu-choose-exit" id="menu-show-trade-exit">Выход</button>`;
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".trade-goods").forEach((btn, i) => {
         btn.addEventListener('click', () => {
@@ -508,9 +508,9 @@ function tradeChooseAction(city) {
 function tradeChooseNumGoodsTrade(goods, city) {
     chooseList.innerHTML = "Продаем товар:";
     chooseList.innerHTML += 
-    `<div class="menu-btn menu-buttons-show-trade" id="sell-all-goods">
+    `<button class="custom-btn btn-15 menu-buttons-show-trade" id="sell-all-goods">
         Продать все
-    </div>`;
+    </button>`;
 
     chooseList.innerHTML += 
     `<fieldset> 
@@ -521,12 +521,12 @@ function tradeChooseNumGoodsTrade(goods, city) {
             list="rangeList"> 
             <span id="rangeValue">0</span>
         </p>
-        <div class="menu-btn menu-buttons-show-trade" id="sell-num-goods">
+        <button class="custom-btn btn-15 menu-buttons-show-trade" id="sell-num-goods">
             Продать
-        </div>
+        </button>
     </fieldset>`;
     // Нарисуем кнопку отмены(выхода)
-    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`; 
+    chooseList.innerHTML += `<button class="custom-btn btn-15 menu-choose-exit" id="menu-show-trade-exit">Выход</button>`; 
     // Продать весь выбранный товар. Аргумент -1 для бекенда
     document.getElementById('sell-all-goods').addEventListener('click', () => { 
         console.log("А попробем-ка продать веь выбранный товар");
@@ -627,14 +627,14 @@ function displayStatisticsOfAllPlayers(playersList) {
             status_end_turn = "НЕ готов"
         }  
         chooseList.innerHTML += 
-        `<div class="menu-btn menu-buttons-show-diplomaty">
+        `<button class="menu-buttons-show-diplomaty custom-btn btn-15">
         ${playersList[id]["name_rus"]}.
         Золото: ${playersList[id]["gold"]}.
         Очки: ${playersList[id]["win_points"]}
-        </div>`; 
+        </button>`; 
     });
     // Нарисуем кнопку отмены(выхода)    
-    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-diplomaty-exit">Выход</div>`;
+    chooseList.innerHTML += `<button class="menu-choose-exit custom-btn btn-15" id="menu-show-diplomaty-exit">Выход</button>`;
         document.getElementById('menu-show-diplomaty-exit').addEventListener('click', () => { 
             chooseList.innerHTML = ''; 
             exitToMainMenuButtons(); 
