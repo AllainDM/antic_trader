@@ -24,6 +24,14 @@ class Goods:
             'Шкуры': 1.5,
             'Зерно': 1,
         }
+        # Словарь с итоговыми ценами на товар на конец хода
+        self.resources_curr_price = {
+            'Оливки': 200,
+            'Медь': 200,
+            'Рабы': 200,
+            'Шкуры': 200,
+            'Зерно': 200,
+        }
         # Просто список с названиями ресурсов
         self.resources_name_list = [
             'Оливки',
@@ -40,7 +48,7 @@ class Goods:
             self.resources_list[res] -= 5
             if self.resources_list[res] < 0:
                 self.resources_list[res] = 0
-            print(f"Запасов ресурсов в городе: {self.resources_list[res]}")
+            # print(f"Запасов ресурсов в городе: {self.resources_list[res]}")
 
     # Получить цену ресурса
     def price(self, resources):
@@ -55,6 +63,23 @@ class Goods:
                 penalty = 0.2
             price = price * penalty
         return price
+
+    # Обновить цену для всех товаров
+    def price_all(self):
+        # print(f"price_32123 {self.resources_list}")
+        # print(f"price_32123 {self.resources_curr_price}")
+        for goods2 in self.resources_name_list:
+            # Расчитаем доп модификатор спроса на товар
+            # Цена падает при наличии 3+ товаров в городе
+            price = self.resources_price[goods2] * self.resources_mod_price[goods2]
+            if self.resources_list[goods2] > 5:
+                # 10% за каждое превышение больше 5, макс штраф 80%
+                penalty = 1 - (self.resources_list[goods2] - 5) * 0.1
+                if penalty < 0.2:
+                    penalty = 0.2
+                price = price * penalty
+            # Присвоим текущую цену выбранному товару
+            self.resources_curr_price[goods2] = price
 
     # Получить список ресурсов
     def resources_available(self):

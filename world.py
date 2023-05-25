@@ -36,6 +36,8 @@ class FirstWorld:
         # self.buildings_price = buildings.buildings_cost
         self.buildings_price = self.calc_buildings_cost()
         self.buildings_name = buildings.buildings_name_list  # Список названий построек
+
+        # !!!!!!!!!! ЭТО НАДО????
         self.cities = cities
         self.cities_name = cities.cities_name_list  # Список названий городов
 
@@ -47,6 +49,8 @@ class FirstWorld:
         self.goods = goods  # Ссылка на класс
         # Список имен ресурсов для отображения на фронте сразу возьмем из класса
         self.goods_name = goods.resources_name_list
+        # Словарь с городами и текущими ценами на товары. Рассчитываем отдельно в конце хода, для отправки на фронт
+        self.all_goods_prices = self.calc_all_goods_price()
 
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
@@ -66,13 +70,14 @@ class FirstWorld:
             "buildings_list": self.buildings_list,
             "settlements": self.settlements,
             "settlements_list": self.settlements_list,
+            "all_goods_prices": self.all_goods_prices,
             "all_logs": self.all_logs,
             "date_create": self.date_create,
 
             "winners": self.winners,
             "game_the_end": self.game_the_end,
         }
-        # print(f"save_to_file{data}")
+        print(f"save_to_file{data}")
         # Пишем в pickle.
         try:
             with open(f"games/{self.row_id}/gameID_{self.row_id}.trader", 'wb') as f:
@@ -100,6 +105,7 @@ class FirstWorld:
         self.buildings_list = data["buildings_list"]
         self.settlements = data["settlements"]
         self.settlements_list = data["settlements_list"]
+        self.all_goods_prices = data["all_goods_prices"]
         self.all_logs = data["all_logs"]
         self.date_create = data["date_create"]
 
@@ -158,6 +164,25 @@ class FirstWorld:
         # print(f"Количество построек: {b_list}")
         # print(f"Количество построек: {self.buildings_list}")
         return sum_cost
+
+    # Рассчитаем стоимость всех товаров и обновим для мира. Нужно для отправки на фронт
+    def calc_all_goods_price(self):
+        goods_prices = {}
+        for city in self.settlements:
+            # Создадим переменную с названием страны
+            print(f"city_4642 {city}")
+            # print(f"city_5352 {self.settlements[city]}")
+            nam = self.settlements[city].name
+            # Запустим расчет цен по городам
+            self.settlements[city].goods_in_city.price_all()
+            # Присвоим городу словарь с текущими ценами
+            goods_prices[nam] = self.settlements[city].goods_in_city.resources_curr_price
+            # print(f"city_9836 {city}")
+        # Вернем ответ, запрос идет для сохранения данных в мире
+        print(f"Стоимость всех товаров расcчитана {goods_prices}")
+        # Присвоим цены обьекту мира с ценами
+        self.all_goods_prices = goods_prices
+        return goods_prices
 
     # Рассчитаем стоимость товара для выбранного города, считаем отдельно на каждый товар
     def calc_goods_cost(self, city_gs, goods_to_sell):
@@ -247,6 +272,8 @@ def calculate_turn(game_id):
     print("Обновим количество товаров в городе. Спишем за внутреннее потребление")
     for settlement in game.settlements_list:
         game.settlements[settlement].goods_in_city.consumption_of_goods()
+    # После списания товаров обновим текущие цены, для возможности отдачи на фронт
+    game.calc_all_goods_price()
     # Сохраним данные для стран
     # Данные сохраняем после всех изменений касающихся игрока, фронт потом запрашивает данные уже из файла
     for dynasty_name in game.dynasty:

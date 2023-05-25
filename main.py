@@ -489,6 +489,7 @@ def req_status_all_player():
                     "name_rus": data_one_player["name_rus"],
                     "gold": data_one_player["gold"],
                     "end_turn": data_one_player["end_turn"],
+                    "win_points": data_one_player["win_points"],
                 }
                 return_data.append(one_player)
         except FileNotFoundError:
@@ -544,6 +545,7 @@ def req_status_game():
             "game_id": my_world["row_id"],
             "date_create": my_world["date_create"],
             "buildings_price": my_world["buildings_price"],
+            "all_goods_prices": my_world["all_goods_prices"],
             "user_name": user_name,
             "cities": list_cities,
             "goods_name_list": goods_name_list,

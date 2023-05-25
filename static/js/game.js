@@ -21,6 +21,7 @@ let statusGame = {
     colonyListForBuild: [],  // Список доступных для строительства построек
     // Сюда попробуем записать обьект с ценами на постройки
     colonyPrice: {},
+    allGoodsPrices: {},  // Словарь(обьект) с городами и ценами на товары
     winPoints: "?",
     winners: [],
     user_name: "",
@@ -142,42 +143,6 @@ function requestStatusPlayer() {
 
 requestStatus();
 requestStatusPlayer();
-// autoUpdateTimer();
-
-// Автообновление странички при статусе "Ход отправлен"
-// Запускать проверку с каждым запросом на сервер. 
-// Типо: 1 = Запрос на сервер
-//       2 = Если переменная "ход отправлен" остается в true, то повторный запрос через интервал
-// function autoUpdate() {
-//     if (statusGame.end_turn) {
-//         requestStatus();
-//         requestStatusPlayer();
-//     } 
-// };
-
-// function autoUpdate2() {
-//     requestStatus();
-//     requestStatusPlayer();
-// };
-
-// Вообщем пока игра всегда каждые 20 секунд проверяет параметр "отправлен ли ход", и если отправлен делает запрос на сервер статуса игры
-// function autoUpdateTimer() {
-//     // console.log("Статус хода: " + statusGame.end_turn)
-//     // console.log(statusGame.end_turn)
-//     // while (statusGame.end_turn) {
-//     //     setTimeout(autoUpdate, 3000)
-//     //     console.log("Таймер работает")
-//     //     // requestStatus();
-//     //     // requestStatusPlayer();
-//     // }
-//     // if (statusGame.end_turn) {
-//     //     requestStatus();
-//     //     requestStatusPlayer();
-//     // }
-//     let timerId = setInterval(() => autoUpdate(), 20000);
-
-// };
-// autoUpdateTimer();
 
 // Делаем новый таймер, он работает от включенной переменной autoUpdate
 function autoUpdate() {
@@ -230,16 +195,16 @@ function actualVar(res) {
 
     statusGame.cities = res.cities
 
-    // Цены на постройки
-    statusGame.colonyPrice = res.buildings_price
-    console.log("тут");
-    console.log(res.buildings_price);
+    statusGame.colonyPrice = res.buildings_price  // Цены на постройки    
+    statusGame.allGoodsPrices = res.all_goods_prices  // Цены на товары по городам    
+    console.log("тут_231234");
+    console.log(res.all_goods_prices);
 
 
     updateVar();
     logAllResultStart();
     // При загрузке запустим запрос статистики игроков для отображения в отдельном окошке
-    req_status_all_player();
+    req_status_all_player_head();
 };
 
 
@@ -500,37 +465,26 @@ function tradeChooseCity() {
 
 // После выбора города определим дальнейшие дествия
 function tradeChooseAction(city) {
-    chooseList.innerHTML = "Продаем товар:";
+    chooseList.innerHTML = `Продаем товар в ${city}:`;
     console.log(`Продаем товар в город ${city}`);
     // Выведем список только тех товаров, которые есть в наличии
     statusGame.goodsListForSell.forEach((item, id) => {
         chooseList.innerHTML += 
         `<div class="menu-btn menu-buttons-show-trade trade-goods">
-            Продать ${item}
+            Продать ${item}. Цена: ${statusGame.allGoodsPrices[city][item]}
         </div>`;
     });     
-
     chooseList.innerHTML += 
     `<div class="menu-btn menu-buttons-show-trade" id="sell-all-goods">
         Продать весь товар
     </div>`;
-
     // Нарисуем кнопку отмены(выхода)
     chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;
-
     // Определяем позицию кнопки и "создаем" соответсвующий приказ
     document.querySelectorAll(".trade-goods").forEach((btn, i) => {
         btn.addEventListener('click', () => {
             console.log(btn);
             console.log(statusGame.goodsListForSell[i]);
-            // console.log([`Продаем: ${statusGame.goodsListForSell[i]} в ${statusGame.cities[i]}`, 201, city, i]); 
-            // statusGame.acts.push([`Продаем: ${statusGame.goodsListForSell[i]} в ${city}`, 
-            //     201, city, statusGame.goodsListForSell[i]
-            // ]); 
-            // postAct(statusGame.game_id);
-            // logStart();
-            // chooseList.innerHTML = ''; 
-            // exitToMainMenuButtons(); 
             tradeChooseNumGoodsTrade(statusGame.goodsListForSell[i], city);
         });
     });
@@ -553,20 +507,10 @@ function tradeChooseAction(city) {
 // После выбора города и выбора товара уточняем количество
 function tradeChooseNumGoodsTrade(goods, city) {
     chooseList.innerHTML = "Продаем товар:";
-
     chooseList.innerHTML += 
     `<div class="menu-btn menu-buttons-show-trade" id="sell-all-goods">
         Продать все
     </div>`;
-
-    // chooseList.innerHTML += 
-    // `<div class="menu-btn menu-buttons-show-trade" id="sell-one-goods">
-    //     Продать 1 штуку
-    // </div>`;
-
-    // chooseList.innerHTML += 
-    // `<input type="range" min="0" max="${statusGame.goods_list[goods]}">`;
-
 
     chooseList.innerHTML += 
     `<fieldset> 
@@ -581,10 +525,8 @@ function tradeChooseNumGoodsTrade(goods, city) {
             Продать
         </div>
     </fieldset>`;
-
     // Нарисуем кнопку отмены(выхода)
-    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`;  
-
+    chooseList.innerHTML += `<div class="menu-btn menu-choose-exit" id="menu-show-trade-exit">Выход</div>`; 
     // Продать весь выбранный товар. Аргумент -1 для бекенда
     document.getElementById('sell-all-goods').addEventListener('click', () => { 
         console.log("А попробем-ка продать веь выбранный товар");
@@ -650,7 +592,7 @@ function req_status_all_player() {
 };
 
 // И такая же функция для отображения в шапке
-function req_status_all_player() {
+function req_status_all_player_head() {
     console.log(statusGame.game_id)
     console.log("Запрос статистики игроков")
     const request = new XMLHttpRequest();
@@ -688,7 +630,7 @@ function displayStatisticsOfAllPlayers(playersList) {
         `<div class="menu-btn menu-buttons-show-diplomaty">
         ${playersList[id]["name_rus"]}.
         Золото: ${playersList[id]["gold"]}.
-        Статус: ${status_end_turn}
+        Очки: ${playersList[id]["win_points"]}
         </div>`; 
     });
     // Нарисуем кнопку отмены(выхода)    
