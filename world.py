@@ -54,6 +54,7 @@ class FirstWorld:
 
         # Общий лог событий. Сюда будут записываться все выполненные действия всех "игроков"
         self.all_logs = []
+        self.all_logs_party = []  # Лог всей партии
 
         self.date_create = date_create
 
@@ -72,6 +73,7 @@ class FirstWorld:
             "settlements_list": self.settlements_list,
             "all_goods_prices": self.all_goods_prices,
             "all_logs": self.all_logs,
+            "all_logs_party": self.all_logs_party,
             "date_create": self.date_create,
 
             "winners": self.winners,
@@ -107,6 +109,7 @@ class FirstWorld:
         self.settlements_list = data["settlements_list"]
         self.all_goods_prices = data["all_goods_prices"]
         self.all_logs = data["all_logs"]
+        self.all_logs_party = data["all_logs_party"]
         self.date_create = data["date_create"]
 
         # Список победителей и статус игры, при окончании победитель повторно не определяется
@@ -251,6 +254,7 @@ def calculate_turn(game_id):
     global_event = events.global_event()
     if global_event:
         game.all_logs.append(global_event)
+        game.all_logs_party.append(f"Ход {game.turn}. {global_event}")
     print(f"Глобальный евент {global_event}")
     # Пока по 5 действий. Нужно разделить по фазам, и что-то сделать в неограниченном количестве.
     # 20 для первого теста

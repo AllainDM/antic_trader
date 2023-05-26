@@ -14,6 +14,7 @@ let statusGame = {
     // actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
     allLogs: [],        // Все логи итогов хода всех стран
+    allLogsParty: [],        // Все логи итогов хода всех стран за всю партию
     gold: 0,
     goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
@@ -188,6 +189,7 @@ function actualVar(res) {
     statusGame.year = res.year;
     statusGame.turn = res.turn;
     statusGame.allLogs = res.all_logs;
+    statusGame.allLogsParty = res.all_logs_party;
 
     statusGame.user_name = res.user_name;
     statusGame.game_id = res.game_id;
@@ -665,4 +667,32 @@ function displayStatisticsOfAllPlayersOnBoard(playersList) {
         // ${playersList[id]["name_rus"]}: <span style="background-color: red;"> ${status_end_turn} </span>
         // </div>`; 
     });
+}
+
+// Модальное окно
+
+// Получить модальное окно
+const modal = document.getElementById("my-modal");
+
+// Получить кнопку, которая открывает модальное окно
+const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
+
+// Получить элемент <span>, который закрывает модальное окно
+const span = document.getElementsByClassName("close")[0];
+
+
+// Открыть модальное окно по нажатию
+btnShowAllLogsParty.onclick = function() {
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    console.log("Модалка открыта")
+    statusGame.allLogsParty.forEach((item, id) => {
+        console.log(item)
+        content.innerHTML += `<div>${item}</div>`
+    });
+};
+
+// Когда пользователь нажимает на <span> (x), закройте модальное окно
+span.onclick = function() {
+  modal.style.display = "none";
 }

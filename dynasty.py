@@ -165,7 +165,9 @@ class Dynasty:
             self.gold -= self.game.buildings_price[buildings_name]
 
             self.result_logs_text.append(f"Вы построили {buildings_name}")
-            self.game.all_logs.append(f"{self.name_rus} построили  {buildings_name}")
+            self.game.all_logs.append(f"{self.name_rus} построили {buildings_name}")
+            self.game.all_logs_party.append(f"Ход {self.game.turn}. "
+                                            f"{self.name_rus} построили {buildings_name}")
 
     def calc_win_points(self):
         self.win_points = round(self.gold / 1000)
@@ -213,6 +215,8 @@ class Dynasty:
         if sum_tg > 0:  # Если хоть что-то продали, пишем лог
             self.result_logs_text.append(f"Вы продали {sum_tg} {trade_goods} в {city} на сумму {money_sum_tg}")
             self.game.all_logs.append(f"{self.name_rus} продают {trade_goods} в {city}")
+            self.game.all_logs_party.append(f"Ход {self.game.turn}. "
+                                            f"{self.name_rus} продают {trade_goods} в {city}")
 
     def act_sell_all_goods(self, city):     # 202 id
         # Преобразуем строку с золотом в число
@@ -237,6 +241,8 @@ class Dynasty:
             # !!!!!!!!! Не считаем товар по типам, просто считаем общее количество
             self.result_logs_text.append(f"Вы продали {sum_tg} товара в {city} на сумму {money_sum_tg}")
             self.game.all_logs.append(f"{self.name_rus} распродаются в {city}")
+            self.game.all_logs_party.append(f"Ход {self.game.turn}. "
+                                            f"{self.name_rus} распродаются в {city}")
 
     def prod_goods(self):
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек

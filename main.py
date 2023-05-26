@@ -542,6 +542,7 @@ def req_status_game():
             "year": my_world["year"],
             "turn": my_world["turn"],
             "all_logs": my_world["all_logs"],
+            "all_logs_party": my_world["all_logs_party"],
             "game_id": my_world["row_id"],
             "date_create": my_world["date_create"],
             "buildings_price": my_world["buildings_price"],
