@@ -490,6 +490,7 @@ def req_status_all_player():
                     "gold": data_one_player["gold"],
                     "end_turn": data_one_player["end_turn"],
                     "win_points": data_one_player["win_points"],
+                    "body_points": data_one_player["body_points"],
                 }
                 return_data.append(one_player)
         except FileNotFoundError:

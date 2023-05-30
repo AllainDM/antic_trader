@@ -16,6 +16,7 @@ let statusGame = {
     allLogs: [],        // Все логи итогов хода всех стран
     allLogsParty: [],        // Все логи итогов хода всех стран за всю партию
     gold: 0,
+    bodyPoints: 0,      // Очки действия для игрока
     goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
     goods_list: {},  // Словарь(обьект) с количеством ресурсов, для торговли
@@ -83,6 +84,17 @@ function updateVar() {
     document.getElementById('player').innerText = 'Игрок: ' + statusGame.user_name;
     document.getElementById('game-id').innerText = 'Игра: ' + statusGame.game_id;
     document.getElementById('game-date').innerText = 'Дата создания: ' + statusGame.date_create;
+
+    // Отобразим очки действий. Покрасим в красный цвет в случае ухода в минус
+    const showBodyPoints = document.getElementById('body-points');
+    showBodyPoints.innerText = `Очки действий: ${statusGame.bodyPoints - statusGame.acts.length}`;
+    if (statusGame.bodyPoints - statusGame.acts.length < 0) {
+        console.log("Нехватает очков действий");
+        showBodyPoints.classList.add("set-red-font");
+    } else {
+        showBodyPoints.classList.remove("set-red-font");
+    }
+
 }
 
 updateVar();
@@ -220,6 +232,7 @@ function actualVarPlayer(res) {
     statusGame.winPoints = res.win_points
     statusGame.dynastyName = res.name_rus
     statusGame.gold = res.gold
+    statusGame.bodyPoints = res.body_points
     statusGame.end_turn = res.end_turn
 
     //  Запись не выполненных действий, массив обновляется на беке при выполнении и остаток возвращается на фронт
@@ -685,6 +698,7 @@ const span = document.getElementsByClassName("close")[0];
 btnShowAllLogsParty.onclick = function() {
     modal.style.display = "block";
     let content = document.getElementById("show-content");
+    content.innerHTML = ""
     console.log("Модалка открыта")
     statusGame.allLogsParty.forEach((item, id) => {
         console.log(item)

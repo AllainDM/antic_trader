@@ -260,9 +260,12 @@ def calculate_turn(game_id):
     # 20 для первого теста
     for cont in range(20):
         for dynasty_name in game.dynasty:
+            # Проверим остались ли очки действия у страны
+            if game.dynasty[dynasty_name].body_points_left > 0:
+                game.dynasty[dynasty_name].calc_act()
+                game.dynasty[dynasty_name].body_points_left -= 1  # Вычтем действие после обсчета
             # print(f"Проверка ссылки: {dynasty_name}")
             # print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
-            game.dynasty[dynasty_name].calc_act()
     # Пост обсчет хода
     # !!!!!!!!!!!!!!!! Было просто game.dynasty. Но считалось 2 раза. А с dynasty_list другой баг
     # print(f"game.dynasty: {game.dynasty}")

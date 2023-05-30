@@ -24,6 +24,9 @@ class Dynasty:
         self.name = name
         self.name_rus = name_rus
         self.gold = gold
+        self.body_points = 3  # Очки действий для игрока
+        # Остаток очков действий, для цикла подсчета хода. Восстанавливается перед подсчетом хода взяв значение выше
+        self.body_points_left = self.body_points
 
         # Общие стартовые условия
         self.win_points = 0
@@ -63,6 +66,7 @@ class Dynasty:
             "name_rus": self.name_rus,
             "gold": self.gold,
             "win_points": self.win_points,
+            "body_points": self.body_points,
 
             # Ссылку на класс нет необходимости сохранять
             # "goods": self.goods,
@@ -105,6 +109,7 @@ class Dynasty:
         self.name_rus = data["name_rus"]
         self.gold = data["gold"]
         self.win_points = data["win_points"]
+        self.body_points = data["body_points"]
 
         # self.goods = data["goods"]
         self.goods_list = data["goods_list"]  # Список(словарь) ресурсов и их количество

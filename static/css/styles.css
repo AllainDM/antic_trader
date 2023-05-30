@@ -323,7 +323,13 @@ div.content {
     line-height: 3;
 }
 
-/* Модальный (фон) */
+/* Покрасим текст через класс */
+.set-red-font {
+    background-color: red;
+}
+
+
+/* Модальное окно */
 .modal {
     display: none; /* Скрыто по умолчанию */
     position: fixed; /* Оставаться на месте */
@@ -340,10 +346,11 @@ div.content {
   /* Модальное содержание/коробка */
   .modal-content {
     background-color: #fefefe;
+    font-size: 14px;
     margin: 15% auto; /* 15% сверху и по центру */
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Может быть больше или меньше, в зависимости от размера экрана */
+    width: 40%; /* Может быть больше или меньше, в зависимости от размера экрана */
   }
   
   /* Кнопка закрытия */
