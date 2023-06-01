@@ -173,6 +173,8 @@ class Dynasty:
             self.game.all_logs.append(f"{self.name_rus} построили {buildings_name}")
             self.game.all_logs_party.append(f"Ход {self.game.turn}. "
                                             f"{self.name_rus} построили {buildings_name}")
+        else:
+            self.result_logs_text.append(f"Вы НЕ построили {buildings_name}, не хватило денег.")
 
     def calc_win_points(self):
         self.win_points = round(self.gold / 1000)
