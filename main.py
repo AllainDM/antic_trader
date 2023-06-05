@@ -552,6 +552,7 @@ def req_status_game():
             "cities": list_cities,
             "goods_name_list": goods_name_list,
             "buildings_name_list": buildings_name_list,
+            "donate_leader": my_world["donate_leader"],
         }
     print(f"data {data}")
     return jsonify(data)

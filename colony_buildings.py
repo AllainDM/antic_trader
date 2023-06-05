@@ -43,7 +43,7 @@ class ColonyBuildings:
     def buildings_available(self, dynasty):
         available_list = []
         for i in self.buildings_name_list:
-            if dynasty == 'Barkid' and i == 'Поля(Зерно)':
+            if dynasty == 'Barkid111' and i == 'Поля(Зерно)':
                 continue
             available_list.append(i)
         return available_list

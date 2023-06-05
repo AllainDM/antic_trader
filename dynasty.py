@@ -5,6 +5,7 @@ import redis
 
 from resources import goods  # Импортируем уже созданный экземпляр класса
 from colony_buildings import buildings  # Импортируем уже созданный экземпляр класса
+import decision  # Импортируем решения, будет обращаться напрямую
 
 
 # Настройка Redis для хранения данных игроков
@@ -24,6 +25,7 @@ class Dynasty:
         self.name = name
         self.name_rus = name_rus
         self.gold = gold
+        self.title = 0  # Стартовый ранг игрока. За каждый дается 1 победное очко
         self.body_points = 3  # Очки действий для игрока
         # Остаток очков действий, для цикла подсчета хода. Восстанавливается перед подсчетом хода взяв значение выше
         self.body_points_left = self.body_points
@@ -42,6 +44,9 @@ class Dynasty:
         self.buildings_name_list = buildings.buildings_name_list  # Вроде не нужно, загружается из класса World
         self.buildings_available_list = buildings.buildings_available(self.name)
 
+        # Решения
+        self.title_price = 1000
+
         self.acts = []  # Список действий
         # self.logs = []
         # self.acts_text = []  # Список с текстом не выполненных действий
@@ -53,7 +58,7 @@ class Dynasty:
         # Это должно быть не у страны, а отдельный столбец у игрока в БД
         # self.active_game = 0  # Id Активной игры. Надо что-то решить и убрать 0
 
-        self.game = game  # Не помню, но для чего то нужно передать ссылку
+        self.game = game
         self.game_id = game.row_id  # Сохраним ИД игры, для создания правильной ссылки при необходимости
         # Но конечно же, можно было бы передать ее аргументом при создании династии
 
@@ -65,6 +70,7 @@ class Dynasty:
             "name": self.name,
             "name_rus": self.name_rus,
             "gold": self.gold,
+            "title": self.title,
             "win_points": self.win_points,
             "body_points": self.body_points,
 
@@ -108,6 +114,7 @@ class Dynasty:
         self.name = data["name"]
         self.name_rus = data["name_rus"]
         self.gold = data["gold"]
+        self.title = data["title"]
         self.win_points = data["win_points"]
         self.body_points = data["body_points"]
 
@@ -141,6 +148,10 @@ class Dynasty:
                 self.acts.pop(0)
             elif self.acts[0][1] == 202:  # Продать вообще весь товар, аргументов только город
                 self.act_sell_all_goods(self.acts[0][2])  # И тут передадим аргумент
+                print(f"""Выполнено действие {self.acts[0]}""")
+                self.acts.pop(0)
+            elif self.acts[0][1] == 301:  # Купить титул
+                self.act_buy_title()  # Аргументов нет
                 print(f"""Выполнено действие {self.acts[0]}""")
                 self.acts.pop(0)
             else:
@@ -250,6 +261,25 @@ class Dynasty:
             self.game.all_logs.append(f"{self.name_rus} распродаются в {city}")
             self.game.all_logs_party.append(f"Ход {self.game.turn}. "
                                             f"{self.name_rus} распродаются в {city}")
+
+    def act_buy_title(self):     # 301 id
+        # Преобразуем строку с золотом в число
+        # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
+        self.gold = int(self.gold)
+        # Рассчитаем стоимость покупки титула. Взяв стоимость из класса.
+        # Аргументами передает текущий уровень титула и общее количество купленных и игре титулов(берется из мира)
+        title_price_now = decision.decision.buy_title(self.title, self.game.title_total_taken)
+        # Если хватает золота и ранг еще не максимальный
+        if self.gold >= title_price_now and self.title < decision.decision.max_title:
+            self.gold -= title_price_now       # Вычтем стоимость
+            self.title += 1     # Добавим титул игроку
+            self.game.title_total_taken += 1  # Добавим к общему счетчику купленных титутов у всех игроков
+            self.result_logs_text.append(f"Вы купили титул за {title_price_now}")
+            self.game.all_logs.append(f"{self.name_rus} покупают титул")
+            self.game.all_logs_party.append(f"Ход {self.game.turn}. "
+                                            f"{self.name_rus} покупают титул")
+        else:
+            self.result_logs_text.append(f"Вы не купили титул")
 
     def prod_goods(self):
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек

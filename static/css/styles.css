@@ -291,6 +291,10 @@ div.content {
     visibility: hidden;
     flex-direction: column;
 }
+.menu-buttons-decision {
+    visibility: hidden;
+    flex-direction: column;
+}
 .menu-buttons-diplomaty {
     visibility: hidden;
     flex-direction: column;

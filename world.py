@@ -37,6 +37,11 @@ class FirstWorld:
         self.buildings_price = self.calc_buildings_cost()
         self.buildings_name = buildings.buildings_name_list  # Список названий построек
 
+        # Решения
+        self.donate_leader = "Не определен"  # Лидер по пожертвованиям, получает 1 победное очко
+        # !!!!!! Пока не понятно нужно ли оно здесь, или будет храниться в классе(экземпляре)
+        self.title_total_taken = 0  # Общее количество купленных титулов, влияет на стоимость
+
         # !!!!!!!!!! ЭТО НАДО????
         self.cities = cities
         self.cities_name = cities.cities_name_list  # Список названий городов
@@ -67,6 +72,8 @@ class FirstWorld:
             "dynasty": self.dynasty,
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
+            "donate_leader": self.donate_leader,
+            "title_total_taken": self.title_total_taken,
             "buildings_price": self.calc_buildings_cost(),
             "buildings_list": self.buildings_list,
             "settlements": self.settlements,
@@ -103,6 +110,8 @@ class FirstWorld:
         self.dynasty = data["dynasty"]  # Тут переменная в виде названия Династии на английском
         self.dynasty_list = data["dynasty_list"]  # И тут переменная в виде названия Династии на английском.....
         self.player_list = data["player_list"]
+        self.donate_leader = data["donate_leader"]
+        self.title_total_taken = data["title_total_taken"]
         self.buildings_price = data["buildings_price"]
         self.buildings_list = data["buildings_list"]
         self.settlements = data["settlements"]

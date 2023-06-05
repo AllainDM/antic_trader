@@ -17,6 +17,7 @@ let statusGame = {
     allLogsParty: [],        // Все логи итогов хода всех стран за всю партию
     gold: 0,
     bodyPoints: 0,      // Очки действия для игрока
+    donateLeader: 0,      // Лидер пожертвований, получает 1 победное очко
     goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
     goods_list: {},  // Словарь(обьект) с количеством ресурсов, для торговли
@@ -73,6 +74,7 @@ function updateVar() {
     document.getElementById('winners').innerText = 'Победители: ' + statusGame.winners;
 
     document.getElementById('gold').innerHTML = `<img class="icon" src="/static/image/icon/money.png"> ` + statusGame.gold;  // 'Золото: ' + 
+    document.getElementById('donate-leader').innerText = 'Лидер пожертвований: ' + statusGame.donateLeader;
     document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
     document.getElementById('province-name').innerText = statusGame.dynastyName;
     if (statusGame.end_turn) {
@@ -200,6 +202,9 @@ function actualVar(res) {
 
     statusGame.year = res.year;
     statusGame.turn = res.turn;
+
+    statusGame.donateLeader = res.donate_leader;
+
     statusGame.allLogs = res.all_logs;
     statusGame.allLogsParty = res.all_logs_party;
 
@@ -553,7 +558,7 @@ function tradeChooseNumGoodsTrade(goods, city) {
     });
     // Продать выбранное число товара
     document.getElementById('sell-num-goods').addEventListener('click', () => { 
-        num = document.getElementById('goods-value').value
+        num = document.getElementById('goods-value').value;
         statusGame.acts.push([`Продаем ${num} товар ${goods} в ${city}`, 201, city, goods, num]); 
         console.log(`Продадим ${num} товар ${goods} в ${city}`);
         postAct(statusGame.game_id);
@@ -568,6 +573,35 @@ function tradeChooseNumGoodsTrade(goods, city) {
         exitToMainMenuButtons(); 
     });
 }
+
+
+// Решения 
+document.getElementById('menu-decision').addEventListener('click', () => {
+    hiddenAllMenu();
+    console.log("Запуск решений")
+    document.getElementById("main-menu-buttons").setAttribute('style','display:none');
+    document.getElementById("menu-buttons-decision").setAttribute('style','visibility:visible');
+
+});
+
+document.getElementById('buy-title').addEventListener('click', () => {
+    console.log("Купить титул");
+    statusGame.acts.push([`Покупаем титул`, 301]); 
+    postAct(statusGame.game_id);
+    logStart();
+    chooseList.innerHTML = ''; 
+    exitToMainMenuButtons(); 
+});
+
+document.getElementById('make-donation').addEventListener('click', () => {
+    console.log("Сделать пожертвование");
+    statusGame.acts.push([`Делаем пожертвование`, 302]); 
+    postAct(statusGame.game_id);
+    logStart();
+    chooseList.innerHTML = ''; 
+    exitToMainMenuButtons(); 
+});
+
 
 //
 // Просмотр "Дипломатии"
