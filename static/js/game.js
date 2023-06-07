@@ -16,6 +16,7 @@ let statusGame = {
     allLogs: [],        // Все логи итогов хода всех стран
     allLogsParty: [],        // Все логи итогов хода всех стран за всю партию
     gold: 0,
+    title: 0,
     bodyPoints: 0,      // Очки действия для игрока
     donateLeader: 0,      // Лидер пожертвований, получает 1 победное очко
     goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
@@ -33,6 +34,16 @@ let statusGame = {
     cities: [], // Массив с городами, пока просто названия
     autoUpdate: true,  // Таймер автообновления странички
 };
+
+// Модальное окно
+// Получить модальное окно
+const modal = document.getElementById("my-modal");
+
+// Получить кнопку, которая открывает модальное окно
+const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
+
+// Получить элемент <span>, который закрывает модальное окно
+const span = document.getElementsByClassName("close")[0];
 
 
 
@@ -73,7 +84,20 @@ function updateVar() {
     document.getElementById('win-points').innerText = 'Победные очки: ' + statusGame.winPoints;
     document.getElementById('winners').innerText = 'Победители: ' + statusGame.winners;
 
+    // Второе меню
+    // Золото
     document.getElementById('gold').innerHTML = `<img class="icon" src="/static/image/icon/money.png"> ` + statusGame.gold;  // 'Золото: ' + 
+    // Очки действий. Покрасим в красный цвет в случае ухода в минус
+    const showBodyPoints = document.getElementById('body-points');
+    showBodyPoints.innerText = `Очки действий: ${statusGame.bodyPoints - statusGame.acts.length}`;
+    if (statusGame.bodyPoints - statusGame.acts.length < 0) {
+        console.log("Нехватает очков действий");
+        showBodyPoints.classList.add("set-red-font");
+    } else {
+        showBodyPoints.classList.remove("set-red-font");    }
+    // Титул(ранг) игрока
+    document.getElementById('rank').innerText = 'Титус: ' + statusGame.title;
+
     document.getElementById('donate-leader').innerText = 'Лидер пожертвований: ' + statusGame.donateLeader;
     document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
     document.getElementById('province-name').innerText = statusGame.dynastyName;
@@ -87,15 +111,6 @@ function updateVar() {
     document.getElementById('game-id').innerText = 'Игра: ' + statusGame.game_id;
     document.getElementById('game-date').innerText = 'Дата создания: ' + statusGame.date_create;
 
-    // Отобразим очки действий. Покрасим в красный цвет в случае ухода в минус
-    const showBodyPoints = document.getElementById('body-points');
-    showBodyPoints.innerText = `Очки действий: ${statusGame.bodyPoints - statusGame.acts.length}`;
-    if (statusGame.bodyPoints - statusGame.acts.length < 0) {
-        console.log("Нехватает очков действий");
-        showBodyPoints.classList.add("set-red-font");
-    } else {
-        showBodyPoints.classList.remove("set-red-font");
-    }
 
 }
 
@@ -237,6 +252,7 @@ function actualVarPlayer(res) {
     statusGame.winPoints = res.win_points
     statusGame.dynastyName = res.name_rus
     statusGame.gold = res.gold
+    statusGame.title = res.title
     statusGame.bodyPoints = res.body_points
     statusGame.end_turn = res.end_turn
 
@@ -585,13 +601,47 @@ document.getElementById('menu-decision').addEventListener('click', () => {
 });
 
 document.getElementById('buy-title').addEventListener('click', () => {
+
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `
+        <div style="font-size: 20px">
+            <div>Купить титул</div>
+            <div>Стоимость: 1000 за 1 ранг + 100 за каждый купленный ранг игроками.</div>
+            <button onclick = buyTitle() style="font-size: 25px; margin-top: 10px">Купить</button>
+            <button onclick = closeModal() style="font-size: 25px">Отмена</button>
+        </div>
+    `;
+    
+    console.log("Модалка открыта");
+
+});
+function buyTitle() {
     console.log("Купить титул");
     statusGame.acts.push([`Покупаем титул`, 301]); 
     postAct(statusGame.game_id);
     logStart();
     chooseList.innerHTML = ''; 
+    closeModal();
     exitToMainMenuButtons(); 
-});
+}
+// span.onclick = function() {
+//     modal.style.display = "none";
+//   }
+
+
+// Открыть модальное окно по нажатию    !!!!!!!!!!!!!!!!!!!!!!
+// На примере другой функции     !!!!!!!!!!!!!!!!!!
+// btnShowAllLogsParty.onclick = function() {
+//     modal.style.display = "block";
+//     let content = document.getElementById("show-content");
+//     content.innerHTML = ""
+//     console.log("Модалка открыта")
+//     statusGame.allLogsParty.forEach((item, id) => {
+//         console.log(item)
+//         content.innerHTML += `<div>${item}</div>`
+//     });
+// };
 
 document.getElementById('make-donation').addEventListener('click', () => {
     console.log("Сделать пожертвование");
@@ -717,16 +767,15 @@ function displayStatisticsOfAllPlayersOnBoard(playersList) {
 }
 
 // Модальное окно
+// Получение самого элемента вверху скрипта
+// // Получить модальное окно
+// const modal = document.getElementById("my-modal");
 
-// Получить модальное окно
-const modal = document.getElementById("my-modal");
+// // Получить кнопку, которая открывает модальное окно
+// const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
 
-// Получить кнопку, которая открывает модальное окно
-const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
-
-// Получить элемент <span>, который закрывает модальное окно
-const span = document.getElementsByClassName("close")[0];
-
+// // Получить элемент <span>, который закрывает модальное окно
+// const span = document.getElementsByClassName("close")[0];
 
 // Открыть модальное окно по нажатию
 btnShowAllLogsParty.onclick = function() {
@@ -744,3 +793,8 @@ btnShowAllLogsParty.onclick = function() {
 span.onclick = function() {
   modal.style.display = "none";
 }
+// Общая функция закрытия модального окна
+function closeModal() {
+    modal.style.display = "none";    
+}
+// Модальное окошко для Решений

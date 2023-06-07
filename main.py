@@ -488,6 +488,7 @@ def req_status_all_player():
                 one_player = {
                     "name_rus": data_one_player["name_rus"],
                     "gold": data_one_player["gold"],
+                    "title": data_one_player["title"],
                     "end_turn": data_one_player["end_turn"],
                     "win_points": data_one_player["win_points"],
                     "body_points": data_one_player["body_points"],
