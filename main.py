@@ -488,6 +488,7 @@ def req_status_all_player():
                 one_player = {
                     "name_rus": data_one_player["name_rus"],
                     "gold": data_one_player["gold"],
+                    "donate_sum": data_one_player["donate_sum"],
                     "title": data_one_player["title"],
                     "end_turn": data_one_player["end_turn"],
                     "win_points": data_one_player["win_points"],
@@ -540,7 +541,8 @@ def req_status_game():
     buildings_name_list = buildings.buildings_name_list
     # print(f"goods_name: {goods_name}")
     data = {
-            "winners": my_world["winners"],
+            "winners": my_world["winners"],  # need_win_points_for_win
+            "need_win_points_for_win": my_world["need_win_points_for_win"],
             "year": my_world["year"],
             "turn": my_world["turn"],
             "all_logs": my_world["all_logs"],

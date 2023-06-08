@@ -18,6 +18,7 @@ let statusGame = {
     gold: 0,
     title: 0,
     bodyPoints: 0,      // Очки действия для игрока
+    donateSum: 0,       // Наши пожертвования
     donateLeader: 0,      // Лидер пожертвований, получает 1 победное очко
     goodsListForSell: [],  // Список ресурсов в наличии у страны, для отображения при продаже
     goodsName: [],
@@ -26,7 +27,8 @@ let statusGame = {
     // Сюда попробуем записать обьект с ценами на постройки
     colonyPrice: {},
     allGoodsPrices: {},  // Словарь(обьект) с городами и ценами на товары
-    winPoints: "?",
+    winPoints: 0,
+    wpForWin: 0,
     winners: [],
     user_name: "",
     game_id: "",        // ИД партии. Будем передавать вместе с ходом.
@@ -83,6 +85,8 @@ const span = document.getElementsByClassName("close")[0];
 function updateVar() {
     document.getElementById('win-points').innerText = 'Победные очки: ' + statusGame.winPoints;
     document.getElementById('winners').innerText = 'Победители: ' + statusGame.winners;
+    // <p id="victory-conditions">Условия победы: Набрать 666 очков</p>
+    document.getElementById('victory-conditions').innerText = `Условия победы: Набрать ${statusGame.wpForWin} очков`;
 
     // Второе меню
     // Золото
@@ -96,7 +100,7 @@ function updateVar() {
     } else {
         showBodyPoints.classList.remove("set-red-font");    }
     // Титул(ранг) игрока
-    document.getElementById('rank').innerText = 'Титус: ' + statusGame.title;
+    document.getElementById('rank').innerText = 'Титул: ' + statusGame.title;
 
     document.getElementById('donate-leader').innerText = 'Лидер пожертвований: ' + statusGame.donateLeader;
     document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
@@ -141,13 +145,19 @@ function requestStatus() {
                 //     actualVar(response);
                 // }
                 actualVar(response);
+                // Тут же проверим победителя                
+                if (response.winners !== "") {
+                    console.log(`Есть победитель, династия ${response.winners}`)
+                    let infoHtml = `<p style="font-size: 20px;">Есть победитель, династия ${response.winners}</p>` 
+                    infoModal(infoHtml)
+                };
+
             };
         } else {
             console.log("Ответ от сервера не получег");
         }
     });
     request.send();
-
 }
 
 // Запрос на сервер уже конкретно параметров "страны" игрока
@@ -215,14 +225,21 @@ let timerId = setInterval(() => autoUpdate(), 10000);
 function actualVar(res) {
     statusGame.winners = res.winners;
 
+    // Год и ход
     statusGame.year = res.year;
     statusGame.turn = res.turn;
 
+    // Инфа об условиях победы
+    statusGame.wpForWin = res.need_win_points_for_win
+
+    // Пожертвования
     statusGame.donateLeader = res.donate_leader;
 
+    // Логи
     statusGame.allLogs = res.all_logs;
     statusGame.allLogsParty = res.all_logs_party;
 
+    // Имя игрока и инфа о партии
     statusGame.user_name = res.user_name;
     statusGame.game_id = res.game_id;
     statusGame.date_create = res.date_create;
@@ -252,6 +269,7 @@ function actualVarPlayer(res) {
     statusGame.winPoints = res.win_points
     statusGame.dynastyName = res.name_rus
     statusGame.gold = res.gold
+    statusGame.donateSum = res.donate_sum;
     statusGame.title = res.title
     statusGame.bodyPoints = res.body_points
     statusGame.end_turn = res.end_turn
@@ -625,32 +643,38 @@ function buyTitle() {
     closeModal();
     exitToMainMenuButtons(); 
 }
-// span.onclick = function() {
-//     modal.style.display = "none";
-//   }
-
-
-// Открыть модальное окно по нажатию    !!!!!!!!!!!!!!!!!!!!!!
-// На примере другой функции     !!!!!!!!!!!!!!!!!!
-// btnShowAllLogsParty.onclick = function() {
-//     modal.style.display = "block";
-//     let content = document.getElementById("show-content");
-//     content.innerHTML = ""
-//     console.log("Модалка открыта")
-//     statusGame.allLogsParty.forEach((item, id) => {
-//         console.log(item)
-//         content.innerHTML += `<div>${item}</div>`
-//     });
-// };
 
 document.getElementById('make-donation').addEventListener('click', () => {
+
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");  // <div>Сделать пожертвование.</div>
+    content.innerHTML = `
+        <div style="font-size: 20px">
+            <div>Сделайте пожертвование на выбранную сумму. Победное очко достается только одному игроку, сделавшему на протяжении партии пожетвований на наибольшую сумму.</div>
+            <div>Ваши пожертвования: ${statusGame.donateSum}.</div>
+            <div>Лидер пожертвований: ${statusGame.donateLeader}.</div>
+            <button onclick = makeDonation(100) style="font-size: 25px; margin-top: 10px">100</button>
+            <button onclick = makeDonation(200) style="font-size: 25px; margin-top: 10px">200</button>
+            <button onclick = makeDonation(300) style="font-size: 25px; margin-top: 10px">300</button>
+            <button onclick = makeDonation(400) style="font-size: 25px; margin-top: 10px">400</button>
+            <button onclick = makeDonation(500) style="font-size: 25px; margin-top: 10px">500</button>
+
+            <button onclick = closeModal() style="font-size: 25px">Отмена</button>
+        </div>
+    `;
+    
+    console.log("Модалка открыта");
+});
+
+function makeDonation(sum) {
     console.log("Сделать пожертвование");
-    statusGame.acts.push([`Делаем пожертвование`, 302]); 
+    statusGame.acts.push([`Делаем пожертвование на ${sum} золота`, 302, sum]); 
     postAct(statusGame.game_id);
     logStart();
     chooseList.innerHTML = ''; 
-    exitToMainMenuButtons(); 
-});
+    closeModal();
+    exitToMainMenuButtons();     
+}
 
 
 //
@@ -793,8 +817,17 @@ btnShowAllLogsParty.onclick = function() {
 span.onclick = function() {
   modal.style.display = "none";
 }
+
 // Общая функция закрытия модального окна
 function closeModal() {
     modal.style.display = "none";    
 }
-// Модальное окошко для Решений
+
+// Информационное модальное окошко
+function infoModal(text) {
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = text 
+    content.innerHTML += `<button onclick = closeModal() style="font-size: 25px">Хорошо</button>`
+
+}

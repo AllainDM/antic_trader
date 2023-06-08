@@ -20,7 +20,7 @@ class FirstWorld:
         self.year = -300
         self.turn = 1
 
-        self.need_win_points_for_win = 11
+        self.need_win_points_for_win = 5
         self.winners = []
         self.winners_ID = []
         self.game_the_end = False
@@ -39,6 +39,8 @@ class FirstWorld:
 
         # Решения
         self.donate_leader = "Не определен"  # Лидер по пожертвованиям, получает 1 победное очко
+        # Сразу используем русское имя династии, с ним и сравниваем для определения победителя
+        # self.donate_leader_name = "Не определен"  # Имя на русском для отправки на фронт
         # !!!!!! Пока не понятно нужно ли оно здесь, или будет храниться в классе(экземпляре)
         self.title_total_taken = 0  # Общее количество купленных титулов, влияет на стоимость
 
@@ -84,6 +86,7 @@ class FirstWorld:
             "date_create": self.date_create,
 
             "winners": self.winners,
+            "need_win_points_for_win": self.need_win_points_for_win,
             "game_the_end": self.game_the_end,
         }
         print(f"save_to_file{data}")
@@ -122,6 +125,7 @@ class FirstWorld:
         self.date_create = data["date_create"]
 
         # Список победителей и статус игры, при окончании победитель повторно не определяется
+        self.need_win_points_for_win = data["need_win_points_for_win"]
         self.winners = data["winners"]
         self.game_the_end = data["game_the_end"]
         # Проверим на ошибку чтение только что записанных данных?????????
@@ -202,6 +206,15 @@ class FirstWorld:
         # print(f"Тут должна быть цена на {goods_to_sell}: {goods_sell_price}, в {city_gs}")
         return goods_sell_price
 
+    def calc_donate_leader(self):
+        donate_leader = ""
+        donate_leader_sum = 0
+        for i in self.dynasty:
+            if self.dynasty[i].donate_sum > donate_leader_sum:
+                donate_leader_sum = self.dynasty[i].donate_sum
+                donate_leader = self.dynasty[i].name_rus
+                self.donate_leader = self.dynasty[i].name_rus
+
 
 def check_readiness(game_id):  # Проверить все ли страны отправили ход
     # Прочитаем общий файл с партией, нам понадобится список стран
@@ -281,6 +294,8 @@ def calculate_turn(game_id):
     for dynasty_name in game.dynasty:
         print(f"Почему запускается два раза? dynasty_name {dynasty_name}")
         game.dynasty[dynasty_name].calc_end_turn()
+    # Рассчитаем лидера пожертвований
+    game.calc_donate_leader()
     # Запустим определение победителя
     if not game.game_the_end:
         check_winners(game)

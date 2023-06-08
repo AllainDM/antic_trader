@@ -46,6 +46,7 @@ class Dynasty:
 
         # Решения
         self.title_price = 1000
+        self.donate_sum = 0
 
         self.acts = []  # Список действий
         # self.logs = []
@@ -70,10 +71,10 @@ class Dynasty:
             "name": self.name,
             "name_rus": self.name_rus,
             "gold": self.gold,
+            "donate_sum": self.donate_sum,
             "title": self.title,
             "win_points": self.win_points,
             "body_points": self.body_points,
-
             # Ссылку на класс нет необходимости сохранять
             # "goods": self.goods,
             "goods_list": self.goods_list,  # Список(словарь) ресурсов
@@ -81,10 +82,9 @@ class Dynasty:
             "buildings_list": self.buildings_list,
             "buildings_name_list": self.buildings_name_list,
             # Список доступных для строительства построек
-            # !!!!!!! Это нужно не сохранять, а каждый раз обновлять из класса, мало ли что изменилось
-            # !!!!!!! Нет, не из класса, класс не меняется, надо сохранять каждый конец хода в файле
+            # TODO !!!!!!! Это нужно не сохранять, а каждый раз обновлять из класса, мало ли что изменилось
+            # TODO !!!!!!! Нет, не из класса, класс не меняется, надо сохранять каждый конец хода в файле
             "buildings_available_list": self.buildings_available_list,
-
             "acts": self.acts,
             "result_logs_text": self.result_logs_text,
             "end_turn": self.end_turn,
@@ -114,6 +114,7 @@ class Dynasty:
         self.name = data["name"]
         self.name_rus = data["name_rus"]
         self.gold = data["gold"]
+        self.donate_sum = data["donate_sum"]
         self.title = data["title"]
         self.win_points = data["win_points"]
         self.body_points = data["body_points"]
@@ -154,6 +155,10 @@ class Dynasty:
                 self.act_buy_title()  # Аргументов нет
                 print(f"""Выполнено действие {self.acts[0]}""")
                 self.acts.pop(0)
+            elif self.acts[0][1] == 302:  # Купить титул
+                self.act_make_donate(self.acts[0][2])  # Аргументом сумма пожертвования
+                print(f"""Выполнено действие {self.acts[0]}""")
+                self.acts.pop(0)
             else:
                 print('Записей в акте нет')
 
@@ -188,7 +193,14 @@ class Dynasty:
             self.result_logs_text.append(f"Вы НЕ построили {buildings_name}, не хватило денег.")
 
     def calc_win_points(self):
-        self.win_points = round(self.gold / 1000)
+        # Возьмем по 1 очку за 5000
+        self.win_points = round(self.gold / 5000)
+        # Дополнительное 1 очко, от лидера пожертвований
+        # Определим сравнением имени победителя в записи игры
+        if self.game.donate_leader == self.name_rus:
+            self.win_points += 1
+        # Добавим за титул
+        self.win_points += self.title
         # print(f"Победные очки {self.name_rus}: {self.win_points}")
         return self.win_points
 
@@ -280,6 +292,20 @@ class Dynasty:
                                             f"{self.name_rus} покупают титул")
         else:
             self.result_logs_text.append(f"Вы не купили титул")
+
+    def act_make_donate(self, donate_sum):  # 302 id
+        # Преобразуем строку с золотом в число
+        # !!!!!!!! Нужно подумать, где на другом этапе это можно сделать
+        self.gold = int(self.gold)
+        if self.gold >= donate_sum:
+            self.gold -= donate_sum
+            self.donate_sum += donate_sum
+            self.result_logs_text.append(f"Вы сделали пожертвование на {donate_sum} золота")
+            self.game.all_logs.append(f"{self.name_rus} делает пожертвование")
+            self.game.all_logs_party.append(f"Ход {self.game.turn}. "
+                                            f"{self.name_rus} делает пожертвование")
+        else:
+            self.result_logs_text.append(f"Вы не сделали пожертвование")
 
     def prod_goods(self):
         # Переберем список с постройками. Просто прибавим к товару количество соответствующих построек
