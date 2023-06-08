@@ -197,16 +197,17 @@ class Dynasty:
             self.result_logs_text.append(f"Вы НЕ построили {buildings_name}, не хватило денег.")
 
     def calc_win_points(self):
-        # Возьмем по 1 очку за 5000
-        self.win_points = round(self.gold / 5000)
+        # Возьмем по 1 очку за 3000
+        win_points = round(self.gold / 3000)
         # Дополнительное 1 очко, от лидера пожертвований
         # Определим сравнением имени победителя в записи игры
         if self.game.donate_leader == self.name_rus:
-            self.win_points += 1
+            win_points += 1
         # Добавим за титул
-        self.win_points += self.title
+        win_points += self.title
+        self.win_points = win_points
         # print(f"Победные очки {self.name_rus}: {self.win_points}")
-        return self.win_points
+        return win_points
 
     def act_sell_goods(self, city, trade_goods, num):     # 201 id
         # Преобразуем строку с золотом в число

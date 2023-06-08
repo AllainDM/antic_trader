@@ -148,7 +148,7 @@ function requestStatus() {
                 // }
                 actualVar(response);
                 // Тут же проверим победителя                
-                if (response.winners !== "") {
+                if (response.winners.length > 0) {
                     console.log(`Есть победитель, династия ${response.winners}`)
                     let infoHtml = `<p style="font-size: 20px;">Есть победитель, династия ${response.winners}</p>` 
                     infoModal(infoHtml)
