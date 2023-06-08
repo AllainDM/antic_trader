@@ -43,8 +43,11 @@ document.getElementById("create-new-set-game").addEventListener("click", () => {
         // nameEng = document.getElementById(`choose-nameEng_${i}`);
         let newDynasty = {
             playerId: Number(document.getElementById(`choose-players_${i}`).value) + 1,
-            nameEng: setGames.namesEng[i-1],
-            nameRus: setGames.namesRus[i-1],
+            nameEng: setGames.listPlayers[i][3],
+            nameRus: setGames.listPlayers[i][3],
+            // nameEng: setGames.namesEng[i-1],
+            // nameRus: setGames.namesRus[i-1],
+            // setGames.listPlayers
         }
         newGame.push(newDynasty);
         console.log(newDynasty);

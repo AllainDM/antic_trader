@@ -291,8 +291,8 @@ def req_list_players():
     # print(f"games: {games}")
     for user in users:
         # Возвращаем имя пользователя(не логин) и ИД пользователя(для админа)
-        # Так же добавим количество побед [5]
-        list_users_to_front.append([user[0], user[3], user[5]])
+        # Так же добавим количество побед [5], Имя династии под игрока [6]
+        list_users_to_front.append([user[0], user[3], user[5], user[6]])
     return jsonify(list_users_to_front)
 
 
@@ -488,11 +488,11 @@ def req_status_all_player():
                 one_player = {
                     "name_rus": data_one_player["name_rus"],
                     "gold": data_one_player["gold"],
-                    "donate_sum": data_one_player["donate_sum"],
-                    "title": data_one_player["title"],
+                    # "donate_sum": data_one_player["donate_sum"],
+                    # "title": data_one_player["title"],
                     "end_turn": data_one_player["end_turn"],
                     "win_points": data_one_player["win_points"],
-                    "body_points": data_one_player["body_points"],
+                    # "body_points": data_one_player["body_points"],
                 }
                 return_data.append(one_player)
         except FileNotFoundError:

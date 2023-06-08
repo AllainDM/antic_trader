@@ -45,8 +45,8 @@
                 <!-- <div class="end-turn">                 -->
                 <button id="end-turn-btn" class="custom-btn end-turn-btn" style="margin-top: 5px;">Отправить ход</button>
                 <!-- </div>         -->
-                <input type="button" value="Отменить последний приказ" id="cancel-act" style="float: right; margin-top: 15px;">
-                <input type="button" value="Отменить все приказы" id="cancel-all-acts" style="float: right;">
+                <!-- <input type="button" value="Отменить последний приказ" id="cancel-act" style="float: right; margin-top: 15px;"> -->
+                <!-- <input type="button" value="Отменить все приказы" id="cancel-all-acts" style="float: right;"> -->
                 <div id="timer">таймер автообновления 10 секунд. ОТКЛЮЧЕН</div>
                 <!-- <input type="button" value="Вывести логи" id="act-logs"> -->
             </div>
@@ -153,23 +153,31 @@
         </div> -->
     </div>
 </div>
+<!-- class="dashboard-stat" -->
 <div class="container">
     <div class="container-act-logs">
         <div class="logs"> 
             <div id="logs"></div>
+            <p></p>
+
+            <!-- <input type="button" value="Отменить последний приказ" id="cancel-act" style="float: right; margin-top: 15px;"> -->
+            <!-- <input type="button" value="Отменить все приказы" id="cancel-all-acts" style="float: right;"> -->
+            <button style="font-size: 12px; margin-top: 5px;" id="cancel-act">Отменить последний приказ</button>
+            <button style="font-size: 12px; margin-top: 5px;" id="cancel-all-acts">Отменить все приказы</button>
         </div>
     </div>
     <div class="container-local-logs">
         <div class="logs"> 
+            <button style="font-size: 14px;" id="show_all_logs_party_players">Посмотреть логи всех ваших ходов</button>
             <div id="logs-result"></div>
         </div>
     </div>
     <div class="container-all-logs">
         <div class="logs"> 
+            <button style="font-size: 14px;" id="show_all_logs_party">Посмотреть логи всех ходов</button>
             <div id="all-logs-result"></div>
         </div>
     </div>
-    <button id="show_all_logs_party">Посмотреть логи всех ходов</button>
 </div>
 
 

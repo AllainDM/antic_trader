@@ -13,6 +13,7 @@ let statusGame = {
     acts: [],           // Запись планируемых действий с описанием
     // actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
+    logsTextAllTurns: [],       // Запись итогов хода в виде текста понятного для игрока
     allLogs: [],        // Все логи итогов хода всех стран
     allLogsParty: [],        // Все логи итогов хода всех стран за всю партию
     gold: 0,
@@ -43,6 +44,7 @@ const modal = document.getElementById("my-modal");
 
 // Получить кнопку, которая открывает модальное окно
 const btnShowAllLogsParty = document.getElementById("show_all_logs_party");
+const btnShowAllLogsPartyPlayers = document.getElementById("show_all_logs_party_players");
 
 // Получить элемент <span>, который закрывает модальное окно
 const span = document.getElementsByClassName("close")[0];
@@ -278,6 +280,7 @@ function actualVarPlayer(res) {
     statusGame.acts = res.acts
     // statusGame.actsText = res.acts_text
     statusGame.logsText = res.result_logs_text
+    statusGame.logsTextAllTurns = res.result_logs_text_all_turns
 
     // Обновим список доступных для игрока(страны) построек
     statusGame.colonyListForBuild = res.buildings_available_list
@@ -423,7 +426,7 @@ function postAct(gameId) {
 // Функции отображения логов. До хода и итогов хода
 
 function logStart() {       //Функция запуска будущего лога
-    document.getElementById('logs').innerText = '';  // Очистим
+    document.getElementById('logs').innerText = 'Ваши действия';  // Очистим
     statusGame.acts.forEach((item, num) => {  
         let a = document.getElementById('logs');
         a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
@@ -811,6 +814,19 @@ btnShowAllLogsParty.onclick = function() {
         console.log(item)
         content.innerHTML += `<div>${item}</div>`
     });
+    content.innerHTML += `<button onclick = closeModal() style="font-size: 20px">Выйти</button>`
+};
+
+btnShowAllLogsPartyPlayers.onclick = function() {
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = ""
+    console.log("Модалка открыта")
+    statusGame.logsTextAllTurns.forEach((item, id) => {
+        console.log(item)
+        content.innerHTML += `<div>${item}</div>`
+    });
+    content.innerHTML += `<button onclick = closeModal() style="font-size: 20px">Выйти</button>`
 };
 
 // Когда пользователь нажимает на <span> (x), закройте модальное окно

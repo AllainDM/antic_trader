@@ -273,14 +273,13 @@ def calculate_turn(game_id):
         game.dynasty[dyns].result_logs_text = []
     # Так же почистим общий лог
     game.all_logs = []
-    # Запустим глобальные/локальные евенты
-    global_event = events.global_event()
-    if global_event:
-        game.all_logs.append(global_event)
-        game.all_logs_party.append(f"Ход {game.turn}. {global_event}")
-    print(f"Глобальный евент {global_event}")
-    # Пока по 5 действий. Нужно разделить по фазам, и что-то сделать в неограниченном количестве.
-    # 20 для первого теста
+    # TODO отключил глобальные евенты
+    # TODO Запустим глобальные/локальные евенты
+    # TODO global_event = events.global_event()
+    # TODO if global_event:
+    # TODO     game.all_logs.append(global_event)
+    # TODO     game.all_logs_party.append(f"Ход {game.turn}. {global_event}")
+    # TODO print(f"Глобальный евент {global_event}")
     # Пробуем намутить по остаткам действий у стран
     # Введем переменную для цикла
     acts_left = True  # Будет проверяться в конце каждого цикла у игроков

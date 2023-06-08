@@ -52,6 +52,7 @@ class Dynasty:
         # self.logs = []
         # self.acts_text = []  # Список с текстом не выполненных действий
         self.result_logs_text = []  # Список с текстом выполненных действий
+        self.result_logs_text_all_turns = []  # Список с текстом выполненных действий по всем ходам
 
         self.end_turn = False  # Отправила ли страна заявку
         self.end_turn_know = True  # Прочитал ли оповещение о новом ходе
@@ -87,6 +88,7 @@ class Dynasty:
             "buildings_available_list": self.buildings_available_list,
             "acts": self.acts,
             "result_logs_text": self.result_logs_text,
+            "result_logs_text_all_turns": self.result_logs_text_all_turns,
             "end_turn": self.end_turn,
             "end_turn_know": self.end_turn_know,
         }
@@ -130,6 +132,7 @@ class Dynasty:
 
         self.acts = data["acts"]
         self.result_logs_text = data["result_logs_text"]
+        self.result_logs_text_all_turns = data["result_logs_text_all_turns"]
         self.end_turn = data["end_turn"]
         self.end_turn_know = data["end_turn_know"]
 
@@ -186,6 +189,7 @@ class Dynasty:
             self.gold -= self.game.buildings_price[buildings_name]
 
             self.result_logs_text.append(f"Вы построили {buildings_name}")
+            self.result_logs_text_all_turns.append(f"Ход {self.game.turn}. Вы построили {buildings_name}")
             self.game.all_logs.append(f"{self.name_rus} построили {buildings_name}")
             self.game.all_logs_party.append(f"Ход {self.game.turn}. "
                                             f"{self.name_rus} построили {buildings_name}")
@@ -244,6 +248,8 @@ class Dynasty:
                 self.result_logs_text.append(f"Вы не продали {trade_goods}, товара нет в наличии")
         if sum_tg > 0:  # Если хоть что-то продали, пишем лог
             self.result_logs_text.append(f"Вы продали {sum_tg} {trade_goods} в {city} на сумму {money_sum_tg}")
+            self.result_logs_text_all_turns.append(f"Ход {self.game.turn}. "
+                                                   f"Вы продали {sum_tg} {trade_goods} в {city} на сумму {money_sum_tg}")
             self.game.all_logs.append(f"{self.name_rus} продают {trade_goods} в {city}")
             self.game.all_logs_party.append(f"Ход {self.game.turn}. "
                                             f"{self.name_rus} продают {trade_goods} в {city}")
@@ -270,6 +276,8 @@ class Dynasty:
         if sum_tg > 0:  # Если хоть что-то продали, пишем лог
             # !!!!!!!!! Не считаем товар по типам, просто считаем общее количество
             self.result_logs_text.append(f"Вы продали {sum_tg} товара в {city} на сумму {money_sum_tg}")
+            self.result_logs_text_all_turns.append(f"Ход {self.game.turn}. "
+                                                   f"Вы продали {sum_tg} товара в {city} на сумму {money_sum_tg}")
             self.game.all_logs.append(f"{self.name_rus} распродаются в {city}")
             self.game.all_logs_party.append(f"Ход {self.game.turn}. "
                                             f"{self.name_rus} распродаются в {city}")
@@ -287,6 +295,7 @@ class Dynasty:
             self.title += 1     # Добавим титул игроку
             self.game.title_total_taken += 1  # Добавим к общему счетчику купленных титутов у всех игроков
             self.result_logs_text.append(f"Вы купили титул за {title_price_now}")
+            self.result_logs_text_all_turns.append(f"Ход {self.game.turn}. Вы купили титул за {title_price_now}")
             self.game.all_logs.append(f"{self.name_rus} покупают титул")
             self.game.all_logs_party.append(f"Ход {self.game.turn}. "
                                             f"{self.name_rus} покупают титул")
@@ -301,6 +310,8 @@ class Dynasty:
             self.gold -= donate_sum
             self.donate_sum += donate_sum
             self.result_logs_text.append(f"Вы сделали пожертвование на {donate_sum} золота")
+            self.result_logs_text_all_turns.append(f"Ход {self.game.turn}. "
+                                                   f"Вы сделали пожертвование на {donate_sum} золота")
             self.game.all_logs.append(f"{self.name_rus} делает пожертвование")
             self.game.all_logs_party.append(f"Ход {self.game.turn}. "
                                             f"{self.name_rus} делает пожертвование")
