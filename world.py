@@ -1,4 +1,5 @@
 import pickle
+from random import sample
 
 from dynasty import Dynasty
 from colony_buildings import buildings
@@ -21,7 +22,7 @@ class FirstWorld:
         self.turn = 1
 
         self.need_win_points_for_win = 5
-        self.winners = []
+        self.winners = ""
         self.winners_ID = []
         self.game_the_end = False
 
@@ -280,14 +281,24 @@ def calculate_turn(game_id):
     print(f"Глобальный евент {global_event}")
     # Пока по 5 действий. Нужно разделить по фазам, и что-то сделать в неограниченном количестве.
     # 20 для первого теста
-    for cont in range(20):
-        for dynasty_name in game.dynasty:
+    # Пробуем намутить по остаткам действий у стран
+    # Введем переменную для цикла
+    acts_left = True  # Будет проверяться в конце каждого цикла у игроков
+    while acts_left:
+    # for cont in range(20):
+        # Отрандомим через random.sample список имен с династиями
+        dyn_arr = sample(game.dynasty_list, len(game.dynasty_list))
+        for rand_dynasty in dyn_arr:
+        # for dynasty_name in game.dynasty:
             # Проверим остались ли очки действия у страны
-            if game.dynasty[dynasty_name].body_points_left > 0:
-                game.dynasty[dynasty_name].calc_act()
-                game.dynasty[dynasty_name].body_points_left -= 1  # Вычтем действие после обсчета
-            # print(f"Проверка ссылки: {dynasty_name}")
-            # print(f"Проверка ссылки: {game.dynasty[dynasty_name]}")
+            if game.dynasty[rand_dynasty].body_points_left > 0:
+                acts_left = True  # Выставим верное значение, для продолжения обсчета цикла
+                game.dynasty[rand_dynasty].calc_act()
+                game.dynasty[rand_dynasty].body_points_left -= 1  # Вычтем действие после обсчета
+            # Вычислим остались ли у игроков ходы
+            else:
+                acts_left = False   # Выставим ложь, если по итогу всего цикла ни у кого не осталось ходов
+
     # Пост обсчет хода
     # !!!!!!!!!!!!!!!! Было просто game.dynasty. Но считалось 2 раза. А с dynasty_list другой баг
     # print(f"game.dynasty: {game.dynasty}")
