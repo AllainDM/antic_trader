@@ -363,12 +363,23 @@ function cancelAct(what) {
 
 // Отправка хода
 document.getElementById('end-turn-btn').addEventListener('click', () => {
-    postTurn(statusGame.game_id); // Передадим ИД партии аргументом, он сразу уйдет на Бек для определения к какой партии присвоить ход
+    if (statusGame.acts.length < statusGame.bodyPoints) {
+        // confimModalEndTurd("У вас еще остались очки действий. Точно отправить ход?")
+        modal.style.display = "block";
+        let content = document.getElementById("show-content");
+        content.innerHTML = `<div style="font-size: 25px">У вас еще остались очки действий. Точно отправить ход?</div>`
+        content.innerHTML += `<button onclick = "postTurn(statusGame.game_id); closeModal();" style="font-size: 25px; width: 100px">Да</button>`
+        content.innerHTML += `<button onclick = closeModal() style="font-size: 25px; width: 100px">Нет</button>`
+    } else {
+        postTurn(statusGame.game_id);
+    }
+    // postTurn(statusGame.game_id); // Передадим ИД партии аргументом, он сразу уйдет на Бек для определения к какой партии присвоить ход
 })
 
-function postTurn(gameId) {
+
+function postTurn() {
     const request = new XMLHttpRequest();
-    request.open('POST', `/post_turn?gameID=${gameId}`);
+    request.open('POST', `/post_turn?gameID=${statusGame.game_id}`);
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     
     // console.log(JSON.stringify(country.acts))
@@ -845,5 +856,17 @@ function infoModal(text) {
     let content = document.getElementById("show-content");
     content.innerHTML = text 
     content.innerHTML += `<button onclick = closeModal() style="font-size: 25px">Хорошо</button>`
+
+}
+
+// Модальное окошко подтверждения
+// Не получается пока сдать универсальное
+function confimModal(text, fn) {
+    fn = postTurn
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `<div style="font-size: 25px">${text}</div>`
+    content.innerHTML += `<button onclick = ${fn} style="font-size: 25px; width: 100px">Да</button>`
+    content.innerHTML += `<button onclick = closeModal() style="font-size: 25px; width: 100px">Нет</button>`
 
 }
