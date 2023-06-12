@@ -27,15 +27,18 @@ let setGames = {
 
 // Создадим массив, глобально, для добавления нового игрока.
 // Пока не могу придумать ничего умнее. Возможно нужен какойто коллбек с ожиданием донастройки всех игрков
-newGame = [];
+// newGame = [];
 // 0 = ид игрока
 // 1 = название династии на английском
 // 2 = название династии на русском
 // 3 = стартовое золото
 
 document.getElementById("create-new-set-game").addEventListener("click", () => {
-    // Почистим массив
-    newGame = [];
+    // Тут будем хранить основные настройки для новой партии
+    let mainSet = {
+        maxPlayers: 8  // Заглушка на максимальное количество игроков
+    }
+    let dynastyList = [];  // Массив с династиями
     for (i = 1; i <= setGames.numPlayers; i++) {
         // playerId = document.getElementById(`choose-players_${i}`);
         // nameEng = setGames.namesEng[i];
@@ -49,10 +52,11 @@ document.getElementById("create-new-set-game").addEventListener("click", () => {
             // nameRus: setGames.namesRus[i-1],
             // setGames.listPlayers
         }
-        newGame.push(newDynasty);
+        dynastyList.push(newDynasty);
         console.log(newDynasty);
-        console.log(newGame);
+        console.log(dynastyList);
     }
+    let newGame = [mainSet, dynastyList];
     createNewGame(newGame);
 });
 

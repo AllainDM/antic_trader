@@ -28,9 +28,15 @@ let statusGame = {
     // Сюда попробуем записать обьект с ценами на постройки
     colonyPrice: {},
     allGoodsPrices: {},  // Словарь(обьект) с городами и ценами на товары
+    // Игроки
+    dynastyList: [],
+    curNumPlayers: 0,
+    maxPlayers: 12,
+    // Победа и победители
     winPoints: 0,
     wpForWin: 0,
     winners: [],
+
     user_name: "",
     game_id: "",        // ИД партии. Будем передавать вместе с ходом.
     date_create: "",
@@ -85,12 +91,8 @@ const span = document.getElementsByClassName("close")[0];
 // Обычная функция обновления параметров на страничке
 // Неплохо бы делать вывод только тех товаров, что есть в наличии через создание верстки перебором массива с ресурсами forEach
 function updateVar() {
-    document.getElementById('win-points').innerText = 'Победные очки: ' + statusGame.winPoints;
-    document.getElementById('winners').innerText = 'Победители: ' + statusGame.winners;
-    // <p id="victory-conditions">Условия победы: Набрать 666 очков</p>
-    document.getElementById('victory-conditions').innerText = `Условия победы: Набрать ${statusGame.wpForWin} очков`;
-
-    // Второе меню
+    // Первое меню
+    document.getElementById('province-name').innerText = statusGame.dynastyName; 
     // Золото
     document.getElementById('gold').innerHTML = `<img class="icon" src="/static/image/icon/money.png"> ` + statusGame.gold;  // 'Золото: ' + 
     // Очки действий. Покрасим в красный цвет в случае ухода в минус
@@ -100,19 +102,29 @@ function updateVar() {
         console.log("Нехватает очков действий");
         showBodyPoints.classList.add("set-red-font");
     } else {
-        showBodyPoints.classList.remove("set-red-font");    }
-    // Титул(ранг) игрока
-    document.getElementById('rank').innerText = 'Титул: ' + statusGame.title;
-
+        showBodyPoints.classList.remove("set-red-font");    
+    document.getElementById('rank').innerText = 'Титул: ' + statusGame.title;}  // Титул(ранг) игрока    
     document.getElementById('donate-leader').innerText = 'Лидер пожертвований: ' + statusGame.donateLeader;
+    document.getElementById('win-points').innerText = 'Победные очки: ' + statusGame.winPoints;
+
+    // Второе меню
+    document.getElementById('cur-num-players').innerText = `Игроков: ${statusGame.curNumPlayers}`;
+    document.getElementById('max-players').innerText = `Макс.игроков: ${statusGame.maxPlayers}`;
+    document.getElementById('victory-conditions').innerText = `Условия победы: Набрать ${statusGame.wpForWin} очков`;
+    document.getElementById('winners').innerText = 'Победители: ' + statusGame.winners;
+
+    // Третье меню со списком игрков и их готовность
+    //
+
+    // Четвертое меню, даты и хода
     document.getElementById('year-turn').innerText = 'Дата: ' + statusGame.year + " Ход: " + statusGame.turn;
-    document.getElementById('province-name').innerText = statusGame.dynastyName;
     if (statusGame.end_turn) {
-        document.getElementById('end-turn-bool').innerText = "Ход отправлен"
+        document.getElementById('end-turn-bool').innerText = "Ход ГОТОВ"
     } else {
-        document.getElementById('end-turn-bool').innerText = "Ход НЕ отправлен"
+        document.getElementById('end-turn-bool').innerText = "Ход НЕ готов"
     }
 
+    // Меню разработки
     document.getElementById('player').innerText = 'Игрок: ' + statusGame.user_name;
     document.getElementById('game-id').innerText = 'Игра: ' + statusGame.game_id;
     document.getElementById('game-date').innerText = 'Дата создания: ' + statusGame.date_create;
@@ -150,7 +162,7 @@ function requestStatus() {
                 // Тут же проверим победителя                
                 if (response.winners.length > 0) {
                     console.log(`Есть победитель, династия ${response.winners}`)
-                    let infoHtml = `<p style="font-size: 20px;">Есть победитель, династия ${response.winners}</p>` 
+                    let infoHtml = `<p style="font-size: 20px;">Есть победитель(и), династия(и) ${response.winners}</p>` 
                     infoModal(infoHtml)
                 };
 
@@ -245,6 +257,8 @@ function actualVar(res) {
     statusGame.user_name = res.user_name;
     statusGame.game_id = res.game_id;
     statusGame.date_create = res.date_create;
+    statusGame.curNumPlayers = res.dynasty_list.length  // Текущим количеством игроков выведем длинну списка стран
+    statusGame.maxPlayers = res.max_players
 
     statusGame.cities = res.cities
 
@@ -275,6 +289,9 @@ function actualVarPlayer(res) {
     statusGame.title = res.title
     statusGame.bodyPoints = res.body_points
     statusGame.end_turn = res.end_turn
+
+    // Игроки
+    
 
     //  Запись не выполненных действий, массив обновляется на беке при выполнении и остаток возвращается на фронт
     statusGame.acts = res.acts

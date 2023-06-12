@@ -15,7 +15,7 @@ import maindb
 
 
 class FirstWorld:
-    def __init__(self, row_id, date_create="0:0:0", is_active=1, the_end=0):
+    def __init__(self, row_id, date_create="0:0:0", max_players=8, is_active=1, the_end=0):
         self.row_id = row_id  # Номер игры
         self.is_active = 1  # Не активная игра считается как завершенная
         self.year = -300
@@ -29,6 +29,7 @@ class FirstWorld:
         self.dynasty = {}  # Основной объект с династиями
         self.dynasty_list = []  # Массив стран, для перебора при обсчете хода
         self.player_list = []
+        self.max_players = max_players
 
         # Товары и производство
         self.buildings = buildings
@@ -75,6 +76,8 @@ class FirstWorld:
             "dynasty": self.dynasty,
             "dynasty_list": self.dynasty_list,
             "player_list": self.player_list,
+            # "cur_num_players": len(self.player_list),
+            "max_players": self.max_players,
             "donate_leader": self.donate_leader,
             "title_total_taken": self.title_total_taken,
             "buildings_price": self.calc_buildings_cost(),
@@ -114,6 +117,7 @@ class FirstWorld:
         self.dynasty = data["dynasty"]  # Тут переменная в виде названия Династии на английском
         self.dynasty_list = data["dynasty_list"]  # И тут переменная в виде названия Династии на английском.....
         self.player_list = data["player_list"]
+        self.max_players = data["max_players"]
         self.donate_leader = data["donate_leader"]
         self.title_total_taken = data["title_total_taken"]
         self.buildings_price = data["buildings_price"]

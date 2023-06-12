@@ -53,18 +53,34 @@ class FDataBase:
 
         return True
 
-    def add_game(self, turn, year, players, is_active=1, the_end=0):
+    def add_game(self, turn, year, players, cur_num_players, max_players, is_active=1, the_end=0):
         try:
             # Пока без даты, надо модифицировать таблицу
             date_create = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
-            self.__cur.execute("INSERT INTO games (is_active, the_end, turn, year, players, date_create) "
-                               "VALUES(%s, %s, %s, %s, %s, %s)",
-                               (is_active, the_end, turn, year, players, date_create))
+            self.__cur.execute("INSERT INTO games (is_active, the_end, turn, year, "
+                               "players, cur_num_players, max_players, "
+                               "date_create) "
+                               "VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",
+                               (is_active, the_end, turn, year, players, cur_num_players, max_players, date_create))
             self.__db.commit()
             print(f"Добавилось? turn:{turn} year: {year} players: {players} "
                   f"date_create: {date_create}")
         except Exception as _ex:
             print("Ошибка добавления данных в БД", _ex)
+            return False
+
+        return True
+
+    def add_player(self, game_id, player_id):  # "Удаление" игры на самом деле просто делает ее не активной
+        # Возможно будет смысл сделать и кнопку полного удаления
+        # Просто возникла сложность при создании новой игры, если ни одной не создано
+        # Типо игра получает ИД 1, а в БД используется порядковый номер
+        try:
+            self.__cur.execute(f"UPDATE games set players = array_append(players, {player_id}) WHERE row_id = {game_id}")
+            self.__db.commit()
+            print(f"Игра сделалась НЕ активной?")
+        except Exception as _ex:
+            print("Ошибка обновления данных в БД", _ex)
             return False
 
         return True
@@ -97,6 +113,20 @@ class FDataBase:
     def get_all_games(self):
         try:
             self.__cur.execute(f"SELECT * FROM games WHERE is_active = 1")
+            res = self.__cur.fetchall()
+            if not res:
+                print("games not found")
+                return []  # Вернем пустой список, для возможности добавления в него первого элемента
+
+            return res
+        except Exception as _ex:
+            print("Ошибка поиска игр в БД", _ex)
+
+        return False
+
+    def get_all_not_full_games(self):
+        try:
+            self.__cur.execute(f"SELECT * FROM games WHERE max_players > cur_num_players")
             res = self.__cur.fetchall()
             if not res:
                 print("games not found")

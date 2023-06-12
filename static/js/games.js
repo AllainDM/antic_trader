@@ -1,7 +1,7 @@
 console.log('Стрипт админской странички списка игр успешно загружен');
 
 
-// Меню для вывода инфы
+// Меню для вывода инфы по играм
 const chooseList = document.querySelector('.choose-list');
 
 
@@ -25,10 +25,8 @@ function requestStatus() {
         }
     });
     request.send();
+};
 
-}
-
-// Отдельно запросим список игроков для каждой игры
 
 requestStatus();
 
@@ -53,6 +51,7 @@ function chooseGame(gamesList) {
     });
 };
 
+
 // Удалить выбранную игру
 function deleteGame(gameId) {
     const request = new XMLHttpRequest();
@@ -66,3 +65,5 @@ function deleteGame(gameId) {
     });
     request.send();
 }
+
+

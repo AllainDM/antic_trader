@@ -160,6 +160,13 @@ div.content {
     margin-top: 0px;
     height: 280px;
 }
+.standart-window {
+    background: rgb(187, 183, 172); /* Цвет фона */
+    /* width: 100%; */
+    outline: 1px solid #000; 
+    border: 1px solid #fff; 
+    border-radius: 1px; 
+}
 .dashboard-stat{
     /* flex-wrap: nowrap; */
     font-size: 16px;

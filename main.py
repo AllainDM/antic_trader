@@ -216,6 +216,38 @@ def load_all_games():  # Делаю подпись html, чтоб раздели
     return jsonify(games_list)
 
 
+@app.route("/load_all_new_games")  # Посмотреть список все игр к которым можно присоединиться
+@login_required
+def load_all_new_games():  # Делаю подпись html, чтоб разделить названия функций с просто запросом страницы
+    global game_arr
+    # Прочитаем файл со списком игр
+    game_arr = dbase.get_all_not_full_games()
+    # Выше мы получили кортеж с данными страны, под 5 индексом список ИД игроков
+    # Нужно перебрать список ИД игроков и вынести имена игроков
+    print(f"game_arr для списка новых игр: {game_arr}")
+    games_list = []  # Это список игр для отправки админу game_arr,
+    # players_list = []  # Это список игр для отправки админу
+    for game in game_arr:
+        pls_in_game = []
+        for pl in game[5]:
+            pls_in_game.append(dbase.get_user(pl)[3])
+        game_and_players = [game, pls_in_game]
+        games_list.append(game_and_players)
+    return jsonify(games_list)
+
+
+@app.route("/add_player_to_game")  # Посмотреть список все игр к которым можно присоединиться
+@login_required
+def add_player_to_game():
+    game_id = int(request.args.get('id'))
+    player_id = int(current_user.get_id())
+    player_info = dbase.get_user(player_id)
+    print(f"player_info: {player_info}")
+    dbase.add_player(game_id, player_id)
+    add_dynasty(game_id, player_info)
+    return "ok"
+
+
 @app.route("/delete_game")  # Удалить игру (сделать неактивной)
 @login_required
 def delete_game():
@@ -356,7 +388,8 @@ def create_new_game():
         return ""
 
 
-def create_game(players_dynasty):  # Получаем только список игроков
+def create_game(setting):  # Получаем только список игроков
+    # TODO Нужно с фронта получать два аргумента, а не только список
     # all_games = dbase.get_all_games()
     # print(f"all_games: {all_games}")
     global game_arr  # Зачем?
@@ -369,7 +402,8 @@ def create_game(players_dynasty):  # Получаем только список 
     date_now = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")  # Дата: день, часы, минуты
 
     # Создадим мир
-    this_game = FirstWorld(game_arr[-1], date_now)
+    max_pl = setting[0]["maxPlayers"]
+    this_game = FirstWorld(game_arr[-1], date_now, max_pl)
 
     # Создадим папку игры и папку ходов если их не существует
     # Может делать проверку при создании игры, и удалять/создавать заново если она есть
@@ -383,10 +417,14 @@ def create_game(players_dynasty):  # Получаем только список 
     # Создадим династии
     id_players_for_add_db = []  # Массив и ИД игроков, передается в БД, для записи партии
     # print(f"players_dynasty {players_dynasty}")
-    for player in players_dynasty:
+    num_id = 1
+    for player in setting[1]:
         # this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
+        # TODO почему первый аргумент всегда 1, надо может делать +1 === num_id Добавить это?
+        print(f"Проверка на добавление династии при создании игры")
         this_game.create_dynasty(1, player["playerId"], player["nameEng"], player["nameRus"], 10000)  # Золото пока не передается
         id_players_for_add_db.append(player["playerId"])
+        num_id += 1
     # Создадим города
     this_game.create_settlement("Карфаген", "Карфаген")
     this_game.settlements["Карфаген"].goods_in_city.resources_mod_price["Оливки"] = 1
@@ -439,11 +477,22 @@ def create_game(players_dynasty):  # Получаем только список 
     # this_game.create_settlement("Syracuse", "Сиракузы")
 
     this_game.save_to_file()
-    dbase.add_game(1, -300, id_players_for_add_db)
+    # setting[1] это список династий, агрументом отдаем его длину как текущее количество игроков
+    print("Добавляем игру в БД")
+    dbase.add_game(1, -300, id_players_for_add_db, len(setting[1]), max_pl)
 
     print("Игра создана")
     print(this_game.dynasty_list)
-    return f"Game create {players_dynasty}"
+    return f"Game create {setting[1]}"
+
+
+def add_dynasty(game_id, player):
+    game = FirstWorld(game_id)  # Восстановим саму игру.
+    game.load_from_file(game_id)  # Запустим метод считающий данные из файла.
+    # TODO исправить первый аргумент???
+    # TODO так же исправить количество золота
+    game.create_dynasty(1, player[0], player[6], player[6], 10000)
+    game.save_to_file()
 
 
 # !!!!!!!!!! Отменять надо у Активной игры. Или нет?
@@ -541,6 +590,9 @@ def req_status_game():
     buildings_name_list = buildings.buildings_name_list
     # print(f"goods_name: {goods_name}")
     data = {
+            # Об игроках
+            "max_players": my_world["max_players"],
+            "dynasty_list": my_world["dynasty_list"],
             "winners": my_world["winners"],  # need_win_points_for_win
             "need_win_points_for_win": my_world["need_win_points_for_win"],
             "year": my_world["year"],
