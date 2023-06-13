@@ -161,11 +161,21 @@ div.content {
     height: 280px;
 }
 .standart-window {
-    background: rgb(187, 183, 172); /* Цвет фона */
+    margin-top: 10px;
+
+    background: rgb(206, 204, 198); /* Цвет фона */
     /* width: 100%; */
     outline: 1px solid #000; 
     border: 1px solid #fff; 
     border-radius: 1px; 
+}
+.window-set-new-game {
+    width: 150px;
+    margin-top: 10px; 
+    font-size: 18px; 
+    background-color: rgb(159, 170, 180); 
+    border-radius: 1px; 
+    border: 1px solid #fff; 
 }
 .dashboard-stat{
     /* flex-wrap: nowrap; */

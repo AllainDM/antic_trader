@@ -369,9 +369,10 @@ def create_new_single_game():
         return ""
 
 
-@app.route("/create_new_game", methods=["POST"])  # Создать настроенную игру получив параметры с фронта
+# Админская версия создания партии
+@app.route("/create_new_game_admin", methods=["POST"])  # Создать настроенную игру получив параметры с фронта
 @login_required
-def create_new_game():
+def create_new_game_admin():
     # Создать вариант, где пользователь не админ, что перекидывало куда-нибудь в другое место
     if request.method == "POST":
         # global game_arr  # Зачем?
@@ -384,6 +385,28 @@ def create_new_game():
             print(f"Ответ от Python: Игра создалась")
             # return jsonify("Ответ от Python: Игра создалась")
             return jsonify(info_to_front)
+    else:
+        return ""
+
+
+@app.route("/create_new_game", methods=["POST"])  # Создать настроенную игру получив параметры с фронта
+@login_required
+def create_new_game():
+    if request.method == "POST":
+        # Соберем инфу о пользоветеле создавшем игру, его данные будут записаны под первой страной
+        player_id = int(current_user.get_id())
+        player_info = dbase.get_user(player_id)
+        post = request.get_json()
+        print(f"post: {post}")
+        print(f"player_info: {player_info}")
+        setting_for_create_game = [
+            {"maxPlayers": post["maxPlayers"]},    # post[0]
+            [{"playerId": player_info[0], "nameEng": player_info[6], "nameRus": player_info[6]}]
+        ]
+        print(f"setting_for_create_game {setting_for_create_game}")
+        info_to_front = create_game(setting_for_create_game)
+        print(f"Ответ от Python: Игра создалась")
+        return jsonify(info_to_front)
     else:
         return ""
 
@@ -403,6 +426,7 @@ def create_game(setting):  # Получаем только список игро
 
     # Создадим мир
     max_pl = setting[0]["maxPlayers"]
+    print(f"max_pl: {max_pl}")
     this_game = FirstWorld(game_arr[-1], date_now, max_pl)
 
     # Создадим папку игры и папку ходов если их не существует
@@ -419,6 +443,8 @@ def create_game(setting):  # Получаем только список игро
     # print(f"players_dynasty {players_dynasty}")
     num_id = 1
     for player in setting[1]:
+        print(f"setting[1]: {setting[1]}")
+        print(f"player: {player}")
         # this_game.create_dynasty(1, player[0], player[1], player[2], 10000)  # Золото пока не передается
         # TODO почему первый аргумент всегда 1, надо может делать +1 === num_id Добавить это?
         print(f"Проверка на добавление династии при создании игры")

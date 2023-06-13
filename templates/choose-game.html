@@ -3,8 +3,8 @@
 {% block content %}
 {{ super() }}
 
-
-<div class="container">
+<!-- Выбор одной из своих партий -->
+<div class="container standart-window">
     <div class="choose-list"> <!-- Возможно лучше скрыть -->
         <div class="menu-buttons-choose" id="menu-buttons-choose">
            <!-- Для отображения кнопок выбора игры -->
@@ -13,12 +13,51 @@
     </div>
 </div>
 
-<div class="container" style="margin-top: 20px;">
+<!-- Присоединиться к новой партии -->
+<div class="container standart-window" style="margin-top: 20px;">
     <div class="choose-list choose-new-game"> <!-- Возможно лучше скрыть -->
         <!-- <div class="menu-buttons-choose" id="menu-buttons-choose"> -->
            <!-- Для отображения кнопок выбора игры -->
         <!-- </div> -->
     </div>    
+</div>
+
+<!-- Создать партию -->
+<div class="container standart-window" style="width: 25%;">
+    <div class="choose-list create-new-game"> 
+        <div class="menu-buttons-choose" id="menu-buttons-choose"> 
+            <div style="font-size: 20px; ">Создание новой игры</div>
+            <div style="margin: 10px;">
+                <div class="window-set-new-game">
+                    <div>
+                        <div>Макс. кол. игроков</div>
+                        <input id="max-players" style="width: 30px;" value="8" readonly>
+                        <button style="margin-left: auto" id="max-players-plus">+</button>
+                        <button style="margin-left: auto" id="max-players-minus">-</button>
+                    </div>
+                </div>
+                <div class="window-set-new-game">
+                    <div>
+                        <div>Победные очки</div>
+                        <input id="win-points" style="width: 30px;" value="8" readonly>
+                        <button style="margin-left: auto" id="win-points-plus">+</button>
+                        <button style="margin-left: auto" id="win-points-minus">-</button>
+                    </div>
+                </div>
+                <button style="margin-top: 10px; font-size: 20px;" id="create-new-game">Создать игру</button>
+            </div>
+            <!-- <table>    border="1"
+                <tr>
+                    <td>Макс. кол. игроков</tdr>
+                    <td>Победные очки</tdr>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><div>8</div><button>+</button><button>-</button></td>
+                </tr>
+           </table> -->
+        </div>
+    </div>
 </div>
 
     <script src="{{ url_for('static', filename='js/choose-game.js') }}"></script>

@@ -174,7 +174,7 @@ reqUsers();
 
 function createNewGame(post) {
     const request = new XMLHttpRequest();
-    request.open('POST', '/create_new_game');
+    request.open('POST', '/create_new_game_admin');
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     
     console.log(JSON.stringify(post));

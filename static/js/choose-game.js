@@ -4,6 +4,8 @@ console.log('Стрипт странички выбора игры успешн�
 const chooseList = document.querySelector('.choose-list');
 // Для присоединения к новой игре
 const chooseNewGameList = document.querySelector('.choose-new-game');
+// Для создания новой игры
+const createNewGameList = document.querySelector('.create-new-game');
 
 // Запрос статуса для отображения выбора одной из своих игр
 function requestStatus() {
@@ -89,11 +91,11 @@ requestStatusForNewGame();
 function chooseNewGame(gamesList) {
     chooseNewGameList.innerHTML = `<div>Список доступных игр(Внимание, тут также игры в которых уже участвует игрок):</div>`;  // Добавим подсказку
     chooseNewGameList.innerHTML += `
-    <table class="table-new-games"border="1">
+    <table class="table-new-games" style="margin-top: 10px" border="1">
         <tr>
-            <td style="font-size: 18px">ИД</td>
-            <td style="font-size: 18px">Год</td>
-            <td style="font-size: 18px">Ход</td>
+            <td style="font-size: 18px; width: 45px;">ИД</td>
+            <td style="font-size: 18px; width: 45px;">Год</td>
+            <td style="font-size: 18px; width: 45px;">Ход</td>
             <td style="font-size: 16px;">Кол-во <br> игроков</td>
             <td rowspan=2 style="font-size: 16px">Макс.<br> игроков</td>
             <td style="font-size: 18px">Список игроков</td>
@@ -163,4 +165,65 @@ function setActiveGame(id){
         console.log('error')
     });
     req.send();
+};
+
+// Для создания новой игры
+const inputMaxPlayers = document.getElementById('max-players');
+const inputWinPoints = document.getElementById('win-points');
+const bntMaxPlayersPlus = document.getElementById('max-players-plus');
+const bntMaxPlayersMinus = document.getElementById('max-players-minus');
+const bntWinPointsPlus = document.getElementById('win-points-plus');
+const bntWinPointsMinus = document.getElementById('win-points-minus');
+const btnCreateNewGame = document.getElementById('create-new-game');
+
+bntMaxPlayersPlus.addEventListener('click', () => {
+    num = Number(inputMaxPlayers.value);
+    if (num < 8) {
+        inputMaxPlayers.value = num + 1;
+    };
+});
+
+bntMaxPlayersMinus.addEventListener('click', () => {
+    num = Number(inputMaxPlayers.value);
+    if (num > 1) {
+        inputMaxPlayers.value = num - 1;
+    };
+});
+
+bntWinPointsPlus.addEventListener('click', () => {
+    num = Number(inputWinPoints.value);
+    inputWinPoints.value = num + 1;
+});
+
+bntWinPointsMinus.addEventListener('click', () => {
+    num = Number(inputWinPoints.value);
+    if (num > 4) {
+        inputWinPoints.value = num - 1;
+    };
+});
+
+btnCreateNewGame.addEventListener('click', () => {
+    let post = {
+        maxPlayers: inputMaxPlayers.value,
+        winPoints: inputWinPoints.value
+    }
+    createNewGame(post);
+});
+
+function createNewGame(post) {
+    const request = new XMLHttpRequest();
+    request.open('POST', '/create_new_game');
+    request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    
+    console.log(JSON.stringify(post));
+    request.send(JSON.stringify(post));
+
+    request.addEventListener('load', () => {
+        // console.log(request.response)
+        console.log("Запрос на создание новой настроенной игры");
+        console.log("Запрос на создание новой настроенной игры");
+        // alert(request.response);
+        window.location.href = 'choose-game';
+    });
+
 };
