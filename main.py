@@ -639,6 +639,27 @@ def req_status_game():
     return jsonify(data)
 
 
+# Чат
+@app.route("/post_chat", methods=["POST"])  # Подтверждение готовности хода
+@login_required
+def post_chat():
+    if request.method == "POST":
+        # print('Запрос с js')
+        # Определим игрока, чтоб понять от кого получен запрос
+        player_id = int(current_user.get_id())
+        player_info = dbase.get_user(player_id)
+        date_now = datetime.strftime(datetime.now(), "%H:%M:%S")  # Дата: часы, минуты, секунды
+        post = request.get_json()
+        chat_redis = rediska.get("chat")
+        # chat_redis.append("nsadaf")
+        mes = f"\n{player_info[3]} {date_now}: {post}"
+        chat_redis += mes
+        rediska.set("chat", chat_redis)
+        print(chat_redis)
+        print(type(chat_redis))
+        return jsonify(chat_redis)
+
+
 # !!!!!!!!!!!!! Запустить функцию подсчета хода
 @app.route("/post_turn", methods=["POST"])  # Подтверждение готовности хода
 @login_required
@@ -785,3 +806,6 @@ def profile():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    # Установим чат
+    chat = ""
+    rediska.set("chat", chat)

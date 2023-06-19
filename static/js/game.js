@@ -206,23 +206,24 @@ requestStatusPlayer();
 // Делаем новый таймер, он работает от включенной переменной autoUpdate
 function autoUpdate() {
     // const tm = document.getElementById("timer");
-    // if (statusGame.autoUpdate) {
+    if (statusGame.autoUpdate) {
     //     console.log("Таймер работает")
     //     let timer = setInterval(tm.innerHTML = `<p>10</p>`, 1000)
     //     for (i = 10; i >= 0; i--) {
     //     }
     //     clearInterval(timerId2)
     //     // Отключим таймер для разработки
-        console.log("Внимание, таймер отключен")
-    //     requestStatus();
-    //     requestStatusPlayer();
+        // console.log("Внимание, таймер отключен")
+        requestStatus();
+        requestStatusPlayer();
         
-    // }
+    }
 };
 function showTimer() {
 
 }
-let timerId = setInterval(() => autoUpdate(), 10000);
+//     // Отключим таймер для разработки
+// let timerId = setInterval(() => autoUpdate(), 5000);
 
 // // autoUpdate();
 // function autoUpdateTimer() {
