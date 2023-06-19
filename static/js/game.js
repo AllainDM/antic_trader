@@ -10,6 +10,7 @@ let statusGame = {
     year: -300,
     turn: 1,
     end_turn: false,
+    endTurnKnow: true, // Оповещен ли игрок о новом ходе
     acts: [],           // Запись планируемых действий с описанием
     // actsText: [],       // Запись планируемых действий в виде текста понятного для игрока
     logsText: [],       // Запись итогов хода в виде текста понятного для игрока
@@ -129,8 +130,12 @@ function updateVar() {
     document.getElementById('game-id').innerText = 'Игра: ' + statusGame.game_id;
     document.getElementById('game-date').innerText = 'Дата создания: ' + statusGame.date_create;
 
+    if (statusGame.endTurnKnow == false) {
+        confimRecTurnModal();
+    };
 
-}
+
+};
 
 updateVar();
 
@@ -200,19 +205,19 @@ requestStatusPlayer();
 
 // Делаем новый таймер, он работает от включенной переменной autoUpdate
 function autoUpdate() {
-    const tm = document.getElementById("timer");
-    if (statusGame.autoUpdate) {
-        // console.log("Таймер работает")
-        // let timer = setInterval(tm.innerHTML = `<p>10</p>`, 1000)
-        // for (i = 10; i >= 0; i--) {
-        // }
-        // clearInterval(timerId2)
-        // Отключим таймер для разработки
+    // const tm = document.getElementById("timer");
+    // if (statusGame.autoUpdate) {
+    //     console.log("Таймер работает")
+    //     let timer = setInterval(tm.innerHTML = `<p>10</p>`, 1000)
+    //     for (i = 10; i >= 0; i--) {
+    //     }
+    //     clearInterval(timerId2)
+    //     // Отключим таймер для разработки
         console.log("Внимание, таймер отключен")
-        // requestStatus();
-        // requestStatusPlayer();
+    //     requestStatus();
+    //     requestStatusPlayer();
         
-    }
+    // }
 };
 function showTimer() {
 
@@ -298,6 +303,7 @@ function actualVarPlayer(res) {
     // statusGame.actsText = res.acts_text
     statusGame.logsText = res.result_logs_text
     statusGame.logsTextAllTurns = res.result_logs_text_all_turns
+    statusGame.endTurnKnow = res.end_turn_know;
 
     // Обновим список доступных для игрока(страны) построек
     statusGame.colonyListForBuild = res.buildings_available_list
@@ -378,7 +384,7 @@ function cancelAct(what) {
     req.send();
 };
 
-// Отправка хода
+// Отправка хода с модалкой
 document.getElementById('end-turn-btn').addEventListener('click', () => {
     if (statusGame.acts.length < statusGame.bodyPoints) {
         // confimModalEndTurd("У вас еще остались очки действий. Точно отправить ход?")
@@ -451,13 +457,38 @@ function postAct(gameId) {
     });
 };
 
+function confirmRecTurn() {  // Подтвердить получение хода, чтобы не вылазило оповещение
+
+    closeModal(); // Закроем модальное окошко
+
+    const request = new XMLHttpRequest();
+    request.open('GET', `/confirm_rec_turn?gameID=${statusGame.game_id}`);
+    request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    
+    console.log(JSON.stringify(statusGame.acts));
+    // Это можно удалить???
+    request.send(JSON.stringify(statusGame.acts));
+
+    request.addEventListener('load', () => {
+        console.log("Автообновление");
+        requestStatus();
+        requestStatusPlayer();
+        closeModal(); // Закроем модальное окошко
+    });
+
+}
+
 // Функции отображения логов. До хода и итогов хода
 
 function logStart() {       //Функция запуска будущего лога
-    document.getElementById('logs').innerText = 'Ваши действия';  // Очистим
+    let listLogs = document.getElementById('logs');
+    listLogs.innerText = 'Ваши действия';  // Очистим
+    if (statusGame.bodyPoints - statusGame.acts.length < 0) {
+        listLogs.innerText += '\n Внимание, вы запланировали больше чем у вас доступно "очков действий", все не выполненное перенесется на следующий ход.'
+    }
     statusGame.acts.forEach((item, num) => {  
-        let a = document.getElementById('logs');
-        a.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
+        // let a = document.getElementById('logs');
+        listLogs.insertAdjacentHTML('beforeend', `<div>${num + 1}: ${item[0]}</div>`);
     });
 }
 
@@ -886,4 +917,13 @@ function confimModal(text, fn) {
     content.innerHTML += `<button onclick = ${fn} style="font-size: 25px; width: 100px">Да</button>`
     content.innerHTML += `<button onclick = closeModal() style="font-size: 25px; width: 100px">Нет</button>`
 
+}
+
+function confimRecTurnModal() {
+    modal.style.display = "block";
+    let content = document.getElementById("show-content");
+    content.innerHTML = `<div style="font-size: 25px">Новый ${statusGame.turn} ход</div>`;
+    content.innerHTML += `<button onclick = confirmRecTurn() style="font-size: 25px; width: 150px">Отлично</button>`;
+    // Сразу подвердим получени хода, чтобы окошко не выскакивало два раза
+    statusGame.endTurnKnow = true;
 }

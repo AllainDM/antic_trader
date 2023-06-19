@@ -171,8 +171,9 @@ class Dynasty:
     def calc_end_turn(self):
         self.prod_goods()  # Произведем товары в "колониях"
 
-        # Выставим False для параметра end_turn
+        # Выставим False для параметра подтверждающего отправку хода и получение оповещения о новом ходе
         self.end_turn = False
+        self.end_turn_know = False
         self.save_to_file()
         print(f"Функция обработки конца хода")
 

@@ -702,6 +702,31 @@ def post_act():
     return ""
 
 
+@app.route("/confirm_rec_turn", methods=["GET"])  # Подтверждение готовности хода
+@login_required
+def confirm_rec_turn():
+    # print('Запрос с js')
+    # Определим игрока, чтоб понять от кого получен запрос и куда его записать
+    player = int(current_user.get_id())
+    # Получим ИД партии, ей будем присваивать запрос !!!!!!!!!!!! после проверки
+    # !!!!!!!!! Нужна проверка участвует ли игрок в этой игре!!!!!!!!!!!!!!!!!!!!!!!!!!
+    game_id = request.args.get('gameID')
+    # print(f"ИД партии которой передается ход: {game_id}")
+    # Получаем список с действиями игрока
+    try:
+        with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'rb') as f:
+            data = pickle.load(f)
+    except FileNotFoundError:
+        print(f"Файл 'games/{game_id}/gameID_{game_id}_playerID_{player}.trader' не найден")
+        return ""
+    # Присвоим изменения игроку
+    data["end_turn_know"] = True
+    # Снова запишем в файл
+    with open(f"games/{game_id}/gameID_{game_id}_playerID_{player}.trader", 'wb') as f:
+        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+    world.check_readiness(game_id)
+
+
 @app.route("/contact", methods=["POST", "GET"])  # Обратная связь
 @login_required
 def contact():
